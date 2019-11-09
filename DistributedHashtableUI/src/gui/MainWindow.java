@@ -48,6 +48,7 @@ import javax.swing.JCheckBox;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Component;
+import javax.swing.JSplitPane;
 //import com.jgoodies.forms.layout.FormLayout;
 //import com.jgoodies.forms.layout.ColumnSpec;
 //import com.jgoodies.forms.layout.RowSpec;
@@ -87,42 +88,61 @@ public class MainWindow extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-				
-						JLayeredPane pnlConnection = new JLayeredPane();
-						pnlConnection.setBackground(Color.GRAY);
-						pnlConnection.setBounds(20, 72, 654, 329);
-						contentPane.add(pnlConnection);
-						pnlConnection.setLayout(null);
-																
-																		JPanel pnlConnectionSettings = new JPanel();
-																		pnlConnectionSettings.setBounds(0, 0, 654, 329);
-																		pnlConnection.add(pnlConnectionSettings);
-																		pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
-																								pnlConnectionSettings.setLayout(null);
-																								
-																								textField = new JTextField();
-																								textField.setBounds(157, 37, 321, 20);
-																								pnlConnectionSettings.add(textField);
-																								textField.setColumns(10);
-																								
-																								JLabel lblServerUrl = new JLabel("Title");
-																								lblServerUrl.setBounds(21, 40, 81, 14);
-																								pnlConnectionSettings.add(lblServerUrl);
-																								
-																								JLabel label = new JLabel("Server URL");
-																								label.setBounds(21, 75, 81, 14);
-																								pnlConnectionSettings.add(label);
-																								
-																								textField_1 = new JTextField();
-																								textField_1.setColumns(10);
-																								textField_1.setBounds(157, 68, 321, 20);
-																								pnlConnectionSettings.add(textField_1);
-																pnlConnection.setVisible(false);
-		
-				JLayeredPane pnlMainBody = new JLayeredPane();
-				pnlMainBody.setBounds(20, 72, 654, 329);
-				contentPane.add(pnlMainBody);
-						pnlMainBody.setLayout(new GridLayout(0, 1, 0, 0));
+								
+										JLayeredPane pnlConnection = new JLayeredPane();
+										pnlConnection.setBackground(Color.GRAY);
+										pnlConnection.setBounds(20, 72, 654, 329);
+										contentPane.add(pnlConnection);
+										pnlConnection.setLayout(null);
+										
+												JPanel pnlConnectionSettings = new JPanel();
+												pnlConnectionSettings.setBounds(0, 0, 654, 329);
+												pnlConnection.add(pnlConnectionSettings);
+												pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
+												pnlConnectionSettings.setLayout(null);
+												
+												textField = new JTextField();
+												textField.setBounds(157, 37, 321, 20);
+												pnlConnectionSettings.add(textField);
+												textField.setColumns(10);
+												
+												JLabel lblServerUrl = new JLabel("Title");
+												lblServerUrl.setBounds(21, 40, 81, 14);
+												pnlConnectionSettings.add(lblServerUrl);
+												
+												JLabel label = new JLabel("Server URL");
+												label.setBounds(21, 75, 81, 14);
+												pnlConnectionSettings.add(label);
+												
+												textField_1 = new JTextField();
+												textField_1.setColumns(10);
+												textField_1.setBounds(157, 68, 321, 20);
+												pnlConnectionSettings.add(textField_1);
+												pnlConnection.setVisible(false);
+						
+								JLayeredPane pnlMainBody = new JLayeredPane();
+								pnlMainBody.setBounds(20, 72, 654, 329);
+								contentPane.add(pnlMainBody);
+								pnlMainBody.setLayout(new GridLayout(0, 1, 0, 0));
+								
+								JSplitPane splitPane = new JSplitPane();
+								pnlMainBody.add(splitPane);
+								
+								JList list = new JList();
+								list.setModel(new AbstractListModel() {
+									String[] values = new String[] {"Key1", "Key2", "Key3"};
+									public int getSize() {
+										return values.length;
+									}
+									public Object getElementAt(int index) {
+										return values[index];
+									}
+								});
+								splitPane.setLeftComponent(list);
+								
+								JTextArea txtrKeyValueGoes = new JTextArea();
+								txtrKeyValueGoes.setText("Key value goes here");
+								splitPane.setRightComponent(txtrKeyValueGoes);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
@@ -145,6 +165,10 @@ public class MainWindow extends JFrame {
 
 		JButton btnDelete = new JButton("Delete");
 		navMain.add(btnDelete);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Current Node", "All"}));
+		navMain.add(comboBox);
 
 		JPanel navConnection = new JPanel();
 		tabbedPane.addTab("Connection", null, navConnection, null);
@@ -176,62 +200,12 @@ public class MainWindow extends JFrame {
 
 				if (index == 0) {
 					pnlMainBody.setVisible(true);
-					pnlEmailBody.setVisible(false);
-					pnlCalendarBody.setVisible(false);
-					pnlContacts.setVisible(false);
 					pnlConnection.setVisible(false);
-					pnlAccounts.setVisible(false);
 				} else if (index == 1) {
 
-					pnlEmailBody.setVisible(true);
 					pnlMainBody.setVisible(false);
-					pnlCalendarBody.setVisible(false);
-					pnlContacts.setVisible(false);
-					pnlConnection.setVisible(false);
-					pnlAccounts.setVisible(false);
-					
-					// TODO
-					//IEmail email = getSelectedEmail();
-					//txtEmailTextEditor.setText(email.getMessageBodyString());
-					//txtTo.setText((String) email.getToAddresses().get(0));
-					//txtSubject.setText(email.getSubject());
-				}
-
-				else if (index == 2) {
-					pnlCalendarBody.setVisible(true);
-					pnlMainBody.setVisible(false);
-					pnlEmailBody.setVisible(false);
-					pnlContacts.setVisible(false);
-					pnlConnection.setVisible(false);
-					pnlAccounts.setVisible(false);
-				}
-
-				else if (index == 3) {
-					pnlContacts.setVisible(true);
-					pnlCalendarBody.setVisible(false);
-					pnlMainBody.setVisible(false);
-					pnlEmailBody.setVisible(false);
-					pnlConnection.setVisible(false);
-					pnlAccounts.setVisible(false);
-				}
-
-				else if (index == 4) {
-					pnlAccounts.setVisible(true);
-
-					pnlContacts.setVisible(false);
-					pnlCalendarBody.setVisible(false);
-					pnlMainBody.setVisible(false);
-					pnlEmailBody.setVisible(false);
-					pnlConnection.setVisible(false);
-
-				} else if (index == 5) {
 					pnlConnection.setVisible(true);
-					pnlAccounts.setVisible(false);
 
-					pnlContacts.setVisible(false);
-					pnlCalendarBody.setVisible(false);
-					pnlMainBody.setVisible(false);
-					pnlEmailBody.setVisible(false);
 				}
 			}
 		});
