@@ -21,6 +21,27 @@ public class DHashtable {
 		localHT = new HashMap<Double, DHashEntry>();
 	}
 	
+	public DHashEntry getEntry(Double angle)
+	{
+		if (localHT.containsKey(angle))
+			return localHT.get(angle);
+		
+		Set<Double> set = localHT.keySet();
+		
+		for (Double key : set)
+		{
+			if (angle - key < 0.01 && angle - key > 0.0)
+				return localHT.get(key);
+		}
+		
+		return null;
+	}
+	
+	public void insert(String value)
+	{
+		this.insert(DHashEntry.getHashEntry(value));
+	}
+	
 	public void insert(DHashEntry... hashEntries)
 	{
 		for (DHashEntry e : hashEntries)
@@ -50,9 +71,12 @@ public class DHashtable {
 		}
 	}
 	
-	public DHashtable moveKeysAboveTo(Double keysAbove)
+	public DHashtable moveKeysAboveTo(DHashtable newTable, Double keysAbove)
 	{
-		DHashtable newTable = new DHashtable();
+		if (newTable == null)
+		{
+			newTable = new DHashtable();
+		}
 		
 		Set<Double> set = localHT.keySet();
 		

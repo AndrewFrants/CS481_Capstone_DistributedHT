@@ -34,6 +34,11 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.List;
 
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import javax.swing.event.ListSelectionListener;
 
 import service.DHService;
@@ -52,9 +57,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Component;
 import javax.swing.JSplitPane;
-//import com.jgoodies.forms.layout.FormLayout;
-//import com.jgoodies.forms.layout.ColumnSpec;
-//import com.jgoodies.forms.layout.RowSpec;
+
 
 
 public class MainWindow extends JFrame {
@@ -67,6 +70,7 @@ public class MainWindow extends JFrame {
 	DefaultListModel<String> keysList;
 	JList keyList;
 	DHService dhService;
+	JTextArea currentValue;
 	
 	/**
 	 * Launch the application.
@@ -120,6 +124,23 @@ public class MainWindow extends JFrame {
 				JButton btnNew = new JButton("New Node");
 				panel.add(btnNew);
 				
+				JButton btnNewButton = new JButton("Remove Node");
+				btnNewButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						if (nodeList.getSelectedIndex() < 0)
+							return;
+						
+						String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
+						selectedIndex = selectedIndex.split("\\(")[0].trim();
+						
+						if (selectedIndex.equalsIgnoreCase("All"))
+							return;
+						
+						RemoveNode(selectedIndex);
+					}
+				});
+				panel.add(btnNewButton);
+				
 				JButton btnNewEntry = new JButton("New Entry");
 				panel.add(btnNewEntry);
 				
@@ -137,7 +158,7 @@ public class MainWindow extends JFrame {
 				JSplitPane splitPane = new JSplitPane();
 				pnlMainBody.add(splitPane);
 				
-				JTextArea currentValue = new JTextArea();
+				currentValue = new JTextArea();
 				currentValue.setText("Key value goes here");
 				splitPane.setRightComponent(currentValue);
 				
@@ -169,9 +190,27 @@ public class MainWindow extends JFrame {
 				});
 				panel_5.add(keyList);
 				
+				keyList.addListSelectionListener(new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent arg0) {
+						PopulateText();
+					}
+				});
 				
 				btnNew.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
+						
+				        JTextField replaceTxt = new JTextField("");
+				        JPanel panel = new JPanel(new GridLayout(0, 1));
+
+				        panel.add(new JLabel("Add Node: "));
+				        panel.add(replaceTxt);
+
+				        int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node",
+				            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				
+				        if (result == JOptionPane.OK_OPTION) {
+				        		AddNode(replaceTxt.getText());
+				        	}
 					}
 				});
 
@@ -250,13 +289,19 @@ public class MainWindow extends JFrame {
 		
 		dhService = DHService.createFiveNodeCluster();
 		
+		populateNodes();
+	}
+	
+	public void populateNodes()
+	{
+		nodesList.clear();
+		
 		nodesList.add(0, "All");
 		
 		for (DNode node : dhService.getAllNodes())
 		{
-			nodesList.add(0, node.getName());
+			nodesList.add(0, node.getName() + " (" + node.getHash() + ")");
 		}
-		//int index = 0;
 	}
 	
 	public void PopulateKeys()
@@ -265,13 +310,13 @@ public class MainWindow extends JFrame {
 			return;
 		
 		String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
+		selectedIndex = selectedIndex.split("\\(")[0].trim();
 		
 		if (selectedIndex.equalsIgnoreCase("All"))
 			return;
 		
 		keysList.clear();
-		keysList.add(0, "sdfe");
-		
+
 		DNode node = dhService.findNodeByName(selectedIndex);
 		
 		for (DHashEntry en : node.getAllEntries())
@@ -280,5 +325,44 @@ public class MainWindow extends JFrame {
 		}
 		
 		keyList.repaint();
+	}
+	
+	public void PopulateText()
+	{
+		if (keyList.getSelectedIndex() < 0)
+			return;
+		
+		String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
+		Double selectedKey = Double.valueOf(selectedIndex);
+		
+		if (selectedIndex.equalsIgnoreCase("All"))
+			return;
+		
+		DNode node = dhService.findNodeByName(selectedKey);
+		
+		DHashEntry entry = node.getTable().getEntry(selectedKey);
+		
+		currentValue.setText(entry.getValue());
+	}
+	
+	public void RefreshControls()
+	{
+		this.PopulateKeys();
+		this.PopulateText();
+		this.populateNodes();
+	}
+	
+	public void AddNode(String text)
+	{
+		dhService.addNode(text);
+		
+		RefreshControls();
+	}
+	
+	public void RemoveNode(String name)
+	{
+		dhService.removeNode(name);
+		
+		RefreshControls();
 	}
 }
