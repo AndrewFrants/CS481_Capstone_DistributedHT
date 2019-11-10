@@ -36,6 +36,9 @@ import java.util.List;
 
 import javax.swing.event.ListSelectionListener;
 
+import service.DHService;
+import service.DHashEntry;
+import service.DNode;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.JTabbedPane;
@@ -59,7 +62,12 @@ public class MainWindow extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_1;
-
+	DefaultListModel<String> nodesList;
+	private JList nodeList;
+	DefaultListModel<String> keysList;
+	JList keyList;
+	DHService dhService;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -81,117 +89,139 @@ public class MainWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public MainWindow() {
-		//emailSvc = new EmailServices();
+		nodesList = new DefaultListModel<String>();
+		keysList = new DefaultListModel<String>();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 700, 450);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		//contentPane.setLayout(new GridLayout(0, 1));
+		contentPane.setLayout(new BorderLayout());
 		setContentPane(contentPane);
-		contentPane.setLayout(null);
-								
-										JLayeredPane pnlConnection = new JLayeredPane();
-										pnlConnection.setBackground(Color.GRAY);
-										pnlConnection.setBounds(20, 72, 654, 329);
-										contentPane.add(pnlConnection);
-										pnlConnection.setLayout(null);
-										
-												JPanel pnlConnectionSettings = new JPanel();
-												pnlConnectionSettings.setBounds(0, 0, 654, 329);
-												pnlConnection.add(pnlConnectionSettings);
-												pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
-												pnlConnectionSettings.setLayout(null);
-												
-												textField = new JTextField();
-												textField.setBounds(157, 37, 321, 20);
-												pnlConnectionSettings.add(textField);
-												textField.setColumns(10);
-												
-												JLabel lblServerUrl = new JLabel("Title");
-												lblServerUrl.setBounds(21, 40, 81, 14);
-												pnlConnectionSettings.add(lblServerUrl);
-												
-												JLabel label = new JLabel("Server URL");
-												label.setBounds(21, 75, 81, 14);
-												pnlConnectionSettings.add(label);
-												
-												textField_1 = new JTextField();
-												textField_1.setColumns(10);
-												textField_1.setBounds(157, 68, 321, 20);
-												pnlConnectionSettings.add(textField_1);
-												pnlConnection.setVisible(false);
-						
-								JLayeredPane pnlMainBody = new JLayeredPane();
-								pnlMainBody.setBounds(20, 72, 654, 329);
-								contentPane.add(pnlMainBody);
-								pnlMainBody.setLayout(new GridLayout(0, 1, 0, 0));
-								
-								JSplitPane splitPane = new JSplitPane();
-								pnlMainBody.add(splitPane);
-								
-								JList list = new JList();
-								list.setModel(new AbstractListModel() {
-									String[] values = new String[] {"Key1", "Key2", "Key3"};
-									public int getSize() {
-										return values.length;
-									}
-									public Object getElementAt(int index) {
-										return values[index];
-									}
-								});
-								splitPane.setLeftComponent(list);
-								
-								JTextArea txtrKeyValueGoes = new JTextArea();
-								txtrKeyValueGoes.setText("Key value goes here");
-								splitPane.setRightComponent(txtrKeyValueGoes);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-
+		tabbedPane.setSelectedIndex(-1);
 		tabbedPane.setBounds(0, 0, 654, 61);
 		contentPane.add(tabbedPane);
+												//pnlMainBody.setBounds(20, 72, 654, 329);
+												BorderLayout bl_pnlMainBody = new BorderLayout();
+
+
 
 		JPanel navMain = new JPanel();
 		tabbedPane.addTab("Main", null, navMain, null);
 		tabbedPane.setEnabledAt(0, true);
+		navMain.setLayout(new BorderLayout(0, 0));
 		
-		JComboBox nodeSelector = new JComboBox();
-		nodeSelector.setModel(new DefaultComboBoxModel(new String[] {"node1", "node2", "node3"}));
-		navMain.add(nodeSelector);
-
-		JButton btnNew = new JButton("New");
-		navMain.add(btnNew);
-
-		JButton btnSave = new JButton("Save");
-		navMain.add(btnSave);
-
-		JButton btnDelete = new JButton("Delete");
-		navMain.add(btnDelete);
+		JPanel panel = new JPanel();
+		navMain.add(panel, BorderLayout.NORTH);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Current Node", "All"}));
-		navMain.add(comboBox);
+				JButton btnNew = new JButton("New Node");
+				panel.add(btnNew);
+				
+				JButton btnNewEntry = new JButton("New Entry");
+				panel.add(btnNewEntry);
+				
+						JButton btnSave = new JButton("Save");
+						panel.add(btnSave);
+						
+								JButton btnDelete = new JButton("Delete");
+								panel.add(btnDelete);
+																												
+				JLayeredPane pnlMainBody = new JLayeredPane();
+				navMain.add(pnlMainBody, BorderLayout.CENTER);
+				pnlMainBody.setLayout(new BorderLayout(0, 0));
+				//pnlMainBody.setLayout(new BorderLayout(0, 0));
+				
+				JSplitPane splitPane = new JSplitPane();
+				pnlMainBody.add(splitPane);
+				
+				JTextArea currentValue = new JTextArea();
+				currentValue.setText("Key value goes here");
+				splitPane.setRightComponent(currentValue);
+				
+				JPanel panel_3 = new JPanel();
+				splitPane.setLeftComponent(panel_3);
+				panel_3.setLayout(new BorderLayout(0, 0));
+				
+				JSplitPane splitPane_1 = new JSplitPane();
+				splitPane_1.setResizeWeight(0.5);
+				panel_3.add(splitPane_1);
+				splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+				
+				JPanel panel_4 = new JPanel();
+				splitPane_1.setLeftComponent(panel_4);
+				panel_4.setLayout(new BorderLayout(50, 50));
+				
+				nodeList = new JList(nodesList);
+				panel_4.add(nodeList, BorderLayout.CENTER);
+				
+				JPanel panel_5 = new JPanel();
+				splitPane_1.setRightComponent(panel_5);
+				panel_5.setLayout(new BorderLayout(0, 0));
+				
+				keyList = new JList(keysList);
+				nodeList.addListSelectionListener(new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent arg0) {
+						PopulateKeys();
+					}
+				});
+				panel_5.add(keyList);
+				
+				
+				btnNew.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+					}
+				});
 
 		JPanel navConnection = new JPanel();
 		tabbedPane.addTab("Connection", null, navConnection, null);
-		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"devBox", "Dans AWS Cluster"}));
-		navConnection.add(comboBox_1);
-
-		JButton btnConnect = new JButton("Connect");
-		btnConnect.setVerticalAlignment(SwingConstants.TOP);
-		btnConnect.setHorizontalAlignment(SwingConstants.LEFT);
-		navConnection.add(btnConnect);
-
-		JButton btnSave_1 = new JButton("Save");
-		btnSave_1.setEnabled(false);
-		btnSave_1.setVerticalAlignment(SwingConstants.TOP);
-		btnSave_1.setHorizontalAlignment(SwingConstants.LEFT);
-		navConnection.add(btnSave_1);
-		
-		JButton btnMakeDefault = new JButton("Make Default");
-		btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
-		btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
-		navConnection.add(btnMakeDefault);
+		navConnection.setLayout(new BorderLayout(0, 0));
+										//pnlConnection.setLayout(null);
+										
+												JPanel pnlConnectionSettings = new JPanel();
+												navConnection.add(pnlConnectionSettings, BorderLayout.CENTER);
+												pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
+												pnlConnectionSettings.setLayout(new GridLayout(3, 2, 0, 0));
+												
+												JLabel lblNewLabel = new JLabel("New label");
+												pnlConnectionSettings.add(lblNewLabel);
+												
+												textField = new JTextField();
+												pnlConnectionSettings.add(textField);
+												textField.setColumns(10);
+												
+												textField_1 = new JTextField();
+												pnlConnectionSettings.add(textField_1);
+												textField_1.setColumns(10);
+												
+												JPanel panel_2 = new JPanel();
+												navConnection.add(panel_2, BorderLayout.NORTH);
+												panel_2.setLayout(new BorderLayout(0, 0));
+												
+												JPanel panel_1 = new JPanel();
+												panel_2.add(panel_1, BorderLayout.NORTH);
+												
+												JComboBox comboBox_1 = new JComboBox();
+												panel_1.add(comboBox_1);
+												comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"devBox", "Dans AWS Cluster"}));
+												
+														JButton btnConnect = new JButton("Connect");
+														panel_1.add(btnConnect);
+														btnConnect.setVerticalAlignment(SwingConstants.TOP);
+														btnConnect.setHorizontalAlignment(SwingConstants.LEFT);
+														
+																JButton btnSave_1 = new JButton("Save");
+																panel_1.add(btnSave_1);
+																btnSave_1.setEnabled(false);
+																btnSave_1.setVerticalAlignment(SwingConstants.TOP);
+																btnSave_1.setHorizontalAlignment(SwingConstants.LEFT);
+																
+																JButton btnMakeDefault = new JButton("Make Default");
+																panel_1.add(btnMakeDefault);
+																btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
+																btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
 		
 
 		tabbedPane.addChangeListener(new ChangeListener() {
@@ -200,23 +230,55 @@ public class MainWindow extends JFrame {
 
 				if (index == 0) {
 					pnlMainBody.setVisible(true);
-					pnlConnection.setVisible(false);
+					pnlConnectionSettings.setVisible(false);
 				} else if (index == 1) {
 
 					pnlMainBody.setVisible(false);
-					pnlConnection.setVisible(true);
+					pnlConnectionSettings.setVisible(true);
 
 				}
 			}
 		});
 		
-		initializeEmailList();
+		createDHService();
 		
 	}
 
-	public void initializeEmailList() {
+	public void createDHService() {
 		//IEmailManager emailMngr = emailSvc.getEmailManager();
-		DefaultListModel<String> lm = new DefaultListModel<String>();
-		int index = 0;
+		//DefaultListModel<String> lm = new DefaultListModel<String>();
+		
+		dhService = DHService.createFiveNodeCluster();
+		
+		nodesList.add(0, "All");
+		
+		for (DNode node : dhService.getAllNodes())
+		{
+			nodesList.add(0, node.getName());
+		}
+		//int index = 0;
+	}
+	
+	public void PopulateKeys()
+	{
+		if (nodeList.getSelectedIndex() < 0)
+			return;
+		
+		String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
+		
+		if (selectedIndex.equalsIgnoreCase("All"))
+			return;
+		
+		keysList.clear();
+		keysList.add(0, "sdfe");
+		
+		DNode node = dhService.findNodeByName(selectedIndex);
+		
+		for (DHashEntry en : node.getAllEntries())
+		{
+			keysList.add(0, en.key.toString());
+		}
+		
+		keyList.repaint();
 	}
 }

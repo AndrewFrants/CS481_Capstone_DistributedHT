@@ -1,5 +1,8 @@
 package service;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /*
  * This class is a node on a network
  */
@@ -9,13 +12,30 @@ public class DNode {
 	
 	Double hash;
 	
+	String name;
+	
+	
+	public DHashtable getTable() {
+		return table;
+	}
+
+	public void setTable(DHashtable table) {
+		this.table = table;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	public Double getHash() {
 		return hash;
 	}
 
 	public DNode(String nodeName)
 	{
+		this.name = nodeName;
 		this.hash = DNode.GetComputerBasedHash(nodeName);
+		table = new DHashtable();
 	}
 	
 	public void AssignKeys(DHashEntry... hashEntries)
@@ -29,13 +49,21 @@ public class DNode {
 	 */
 	public static double GetComputerBasedHash(String computerId)
 	{
-		int hash = 0;
+		return Hasher.hashValue(computerId);
+	}
+
+	/*
+	 * Gets all entries for visualization
+	 */
+	public List<DHashEntry> getAllEntries()
+	{
+		List<DHashEntry> allEntries = new LinkedList<DHashEntry>();
 		
-		for (char c : computerId.toCharArray())
+		for (Double key : table.getHT().keySet())
 		{
-			hash += ((int)c) * 1000 * Math.E; // increase the spread a bit
+			allEntries.add(table.getHT().get(key));
 		}
 		
-		return hash % 360;
+		return allEntries;
 	}
 }

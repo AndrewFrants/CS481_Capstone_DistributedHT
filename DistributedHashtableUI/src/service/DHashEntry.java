@@ -10,15 +10,15 @@ package service;
  */
 public class DHashEntry {
 	
-	public String key;
+	public Double key;
 	
 	public String value;
 
-	public String getKey() {
+	public Double getKey() {
 		return key;
 	}
 
-	public void setKey(String key) {
+	public void setKey(Double key) {
 		this.key = key;
 	}
 
@@ -30,5 +30,14 @@ public class DHashEntry {
 		this.value = value;
 	}
 	
+	public DHashEntry(String value)
+	{
+		this.setKey(Hasher.hashValue(value));
+		this.setValue(value);
+	}
 	
+	public static DHashEntry getHashEntry(String value)
+	{
+		return new DHashEntry(value);
+	}
 }
