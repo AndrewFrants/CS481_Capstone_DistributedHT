@@ -4,7 +4,7 @@
 package test;
 
 import service.DHService;
-import service.Hasher;
+import service.ChecksumDemoHashingFunction;
 
 /**
  * @author andreyf
@@ -18,7 +18,7 @@ public class TestMain {
 	public static void main(String[] args) {
 		
 		// Test the hasher
-		System.out.println(Hasher.hashValue("1afaS2s=2abcdef"));
+		System.out.println(ChecksumDemoHashingFunction.hashValue("1afaS2s=2abcdef"));
 		
 		DHService dhs = DHService.createFiveNodeCluster();
 		

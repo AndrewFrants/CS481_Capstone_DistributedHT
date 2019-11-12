@@ -63,11 +63,11 @@ public class DHashtable {
 	 */
 	public void copyValuesTo(DHashtable table)
 	{
-		Set<Double> set = localHT.keySet();
+		Set<Double> set = table.getHT().keySet();
 		
 		for (Double key : set)
 		{
-			table.insert(localHT.get(key));
+			localHT.put(key, table.getHT().get(key));
 		}
 	}
 	
@@ -86,8 +86,15 @@ public class DHashtable {
 			{
 				DHashEntry entryToCopy = localHT.get(key);
 				newTable.insert(entryToCopy);
-				set.remove(entryToCopy);
 			}
+		}
+		
+		// remove added keys from old owner
+		set = newTable.getHT().keySet();
+		
+		for (Double key : set)
+		{
+			localHT.remove(key);
 		}
 		
 		return newTable;

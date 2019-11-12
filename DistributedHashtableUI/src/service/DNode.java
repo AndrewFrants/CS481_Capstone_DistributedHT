@@ -6,7 +6,7 @@ import java.util.List;
 /*
  * This class is a node on a network
  */
-public class DNode {
+public class DNode implements Comparable<DNode> {
 
 	DHashtable table;
 	
@@ -49,7 +49,7 @@ public class DNode {
 	 */
 	public static double GetComputerBasedHash(String computerId)
 	{
-		return Hasher.hashValue(computerId);
+		return ChecksumDemoHashingFunction.hashValue(computerId);
 	}
 
 	/*
@@ -66,4 +66,28 @@ public class DNode {
 		
 		return allEntries;
 	}
+
+	@Override
+	public int compareTo(DNode arg0) {
+		if (arg0 == null || arg0.getHash() == this.getHash())
+			return 0;
+		
+		if (arg0.getHash() > this.getHash())
+			return -1;
+		
+		return 1;
+	}
+
+	/*
+	@Override
+	public int compareTo(Object o) {
+		if (o == null || o instanceof DNode || ((DNode)o).getHash() == this.getHash())
+			return 0;
+		
+		if (arg0.getHash() > this.getHash())
+			return -1;
+		
+		return 1;
+	}
+	*/
 }

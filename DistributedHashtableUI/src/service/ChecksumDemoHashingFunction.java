@@ -1,9 +1,13 @@
 package service;
 
-public class Hasher {
+public class ChecksumDemoHashingFunction {
 
 	/*
 	 * Returns a hash of a string into 360 Degrees
+	 * 
+	 * This is a stupid/experimental checksum based hash
+	 * this probably should never be used for anything
+	 * Implemented for demo purposes only.
 	 */
 	public static double hashValue(String value)
 	{
@@ -13,16 +17,18 @@ public class Hasher {
 		{
 			//System.out.println((Math.pow((int)c + 10, 2)) * Math.PI);
 			
-			hash += Math.round((Math.sqrt((int)c * 10000 * Math.PI))); // increase the spread a bit
+			hash += (Math.sqrt(Math.pow((int)c, Math.PI))); // increase the spread a bit
 		}
 		
 		//System.out.println(hash);
 		
-		hash = Math.round(hash * 10) / 100.0;
+		
 		
 		//System.out.println(hash);
 		
 		double rem = hash - (double)Math.floor(hash); // keep the remainder
+		
+		rem = Math.round(rem * 10) / 100.0;
 		
 		//System.out.println(hash);
 		//System.out.println(Math.round(hash));

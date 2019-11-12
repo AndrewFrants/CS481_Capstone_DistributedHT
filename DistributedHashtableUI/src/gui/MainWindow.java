@@ -32,6 +32,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.JLayeredPane;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -137,6 +140,8 @@ public class MainWindow extends JFrame {
 							return;
 						
 						RemoveNode(selectedIndex);
+						
+						RefreshControls();
 					}
 				});
 				panel.add(btnNewButton);
@@ -211,6 +216,8 @@ public class MainWindow extends JFrame {
 				        if (result == JOptionPane.OK_OPTION) {
 				        		AddNode(replaceTxt.getText());
 				        	}
+				        
+				        RefreshControls();
 					}
 				});
 
@@ -219,48 +226,48 @@ public class MainWindow extends JFrame {
 		navConnection.setLayout(new BorderLayout(0, 0));
 										//pnlConnection.setLayout(null);
 										
-												JPanel pnlConnectionSettings = new JPanel();
-												navConnection.add(pnlConnectionSettings, BorderLayout.CENTER);
-												pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
-												pnlConnectionSettings.setLayout(new GridLayout(3, 2, 0, 0));
-												
-												JLabel lblNewLabel = new JLabel("New label");
-												pnlConnectionSettings.add(lblNewLabel);
-												
-												textField = new JTextField();
-												pnlConnectionSettings.add(textField);
-												textField.setColumns(10);
-												
-												textField_1 = new JTextField();
-												pnlConnectionSettings.add(textField_1);
-												textField_1.setColumns(10);
-												
-												JPanel panel_2 = new JPanel();
-												navConnection.add(panel_2, BorderLayout.NORTH);
-												panel_2.setLayout(new BorderLayout(0, 0));
-												
-												JPanel panel_1 = new JPanel();
-												panel_2.add(panel_1, BorderLayout.NORTH);
-												
-												JComboBox comboBox_1 = new JComboBox();
-												panel_1.add(comboBox_1);
-												comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"devBox", "Dans AWS Cluster"}));
-												
-														JButton btnConnect = new JButton("Connect");
-														panel_1.add(btnConnect);
-														btnConnect.setVerticalAlignment(SwingConstants.TOP);
-														btnConnect.setHorizontalAlignment(SwingConstants.LEFT);
-														
-																JButton btnSave_1 = new JButton("Save");
-																panel_1.add(btnSave_1);
-																btnSave_1.setEnabled(false);
-																btnSave_1.setVerticalAlignment(SwingConstants.TOP);
-																btnSave_1.setHorizontalAlignment(SwingConstants.LEFT);
-																
-																JButton btnMakeDefault = new JButton("Make Default");
-																panel_1.add(btnMakeDefault);
-																btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
-																btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
+				JPanel pnlConnectionSettings = new JPanel();
+				navConnection.add(pnlConnectionSettings, BorderLayout.CENTER);
+				pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
+				pnlConnectionSettings.setLayout(new GridLayout(3, 2, 0, 0));
+				
+				JLabel lblNewLabel = new JLabel("New label");
+				pnlConnectionSettings.add(lblNewLabel);
+				
+				textField = new JTextField();
+				pnlConnectionSettings.add(textField);
+				textField.setColumns(10);
+				
+				textField_1 = new JTextField();
+				pnlConnectionSettings.add(textField_1);
+				textField_1.setColumns(10);
+				
+				JPanel panel_2 = new JPanel();
+				navConnection.add(panel_2, BorderLayout.NORTH);
+				panel_2.setLayout(new BorderLayout(0, 0));
+				
+				JPanel panel_1 = new JPanel();
+				panel_2.add(panel_1, BorderLayout.NORTH);
+				
+				JComboBox comboBox_1 = new JComboBox();
+				panel_1.add(comboBox_1);
+				comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"devBox", "Dans AWS Cluster"}));
+				
+						JButton btnConnect = new JButton("Connect");
+						panel_1.add(btnConnect);
+						btnConnect.setVerticalAlignment(SwingConstants.TOP);
+						btnConnect.setHorizontalAlignment(SwingConstants.LEFT);
+						
+								JButton btnSave_1 = new JButton("Save");
+								panel_1.add(btnSave_1);
+								btnSave_1.setEnabled(false);
+								btnSave_1.setVerticalAlignment(SwingConstants.TOP);
+								btnSave_1.setHorizontalAlignment(SwingConstants.LEFT);
+								
+								JButton btnMakeDefault = new JButton("Make Default");
+								panel_1.add(btnMakeDefault);
+								btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
+								btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
 		
 
 		tabbedPane.addChangeListener(new ChangeListener() {
@@ -296,11 +303,19 @@ public class MainWindow extends JFrame {
 	{
 		nodesList.clear();
 		
-		nodesList.add(0, "All");
+		//nodesList.add(0, "All");
 		
-		for (DNode node : dhService.getAllNodes())
+		List<DNode> list = new ArrayList<DNode>(dhService.getAllNodes());
+		
+		Collections.sort(list);
+		
+		int index = 0;
+		
+		for (DNode node : list)
 		{
-			nodesList.add(0, node.getName() + " (" + node.getHash() + ")");
+			int count = node.getAllEntries().size();
+			
+			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + node.getHash() + ", Size=" + count + ")");
 		}
 	}
 	
@@ -319,12 +334,34 @@ public class MainWindow extends JFrame {
 
 		DNode node = dhService.findNodeByName(selectedIndex);
 		
-		for (DHashEntry en : node.getAllEntries())
+		List<DHashEntry> list = new ArrayList<DHashEntry>(node.getAllEntries());
+		
+		Collections.sort(list);
+		
+		for (DHashEntry en : list)
 		{
-			keysList.add(0, en.key.toString());
+			keysList.add(keysList.getSize(), en.getValue().split("\n")[0] + " (" + en.key.toString() + ")");
 		}
 		
+
 		keyList.repaint();
+	}
+	
+	/*
+	 * Not used
+	 */
+	private <T extends Comparable<? super T>> void sortModel(DefaultListModel model) {
+	    List<T> list = new ArrayList<T>();
+	    for (int i = 0; i < model.size(); i++) {
+	        list.add((T)model.get(i));
+	    }
+	    
+	    Collections.sort(list);
+	    model.removeAllElements();
+	    
+	    for (T s : list) {
+	        model.addElement(s);
+	    }
 	}
 	
 	public void PopulateText()
@@ -333,7 +370,8 @@ public class MainWindow extends JFrame {
 			return;
 		
 		String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
-		Double selectedKey = Double.valueOf(selectedIndex);
+		String angleVal = selectedIndex.split("\\(")[1].replace(")", "");
+		Double selectedKey = Double.valueOf(angleVal);
 		
 		if (selectedIndex.equalsIgnoreCase("All"))
 			return;

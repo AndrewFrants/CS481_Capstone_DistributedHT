@@ -35,7 +35,7 @@ public class DHService {
 	
 	public void insertValue(String newValue)
 	{
-		double key = Hasher.hashValue(newValue);
+		double key = ChecksumDemoHashingFunction.hashValue(newValue);
 		
 	}
 	
@@ -44,7 +44,7 @@ public class DHService {
 		/*
 		 * TODO. This part can be/should be optimized to a BST
 		 */
-		double key = Hasher.hashValue(value);
+		double key = ChecksumDemoHashingFunction.hashValue(value);
 		Set<Double> keysenu = nodes.keySet();
 		
 		for (Double ikey : keysenu)
@@ -61,7 +61,7 @@ public class DHService {
 	
 	public DNode findNodeByName(String name)
 	{
-		double hash = Hasher.hashValue(name);
+		double hash = ChecksumDemoHashingFunction.hashValue(name);
 		
 		if (this.nodes.containsKey(hash))
 			return this.nodes.get(hash);
@@ -152,35 +152,35 @@ public class DHService {
 	{
 		DHService dhService = new DHService();
 		
-		String[] nodeNames = new String[] { "Andrew", 
-											"Daniyal",
-											"Palak",
+		String[] nodeNames = new String[] { "Andrews PC", 
+											"Daniyal Server",
+											"Palak Tablet",
 											"Rachana" };
 		
-		String[] keyNames = new String[] { "CS400 - Monday 9-17.pdf", 
-											"CS400 - Monday 9-24.pdf",
-											"CS400 - Friday 10-14.pdf",
-											"CS400 - Wednesday 10-24.pdf",
-											"CS400 - Monday 11-04.pdf",
-											"CS400 - Monday 11-14.pdf",
-											"CS400 - Monday 11-24.pdf",
-											"CS400 - Friday 12-05.pdf",
-											"CS411 - Monday 9-17.pdf", 
-											"CS411 - Wednesday 9-24.pdf",
-											"CS411 - Monday 10-14.pdf",
-											"CS411 - Wednesday 10-24.pdf",
-											"CS411 - Monday 11-04.pdf",
-											"CS411 - Monday 11-14.pdf",
-											"CS411 - Monday 11-24.pdf",
-											"CS411 - Friday 12-05.pdf",
-											"CS420 - Monday 9-17.pdf", 
-											"CS420 - Monday 9-24.pdf",
-											"CS420 - Friday 10-14.pdf",
-											"CS420 - Monday 10-24.pdf",
-											"CS420 - Wednesday 11-04.pdf",
-											"CS420 - Monday 11-14.pdf",
-											"CS420 - Friday 11-24.pdf",
-											"CS420 - Monday 12-05.pdf" 
+		String[] keyNames = new String[] { "CS400 - Monday 9-17.pdf\nClick to Download", 
+											"CS400 - Monday 9-24.pdf\nClick to Download",
+											"CS400 - Friday 10-14.pdf\nClick to Download",
+											"CS400 - Wednesday 10-24.pdf\nClick to Download",
+											"CS400 - Monday 11-04.pdf\nClick to Download",
+											"CS400 - Monday 11-14.pdf\nClick to Download",
+											"CS400 - Monday 11-24.pdf\nClick to Download",
+											"CS400 - Friday 12-05.pdf\nClick to Download",
+											"CS411 - Monday 9-17.pdf\nClick to Download", 
+											"CS411 - Wednesday 9-24.pdf\nClick to Download",
+											"CS411 - Monday 10-14.pdf\nClick to Download",
+											"CS411 - Wednesday 10-24.pdf\nClick to Download",
+											"CS411 - Monday 11-04.pdf\nClick to Download",
+											"CS411 - Monday 11-14.pdf\nClick to Download",
+											"CS411 - Monday 11-24.pdf\nClick to Download",
+											"CS411 - Friday 12-05.pdf\nClick to Download",
+											"CS420 - Monday 9-17.pdf\nClick to Download", 
+											"CS420 - Monday 9-24.pdf\nClick to Download",
+											"CS420 - Friday 10-14.pdf\nClick to Download",
+											"CS420 - Monday 10-24.pdf\nClick to Download",
+											"CS420 - Wednesday 11-04.pdf\nClick to Download",
+											"CS420 - Monday 11-14.pdf\nClick to Download",
+											"CS420 - Friday 11-24.pdf\nClick to Download",
+											"CS420 - Monday 12-05.pdf\nClick to Download" 
 											};
 		int index = 0;
 		
@@ -193,7 +193,7 @@ public class DHService {
 		
 		for (int i = 0; i < keyNames.length; i++)
 		{
-			Double hash = Hasher.hashValue(keyNames[i]);
+			Double hash = ChecksumDemoHashingFunction.hashValue(keyNames[i]);
 			DNode node = dhService.findNodeByName(hash);
 			System.out.println("Node: " + node.hash + " entry: " + hash);
 			node.getTable().insert(keyNames[i]);
