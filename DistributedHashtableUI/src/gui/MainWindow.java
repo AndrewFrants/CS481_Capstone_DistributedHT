@@ -44,6 +44,7 @@ import javax.swing.JTextField;
 
 import javax.swing.event.ListSelectionListener;
 
+import service.ChecksumDemoHashingFunction;
 import service.DHService;
 import service.DHashEntry;
 import service.DNode;
@@ -60,6 +61,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Component;
 import javax.swing.JSplitPane;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 
 
@@ -147,6 +152,7 @@ public class MainWindow extends JFrame {
 				panel.add(btnNewButton);
 				
 				JButton btnNewEntry = new JButton("New Entry");
+				
 				panel.add(btnNewEntry);
 				
 						JButton btnSave = new JButton("Save");
@@ -164,6 +170,7 @@ public class MainWindow extends JFrame {
 				pnlMainBody.add(splitPane);
 				
 				currentValue = new JTextArea();
+				
 				currentValue.setText("Key value goes here");
 				splitPane.setRightComponent(currentValue);
 				
@@ -201,15 +208,58 @@ public class MainWindow extends JFrame {
 					}
 				});
 				
+				btnNewEntry.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+				        JTextField replaceTxt = new JTextField("");
+				        JLabel label = new JLabel("Hashed value: 0.0000000000000");
+				        JPanel panel = new JPanel(new GridLayout(0, 2));
+
+				        panel.add(new JLabel("Add Entry: "));
+				        panel.add(replaceTxt);
+
+				        replaceTxt.addKeyListener(new KeyAdapter() {
+							@Override
+							public void keyPressed(KeyEvent e) {
+								label.setText("Hashed value: " + Double.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+								
+							}
+						});
+				        
+				        
+				        
+				        panel.add(label);
+				        
+				        int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry",
+				            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				        
+				        if (result == JOptionPane.OK_OPTION) {
+				        		AddEntry(replaceTxt.getText());
+				        	}
+				        
+				        RefreshControls();
+					}
+				});
+				
 				btnNew.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent arg0) {
 						
 				        JTextField replaceTxt = new JTextField("");
-				        JPanel panel = new JPanel(new GridLayout(0, 1));
+				        JLabel label = new JLabel("Hashed value: 0.0000000000000");
+				        JPanel panel = new JPanel(new GridLayout(0, 2));
 
 				        panel.add(new JLabel("Add Node: "));
 				        panel.add(replaceTxt);
 
+				        replaceTxt.addKeyListener(new KeyAdapter() {
+							@Override
+							public void keyPressed(KeyEvent e) {
+								label.setText("Hashed value: " + Double.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+								
+							}
+						});
+				        
+				        panel.add(label);
+				        
 				        int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node",
 				            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 				
@@ -393,6 +443,15 @@ public class MainWindow extends JFrame {
 	public void AddNode(String text)
 	{
 		dhService.addNode(text);
+		
+		RefreshControls();
+	}
+	
+	public void AddEntry(String text)
+	{
+		DNode node = dhService.findNodeByName(text);
+		
+		node.AssignKeys(DHashEntry.getHashEntry(text));
 		
 		RefreshControls();
 	}
