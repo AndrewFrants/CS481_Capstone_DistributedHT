@@ -9,7 +9,7 @@ public class RoutingTable {
 	 
 	
 	public RoutingTable(int bitSize) {
-		size = bitSize -1;
+		size = bitSize - 1;
 		table = new HashMap<Integer, String>();
 		init();
 		
@@ -20,6 +20,8 @@ public class RoutingTable {
 		for(int i = 0; i < size;i++) {
 			table.put(i, null);
 		}
+		
+		
 	}
 	
 	

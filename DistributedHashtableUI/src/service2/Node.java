@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Node {
 	
 	HashMap<Integer, String> localTable;  //HT on the local node
-	Node predeccesor;  //Node's predecessor
+	Node predecessor;  //Node's predecessor
 	Node successor;  //Node's  successor
 	ArrayList<Integer> keyResponsability; //List of keys this Node is responsible for
 	int nodeID;	//unique node ID
@@ -19,9 +19,44 @@ public class Node {
 	public Node(String address) {
 		ipAddress = address;  //set's the ip address of the node
 		nodeID = hashCode();
-		predeccesor = null;
+		predecessor = null;
 		successor = null;
+		angle = setAngle();
 		
+	}
+	
+	public double setAngle() {
+		int highest_node_val = 15;
+		int lowest_node_val = 0;
+		double max_degree = 360;
+		double min_degree = 0;
+		double angle_val = (double) nodeID/((double)(highest_node_val - lowest_node_val))*((max_degree - min_degree)) 
+				+ min_degree;
+		
+		return angle_val;
+		
+		
+		
+		
+	}
+	
+	public void setSucessor(Node successor) {
+		this.successor = successor;
+	}
+	
+	public void setPredecessor(Node predecessor) {
+		this.predecessor = predecessor;
+		
+	}
+	
+	public Node findSucessor() {
+		
+		return new Node("placeholder");
+	}
+	
+	public Node findPredecessor() {
+		
+		return new Node("placeholder");
 	}
 
 	@Override
@@ -32,7 +67,7 @@ public class Node {
 	@Override
 	public int hashCode() {
 		
-		HashFunction h = new HashFunction(16);
+		HashFunction h = new HashFunction(4);
 		int result = h.hash(ipAddress);
 		return result;
 	}
