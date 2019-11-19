@@ -10,15 +10,15 @@ package service;
  */
 public class DHashEntry implements Comparable<DHashEntry> {
 	
-	public Double key;
+	public Integer key;
 	
 	public String value;
 
-	public Double getKey() {
+	public Integer getKey() {
 		return key;
 	}
 
-	public void setKey(Double key) {
+	public void setKey(Integer key) {
 		this.key = key;
 	}
 

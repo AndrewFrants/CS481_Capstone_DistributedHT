@@ -10,30 +10,30 @@ import java.util.Set;
  */
 public class DHashtable {
 
-	HashMap<Double, DHashEntry> localHT;
+	HashMap<Integer, DHashEntry> localHT;
 	
-	public HashMap<Double, DHashEntry> getHT() {
+	public HashMap<Integer, DHashEntry> getHT() {
 		return localHT;
 	}
 
 	public DHashtable()
 	{
-		localHT = new HashMap<Double, DHashEntry>();
+		localHT = new HashMap<Integer, DHashEntry>();
 	}
 	
-	public DHashEntry getEntry(Double angle)
+	public DHashEntry getEntry(Integer nodeID)
 	{
-		if (localHT.containsKey(angle))
-			return localHT.get(angle);
+		if (localHT.containsKey(nodeID))
+			return localHT.get(nodeID);
 		
-		Set<Double> set = localHT.keySet();
-		
-		for (Double key : set)
+		Set<Integer> set = localHT.keySet();
+		/**
+		for (Integer key : set)
 		{
 			if (angle - key < 0.01 && angle - key > 0.0)
 				return localHT.get(key);
 		}
-		
+		*/
 		return null;
 	}
 	
@@ -63,24 +63,24 @@ public class DHashtable {
 	 */
 	public void copyValuesTo(DHashtable table)
 	{
-		Set<Double> set = table.getHT().keySet();
+		Set<Integer> set = table.getHT().keySet();
 		
-		for (Double key : set)
+		for (Integer key : set)
 		{
 			localHT.put(key, table.getHT().get(key));
 		}
 	}
 	
-	public DHashtable moveKeysAboveTo(DHashtable newTable, Double keysAbove)
+	public DHashtable moveKeysAboveTo(DHashtable newTable, Integer keysAbove)
 	{
 		if (newTable == null)
 		{
 			newTable = new DHashtable();
 		}
 		
-		Set<Double> set = localHT.keySet();
+		Set<Integer> set = localHT.keySet();
 		
-		for (Double key : set)
+		for (Integer key : set)
 		{
 			if (key >= keysAbove)
 			{
@@ -92,7 +92,7 @@ public class DHashtable {
 		// remove added keys from old owner
 		set = newTable.getHT().keySet();
 		
-		for (Double key : set)
+		for (Integer key : set)
 		{
 			localHT.remove(key);
 		}

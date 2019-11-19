@@ -220,7 +220,7 @@ public class MainWindow extends JFrame {
 				        replaceTxt.addKeyListener(new KeyAdapter() {
 							@Override
 							public void keyPressed(KeyEvent e) {
-								label.setText("Hashed value: " + Double.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+								label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
 								
 							}
 						});
@@ -253,7 +253,7 @@ public class MainWindow extends JFrame {
 				        replaceTxt.addKeyListener(new KeyAdapter() {
 							@Override
 							public void keyPressed(KeyEvent e) {
-								label.setText("Hashed value: " + Double.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+								label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
 								
 							}
 						});
@@ -365,7 +365,7 @@ public class MainWindow extends JFrame {
 		{
 			int count = node.getAllEntries().size();
 			
-			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + node.getHash() + ", Size=" + count + ")");
+			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID() + ", angle: " + node.getAngle() + ", Size=" + count + ")");
 		}
 	}
 	
@@ -421,7 +421,7 @@ public class MainWindow extends JFrame {
 		
 		String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
 		String angleVal = selectedIndex.split("\\(")[1].replace(")", "");
-		Double selectedKey = Double.valueOf(angleVal);
+		Integer selectedKey = Integer.valueOf(angleVal);
 		
 		if (selectedIndex.equalsIgnoreCase("All"))
 			return;

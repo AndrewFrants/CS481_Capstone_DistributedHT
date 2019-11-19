@@ -9,12 +9,20 @@ import java.util.List;
 public class DNode implements Comparable<DNode> {
 
 	DHashtable table;
-	
-	Double hash;
-	
+
+	Integer nodeID;
+
 	String name;
-	
-	
+
+	Double angleVal;
+
+	public DNode(String nodeName) {
+		this.name = nodeName;
+		this.nodeID = DNode.GetComputerBasedHash(nodeName);
+		table = new DHashtable();
+		setAngle(nodeID);
+	}
+
 	public DHashtable getTable() {
 		return table;
 	}
@@ -27,67 +35,66 @@ public class DNode implements Comparable<DNode> {
 		return name;
 	}
 
-	public Double getHash() {
-		return hash;
+	public Integer getNodeID() {
+		return nodeID;
 	}
 
-	public DNode(String nodeName)
-	{
-		this.name = nodeName;
-		this.hash = DNode.GetComputerBasedHash(nodeName);
-		table = new DHashtable();
+	public void setAngle(int nodeID) {
+		int highest_node_val = 15;
+		int lowest_node_val = 0;
+		double max_degree = 360;
+		double min_degree = 0;
+		angleVal = (double) nodeID/((double)(highest_node_val - lowest_node_val))*((max_degree - min_degree)) 
+				+ min_degree;
+
 	}
-	
-	public void AssignKeys(DHashEntry... hashEntries)
-	{
+
+	public Double getAngle() {
+		return angleVal;
+	}
+
+	public void AssignKeys(DHashEntry... hashEntries) {
 		table.insert(hashEntries);
 	}
-	
+
 	/*
-	 * This method returns the consistent hash for a machine based on its name.
-	 * The name can be a computer name+ip, etc.
+	 * This method returns the consistent hash for a machine based on its name. The
+	 * name can be a computer name+ip, etc.
 	 */
-	public static double GetComputerBasedHash(String computerId)
-	{
+	public static int GetComputerBasedHash(String computerId) {
 		return ChecksumDemoHashingFunction.hashValue(computerId);
 	}
 
 	/*
 	 * Gets all entries for visualization
 	 */
-	public List<DHashEntry> getAllEntries()
-	{
+	public List<DHashEntry> getAllEntries() {
 		List<DHashEntry> allEntries = new LinkedList<DHashEntry>();
-		
-		for (Double key : table.getHT().keySet())
-		{
+
+		for (Integer key : table.getHT().keySet()) {
 			allEntries.add(table.getHT().get(key));
 		}
-		
+
 		return allEntries;
 	}
 
 	@Override
 	public int compareTo(DNode arg0) {
-		if (arg0 == null || arg0.getHash() == this.getHash())
+		if (arg0 == null || arg0.getNodeID() == this.getNodeID())
 			return 0;
-		
-		if (arg0.getHash() > this.getHash())
+
+		if (arg0.getNodeID() > this.getNodeID())
 			return -1;
-		
+
 		return 1;
 	}
 
 	/*
-	@Override
-	public int compareTo(Object o) {
-		if (o == null || o instanceof DNode || ((DNode)o).getHash() == this.getHash())
-			return 0;
-		
-		if (arg0.getHash() > this.getHash())
-			return -1;
-		
-		return 1;
-	}
-	*/
+	 * @Override public int compareTo(Object o) { if (o == null || o instanceof
+	 * DNode || ((DNode)o).getHash() == this.getHash()) return 0;
+	 * 
+	 * if (arg0.getHash() > this.getHash()) return -1;
+	 * 
+	 * return 1; }
+	 */
 }

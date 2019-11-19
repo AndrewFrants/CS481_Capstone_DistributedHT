@@ -21,21 +21,21 @@ import java.util.Set;
  */
 public class DHService {
 
-	HashMap<Double, DNode> nodes;
+	HashMap<Integer, DNode> nodes;
 	
 	public DHService()
 	{
-		nodes = new HashMap<Double, DNode>();
+		nodes = new HashMap<Integer, DNode>();
 	}
 	
 	public void addNode(DNode newNode)
 	{
-		nodes.put(newNode.getHash(), newNode);
+		nodes.put(newNode.getNodeID(), newNode);
 	}
 	
 	public void insertValue(String newValue)
 	{
-		double key = ChecksumDemoHashingFunction.hashValue(newValue);
+		int key = ChecksumDemoHashingFunction.hashValue(newValue);
 		
 	}
 	
@@ -44,24 +44,24 @@ public class DHService {
 		/*
 		 * TODO. This part can be/should be optimized to a BST
 		 */
-		double key = ChecksumDemoHashingFunction.hashValue(value);
-		Set<Double> keysenu = nodes.keySet();
+		Integer key = ChecksumDemoHashingFunction.hashValue(value);
+		Set<Integer> keysenu = nodes.keySet();
 		
-		for (Double ikey : keysenu)
+		for (Integer ikey : keysenu)
 		{
-			Double nodeAngle = ikey;
+			Integer nodeID = ikey;
 			
-			if (ikey >= nodeAngle)
+			if (ikey >= nodeID)
 			{
 				// assign this value to a node
-				nodes.get(nodeAngle).AssignKeys(DHashEntry.getHashEntry(value));
+				nodes.get(nodeID).AssignKeys(DHashEntry.getHashEntry(value));
 			}
 		}
 	}
 	
 	public DNode findNodeByName(String name)
 	{
-		double hash = ChecksumDemoHashingFunction.hashValue(name);
+		int hash = ChecksumDemoHashingFunction.hashValue(name);
 		
 		if (this.nodes.containsKey(hash))
 			return this.nodes.get(hash);
@@ -69,30 +69,30 @@ public class DHService {
 		return findNodeByName(hash);
 	}
 	
-	public DNode findNodeByName(Double hash)
+	public DNode findNodeByName(Integer hash)
 	{
-		Set<Double> keysenu = nodes.keySet();
-		List<Double> numbersList = new ArrayList<Double>(keysenu);
+		Set<Integer> keysenu = nodes.keySet();
+		List<Integer> numbersList = new ArrayList<Integer>(keysenu);
 		
 		Collections.sort(numbersList);
 		System.out.println();
 		System.out.println();
 		System.out.println();
 		
-		Iterator<Double> iter = numbersList.iterator();
-		Double prev = 0.0;
-		Double first = 0.0;
+		Iterator<Integer> iter = numbersList.iterator();
+		int prev = 0;
+		int first = 0;
 		
 		while (iter.hasNext())
 		{
-			Double curr = iter.next();
+			Integer curr = iter.next();
 
-			if (first == 0.0)
+			if (first == 0)
 				first = curr;
 			
 			System.out.println(curr);
 			
-			if (prev != 0.0 && hash >= prev && hash <= curr)
+			if (prev != 0 && hash >= prev && hash <= curr)
 			{
 				return this.nodes.get(prev);
 			}
@@ -116,7 +116,7 @@ public class DHService {
 		
 		DHashtable table = node.getTable();
 		
-		nodes.remove(node.getHash());
+		nodes.remove(node.getNodeID());
 		
 		// find the next node
 		node = findNodeByName(name);
@@ -137,12 +137,12 @@ public class DHService {
 		/*
 		 * TODO. Following is a hack, it will not necessarily always return prev node.
 		 */
-		DNode prevNode = findNodeByName(existingNode.hash - 0.001);
+		DNode prevNode = findNodeByName(existingNode.nodeID);
 		
-		existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
+		existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
 		//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
 
-		this.nodes.put(newNode.getHash(), newNode);
+		this.nodes.put(newNode.getNodeID(), newNode);
 	}
 	
 	/*
@@ -193,9 +193,9 @@ public class DHService {
 		
 		for (int i = 0; i < keyNames.length; i++)
 		{
-			Double hash = ChecksumDemoHashingFunction.hashValue(keyNames[i]);
+			Integer hash = ChecksumDemoHashingFunction.hashValue(keyNames[i]);
 			DNode node = dhService.findNodeByName(hash);
-			System.out.println("Node: " + node.hash + " entry: " + hash);
+			System.out.println("Node: " + node.nodeID + " entry: " + hash);
 			node.getTable().insert(keyNames[i]);
 		}
 		
@@ -209,7 +209,7 @@ public class DHService {
 	{
 		List<DNode> allEntries = new LinkedList<DNode>();
 		
-		for (Double key : nodes.keySet())
+		for (Integer key : nodes.keySet())
 		{
 			allEntries.add(nodes.get(key));
 		}
