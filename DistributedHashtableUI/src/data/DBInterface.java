@@ -1,4 +1,5 @@
-package service;
+package data;
+
 import java.util.*;
 import java.text.*;   // for date and time
 import java.net.*;
@@ -26,18 +27,17 @@ import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
 
-public class Documents {
-	static AmazonDynamoDB dynamoDB;
+public class DBInterface {
+	AmazonDynamoDB dynamoDB;
 	
-	
-	private static void init() throws Exception {
+	private void init() throws Exception {
         /*
          * To configure the Credentials value including the "access_key_id" and "secret_key_id"
          * which could also be found in ./.aws/credentials
          */
 		//change the below values to match with your instance 
 		  
-		BasicAWSCredentials awsCreds = new BasicAWSCredentials("-----","-----");
+		BasicAWSCredentials awsCreds = new BasicAWSCredentials("AKIAUIHPUI4YQCDDD57X","7ecR7kCa+Ior7Uu6jTa9rPH3xrXIR4FvLaKS/+uL");
 		dynamoDB = AmazonDynamoDBClientBuilder.standard()
         .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
         .withRegion("us-east-2") //the region of your instance --- the availability zone showed in your EC2 main page 
@@ -45,44 +45,10 @@ public class Documents {
 
 	}
 	
-	public static void main(String[] args) throws Exception {
-		String[] documentTitles = new String[] { "CS400 - Monday 9-17.pdf", 
-				"CS400 - Monday 9-24.pdf",
-				"CS400 - Friday 10-14.pdf",
-				"CS400 - Wednesday 10-24.pdf",
-				"CS400 - Monday 11-04.pdf",
-				"CS400 - Monday 11-14.pdf",
-				"CS400 - Monday 11-24.pdf",
-				"CS400 - Friday 12-05.pdf",
-				"CS411 - Monday 9-17.pdf", 
-				"CS411 - Wednesday 9-24.pdf",
-				"CS411 - Monday 10-14.pdf",
-				"CS411 - Wednesday 10-24.pdf",
-				"CS411 - Monday 11-04.pdf",
-				"CS411 - Monday 11-14.pdf",
-				"CS411 - Monday 11-24.pdf",
-				"CS411 - Friday 12-05.pdf",
-				"CS420 - Monday 9-17.pdf", 
-				"CS420 - Monday 9-24.pdf",
-				"CS420 - Friday 10-14.pdf",
-				"CS420 - Monday 10-24.pdf",
-				"CS420 - Wednesday 11-04.pdf",
-				"CS420 - Monday 11-14.pdf",
-				"CS420 - Friday 11-24.pdf",
-				"CS420 - Monday 12-05.pdf" 
-				};
-		
-		for(String title : documentTitles) {
-			insertDocument(title, "This is document " + title);
-		}
-		
-		
-	}
-	
-	public static void insertDocument(String title, String file) throws Exception {
+	public void insertDocument(String title, String file, String tableName) throws Exception {
 		init();
 		try {
-			String tableName = "Documents";
+			// String tableName = tableName;
 	        // Create a table with a primary hash key named 'name', which holds a string
 	        CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)
 	            .withKeySchema(new KeySchemaElement().withAttributeName("Title").withKeyType(KeyType.HASH))
@@ -124,14 +90,16 @@ public class Documents {
 	                + "such as not being able to access the network.");
 	        System.out.println("Error Message: " + ace.getMessage());
 	    }
+	}
+		
+		private Map<String, AttributeValue> newItem(String title, String file) {
+		    Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
+		    item.put("Title", new AttributeValue(title));
+		    item.put("File", new AttributeValue(file));
+		    return item;
 		
 	}
 	
-	private static Map<String, AttributeValue> newItem(String title, String file) {
-	    Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
-	    item.put("Title", new AttributeValue(title));
-	    item.put("File", new AttributeValue(file));
-	    return item;
 	
-}
+
 }

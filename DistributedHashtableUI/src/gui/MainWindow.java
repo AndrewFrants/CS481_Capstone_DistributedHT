@@ -344,7 +344,6 @@ public class MainWindow extends JFrame {
 	public void createDHService() {
 		//IEmailManager emailMngr = emailSvc.getEmailManager();
 		//DefaultListModel<String> lm = new DefaultListModel<String>();
-		
 		dhService = DHService.createFiveNodeCluster();
 		
 		populateNodes();

@@ -53,6 +53,22 @@ public class DNode implements Comparable<DNode> {
 		return angleVal;
 	}
 
+	public DNode getSuccessor() {
+		return successor;
+	}
+
+	public void setSuccessor(DNode successor) {
+		this.successor = successor;
+	}
+
+	public DNode getPredecessor() {
+		return predecessor;
+	}
+
+	public void setPredecessor(DNode predecessor) {
+		this.predecessor = predecessor;
+	}
+
 	public void AssignKeys(DHashEntry... hashEntries) {
 		table.insert(hashEntries);
 	}

@@ -22,10 +22,12 @@ import java.util.Set;
 public class DHService {
 
 	HashMap<Integer, DNode> nodes;
+	Integer networkBitSize;
 	
 	public DHService()
 	{
 		nodes = new HashMap<Integer, DNode>();
+
 	}
 	
 	/*
