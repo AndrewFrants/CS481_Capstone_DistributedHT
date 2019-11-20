@@ -19,7 +19,7 @@ public class ChecksumDemoHashingFunction {
 			
 			hash += c; // increase the spread a bit
 		}
-		hash = hash%16;
+		hash = hash%255;
 		//System.out.println(hash);
 		
 		

@@ -13,6 +13,7 @@ public class DNode implements Comparable<DNode> {
 	String name;
 	Double angleVal;
 	DNode successor;
+	DNode predecessor;
 	
 	
 	public DNode(String nodeName) {
@@ -39,7 +40,7 @@ public class DNode implements Comparable<DNode> {
 	}
 
 	public void setAngle(int nodeID) {
-		int highest_node_val = 15;
+		int highest_node_val = 255;
 		int lowest_node_val = 0;
 		double max_degree = 360;
 		double min_degree = 0;

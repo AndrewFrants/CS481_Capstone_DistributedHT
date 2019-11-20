@@ -28,6 +28,13 @@ public class DHService {
 		nodes = new HashMap<Integer, DNode>();
 	}
 	
+	/*
+	 * POST <url>/addNode
+	 * {
+	 *    "name" : "blah"
+	 *    /...
+	 * }
+	 */
 	public void addNode(DNode newNode)
 	{
 		nodes.put(newNode.getNodeID(), newNode);
