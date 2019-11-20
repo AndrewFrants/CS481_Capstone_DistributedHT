@@ -68,6 +68,7 @@ import java.beans.PropertyChangeEvent;
 
 
 
+// Palak was here 
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
