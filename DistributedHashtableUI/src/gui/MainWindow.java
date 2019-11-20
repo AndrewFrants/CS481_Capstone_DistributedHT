@@ -244,7 +244,7 @@ public class MainWindow extends JFrame {
 					public void actionPerformed(ActionEvent arg0) {
 						
 				        JTextField replaceTxt = new JTextField("");
-				        JLabel label = new JLabel("Hashed value: 0.0000000000000");
+				        JLabel label = new JLabel("Hashed value: 0");
 				        JPanel panel = new JPanel(new GridLayout(0, 2));
 
 				        panel.add(new JLabel("Add Node: "));
@@ -365,7 +365,7 @@ public class MainWindow extends JFrame {
 		{
 			int count = node.getAllEntries().size();
 			
-			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID() + ", angle: " + node.getAngle() + ", Size=" + count + ")");
+			nodesList.add(nodesList.getSize(), node.getName() +  ", " + "nodeID: " + node.getNodeID() + ", angle: " + node.getAngle() + ", Size=" + count + ")");
 		}
 	}
 	

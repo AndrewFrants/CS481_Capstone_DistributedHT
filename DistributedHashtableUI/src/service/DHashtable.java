@@ -26,8 +26,12 @@ public class DHashtable {
 		if (localHT.containsKey(nodeID))
 			return localHT.get(nodeID);
 		
-		Set<Integer> set = localHT.keySet();
+		else {
+			//forward request to another node
+		}
 		/**
+		Set<Integer> set = localHT.keySet();
+		
 		for (Integer key : set)
 		{
 			if (angle - key < 0.01 && angle - key > 0.0)

@@ -9,13 +9,12 @@ import java.util.List;
 public class DNode implements Comparable<DNode> {
 
 	DHashtable table;
-
 	Integer nodeID;
-
 	String name;
-
 	Double angleVal;
-
+	DNode successor;
+	
+	
 	public DNode(String nodeName) {
 		this.name = nodeName;
 		this.nodeID = DNode.GetComputerBasedHash(nodeName);
