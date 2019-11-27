@@ -136,7 +136,7 @@ public class MainWindow extends JFrame {
 		setContentPane(contentPane);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setSelectedIndex(0);
+		tabbedPane.setSelectedIndex(-1);
 		tabbedPane.setBounds(0, 0, 654, 61);
 		
 		contentPane.add(tabbedPane);

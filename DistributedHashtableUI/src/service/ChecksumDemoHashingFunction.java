@@ -11,6 +11,7 @@ public class ChecksumDemoHashingFunction {
 	 */
 	public static int hashValueByDegree(String value)
 	{
+		
 		int hash = 0;
 		
 		for (char c : value.toCharArray())

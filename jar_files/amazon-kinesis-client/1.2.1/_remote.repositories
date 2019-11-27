@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Wed Nov 06 12:56:38 PST 2019
+amazon-kinesis-client-1.2.1.jar>central=
+amazon-kinesis-client-1.2.1.pom>central=
+amazon-kinesis-client-1.2.1-sources.jar>central=
