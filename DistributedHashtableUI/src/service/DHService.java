@@ -1,5 +1,5 @@
 /**
- * 
+ * This is the DH Service
  */
 package service;
 
@@ -15,7 +15,6 @@ import java.util.Set;
 
 
 /**
- * @author andreyf
  * This is the entry point into the service
  * it provides service level functionality
  */
@@ -23,7 +22,10 @@ public class DHService {
 
 	HashMap<Integer, DNode> nodes;
 	Integer networkBitSize;
-	
+
+	/*
+	 * C'tor
+	 */
 	public DHService()
 	{
 		nodes = new HashMap<Integer, DNode>();
@@ -42,12 +44,18 @@ public class DHService {
 		nodes.put(newNode.getNodeID(), newNode);
 	}
 	
+	/*
+	 * Add a new value
+	 */
 	public void insertValue(String newValue)
 	{
 		int key = ChecksumDemoHashingFunction.hashValue(newValue);
 		
 	}
 	
+	/*
+	 * Locate what should be the owner of a given file
+	 */
 	public void findOwnerNode(String value)
 	{
 		/*
@@ -68,6 +76,9 @@ public class DHService {
 		}
 	}
 	
+	/*
+	 * Find a node by it's name (this is useful for UI).
+	 */
 	public DNode findNodeByName(String name)
 	{
 		int hash = ChecksumDemoHashingFunction.hashValue(name);
@@ -78,15 +89,15 @@ public class DHService {
 		return findNodeByName(hash);
 	}
 	
+	/*
+	 * Find the node by a hash code
+	 */
 	public DNode findNodeByName(Integer hash)
 	{
 		Set<Integer> keysenu = nodes.keySet();
 		List<Integer> numbersList = new ArrayList<Integer>(keysenu);
 		
 		Collections.sort(numbersList);
-		System.out.println();
-		System.out.println();
-		System.out.println();
 		
 		Iterator<Integer> iter = numbersList.iterator();
 		int prev = 0;
@@ -98,8 +109,6 @@ public class DHService {
 
 			if (first == 0)
 				first = curr;
-			
-			System.out.println(curr);
 			
 			if (prev != 0 && hash >= prev && hash <= curr)
 			{

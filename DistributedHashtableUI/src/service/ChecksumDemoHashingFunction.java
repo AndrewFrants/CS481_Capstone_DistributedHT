@@ -9,32 +9,38 @@ public class ChecksumDemoHashingFunction {
 	 * this probably should never be used for anything
 	 * Implemented for demo purposes only.
 	 */
-	public static int hashValue(String value)
+	public static int hashValueByDegree(String value)
 	{
 		int hash = 0;
 		
 		for (char c : value.toCharArray())
 		{
-			//System.out.println((Math.pow((int)c + 10, 2)) * Math.PI);
-			
+			hash += (Math.sqrt(Math.pow((int)c, Math.PI)));
+		}
+		
+		double rem = hash - (double)Math.floor(hash); // keep the remainder
+
+		rem = Math.round(rem * 10) / 100.0;
+		
+		// TODO: here we want to make the hash generic
+		// so that we can use different hash types.
+		return (int)((hash % 360) + rem);
+	}
+	
+	/*
+	 * Returns a checksum hash
+	 */
+	public static int hashValue(String value)
+	{
+		int hash = 0;
+		
+		for (char c : value.toCharArray())
+		{	
 			hash += c; // increase the spread a bit
 		}
+
 		hash = hash%255;
-		//System.out.println(hash);
 		
-		
-		
-		//System.out.println(hash);
-		
-	//	double rem = hash - (double)Math.floor(hash); // keep the remainder
-		
-	//	rem = Math.round(rem * 10) / 100.0;
-		
-		//System.out.println(hash);
-		//System.out.println(Math.round(hash));
-		
-		//System.out.println(rem);
 		return hash;
-		// return (hash % 360) + rem;
 	}
 }

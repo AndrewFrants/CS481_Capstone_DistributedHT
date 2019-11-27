@@ -66,23 +66,41 @@ import java.awt.event.InputMethodEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 
-
-
-// Palak was here 
+/*
+ * This is the main window for the UI
+ * It is built using WindowBuilder
+ */
 public class MainWindow extends JFrame {
 
+	/**
+	 * Serial version id (for serialization)
+	 */
+	private static final long serialVersionUID = 1L;
+
+	// This is the main window content pane
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
+	
+	/*
+	 * Connection settings
+	 */
+	private JTextField serviceUrl;
+	
+	/*
+	 * Hashtable viewer
+	 */
 	DefaultListModel<String> nodesList;
 	private JList nodeList;
 	DefaultListModel<String> keysList;
 	JList keyList;
-	DHService dhService;
 	JTextArea currentValue;
 	
+	/*
+	 * Service connector
+	 */
+	DHService dhService;
+	
 	/**
-	 * Launch the application.
+	 * Entry point into the application
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -102,26 +120,32 @@ public class MainWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public MainWindow() {
+		
 		nodesList = new DefaultListModel<String>();
 		keysList = new DefaultListModel<String>();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 700, 450);
+
+		/*
+		 * Creating the UI framework
+		 */
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		//contentPane.setLayout(new GridLayout(0, 1));
 		contentPane.setLayout(new BorderLayout());
 		setContentPane(contentPane);
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setSelectedIndex(-1);
+		tabbedPane.setSelectedIndex(0);
 		tabbedPane.setBounds(0, 0, 654, 61);
+		
 		contentPane.add(tabbedPane);
-												//pnlMainBody.setBounds(20, 72, 654, 329);
-												BorderLayout bl_pnlMainBody = new BorderLayout();
+		
+		BorderLayout bl_pnlMainBody = new BorderLayout();
 
-
-
+		/*
+		 * Tabbed control
+		 */
 		JPanel navMain = new JPanel();
 		tabbedPane.addTab("Main", null, navMain, null);
 		tabbedPane.setEnabledAt(0, true);
@@ -130,12 +154,15 @@ public class MainWindow extends JFrame {
 		JPanel panel = new JPanel();
 		navMain.add(panel, BorderLayout.NORTH);
 		
-				JButton btnNew = new JButton("New Node");
-				panel.add(btnNew);
-				
-				JButton btnNewButton = new JButton("Remove Node");
-				btnNewButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
+		JButton btnNew = new JButton("New Node");
+		panel.add(btnNew);
+		
+		/*
+		 * Remove node implementation
+		 */
+		JButton btnNewButton = new JButton("Remove Node");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
 						if (nodeList.getSelectedIndex() < 0)
 							return;
 						
@@ -150,177 +177,183 @@ public class MainWindow extends JFrame {
 						RefreshControls();
 					}
 				});
-				panel.add(btnNewButton);
+		
+		panel.add(btnNewButton);
 				
-				JButton btnNewEntry = new JButton("New Entry");
+		/*
+		 * New entry implementation
+		 */
+		JButton btnNewEntry = new JButton("New Entry");		
+		panel.add(btnNewEntry);
+		
+		/*
+		 * Save buton
+		 */
+		JButton btnSave = new JButton("Save");
+		panel.add(btnSave);
+		
+		/*
+		 * Delete button
+		 */
+		JButton btnDelete = new JButton("Delete");
+		panel.add(btnDelete);
+		
+		/*
+		 * Main view panel
+		 */
+		JLayeredPane pnlMainBody = new JLayeredPane();
+		navMain.add(pnlMainBody, BorderLayout.CENTER);
+		pnlMainBody.setLayout(new BorderLayout(0, 0));
+		
+		// Node selection/Key value splitter
+		JSplitPane splitPane = new JSplitPane();
+		pnlMainBody.add(splitPane);
+		
+		currentValue = new JTextArea();		
+		currentValue.setText("Please select a node and key to view value");
+		splitPane.setRightComponent(currentValue);
 				
-				panel.add(btnNewEntry);
+		JPanel nodeKeyViewPanel = new JPanel();
+		splitPane.setLeftComponent(nodeKeyViewPanel);
+		nodeKeyViewPanel.setLayout(new BorderLayout(0, 0));
+		
+		JSplitPane splitPane_1 = new JSplitPane();
+		splitPane_1.setResizeWeight(0.5);
+		nodeKeyViewPanel.add(splitPane_1);
+		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
 				
-						JButton btnSave = new JButton("Save");
-						panel.add(btnSave);
-						
-								JButton btnDelete = new JButton("Delete");
-								panel.add(btnDelete);
-																												
-				JLayeredPane pnlMainBody = new JLayeredPane();
-				navMain.add(pnlMainBody, BorderLayout.CENTER);
-				pnlMainBody.setLayout(new BorderLayout(0, 0));
-				//pnlMainBody.setLayout(new BorderLayout(0, 0));
+		JPanel nodeListPanel = new JPanel();
+		splitPane_1.setLeftComponent(nodeListPanel);
+		nodeListPanel.setLayout(new BorderLayout(50, 50));
 				
-				JSplitPane splitPane = new JSplitPane();
-				pnlMainBody.add(splitPane);
+		nodeList = new JList(nodesList);
+		nodeListPanel.add(nodeList, BorderLayout.CENTER);
 				
-				currentValue = new JTextArea();
+		JPanel keyListPanel = new JPanel();
+		splitPane_1.setRightComponent(keyListPanel);
+		keyListPanel.setLayout(new BorderLayout(0, 0));
 				
-				currentValue.setText("Key value goes here");
-				splitPane.setRightComponent(currentValue);
+		keyList = new JList(keysList);
+		nodeList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent arg0) {
+				PopulateKeys();
+				}
+			});
+		keyListPanel.add(keyList);
 				
-				JPanel panel_3 = new JPanel();
-				splitPane.setLeftComponent(panel_3);
-				panel_3.setLayout(new BorderLayout(0, 0));
-				
-				JSplitPane splitPane_1 = new JSplitPane();
-				splitPane_1.setResizeWeight(0.5);
-				panel_3.add(splitPane_1);
-				splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-				
-				JPanel panel_4 = new JPanel();
-				splitPane_1.setLeftComponent(panel_4);
-				panel_4.setLayout(new BorderLayout(50, 50));
-				
-				nodeList = new JList(nodesList);
-				panel_4.add(nodeList, BorderLayout.CENTER);
-				
-				JPanel panel_5 = new JPanel();
-				splitPane_1.setRightComponent(panel_5);
-				panel_5.setLayout(new BorderLayout(0, 0));
-				
-				keyList = new JList(keysList);
-				nodeList.addListSelectionListener(new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent arg0) {
-						PopulateKeys();
+		keyList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent arg0) {
+					PopulateText();
 					}
-				});
-				panel_5.add(keyList);
+			});	
 				
-				keyList.addListSelectionListener(new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent arg0) {
-						PopulateText();
-					}
-				});
-				
-				btnNewEntry.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-				        JTextField replaceTxt = new JTextField("");
-				        JLabel label = new JLabel("Hashed value: 0.0000000000000");
-				        JPanel panel = new JPanel(new GridLayout(0, 2));
+		btnNewEntry.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JTextField replaceTxt = new JTextField("");
+				JLabel label = new JLabel("Hashed value: 0.0000000000000");
+					JPanel panel = new JPanel(new GridLayout(0, 2));
 
-				        panel.add(new JLabel("Add Entry: "));
-				        panel.add(replaceTxt);
+				    panel.add(new JLabel("Add Entry: "));
+				    panel.add(replaceTxt);
 
-				        replaceTxt.addKeyListener(new KeyAdapter() {
-							@Override
+				    replaceTxt.addKeyListener(new KeyAdapter() {
+				    	@Override
 							public void keyPressed(KeyEvent e) {
 								label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
 								
 							}
 						});
 				        
+				    panel.add(label);
 				        
-				        
-				        panel.add(label);
-				        
-				        int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry",
+				    int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry",
 				            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 				        
-				        if (result == JOptionPane.OK_OPTION) {
-				        		AddEntry(replaceTxt.getText());
-				        	}
+				    if (result == JOptionPane.OK_OPTION) {
+				    	AddEntry(replaceTxt.getText());
+				    }
 				        
-				        RefreshControls();
-					}
-				});
-				
-				btnNew.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
+				    RefreshControls();
+				}
+			});
+		
+			/*
+			 * Add Node implementation
+			 */
+		btnNew.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
 						
-				        JTextField replaceTxt = new JTextField("");
-				        JLabel label = new JLabel("Hashed value: 0");
-				        JPanel panel = new JPanel(new GridLayout(0, 2));
+			JTextField replaceTxt = new JTextField("");
+			JLabel label = new JLabel("Hashed value: 0");
+			JPanel panel = new JPanel(new GridLayout(0, 2));
 
-				        panel.add(new JLabel("Add Node: "));
-				        panel.add(replaceTxt);
+			panel.add(new JLabel("Add Node: "));
+			panel.add(replaceTxt);
 
-				        replaceTxt.addKeyListener(new KeyAdapter() {
-							@Override
-							public void keyPressed(KeyEvent e) {
-								label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
-								
-							}
-						});
+			replaceTxt.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+						label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));		
+					}});
 				        
-				        panel.add(label);
+				    panel.add(label);
 				        
-				        int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node",
+				    int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node",
 				            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 				
-				        if (result == JOptionPane.OK_OPTION) {
-				        		AddNode(replaceTxt.getText());
-				        	}
+				    if (result == JOptionPane.OK_OPTION) {
+				    	AddNode(replaceTxt.getText());
+				        }
 				        
-				        RefreshControls();
-					}
-				});
+				    RefreshControls();
+				}});
 
+		/*
+		 * Create the connection panel
+		 */
 		JPanel navConnection = new JPanel();
 		tabbedPane.addTab("Connection", null, navConnection, null);
 		navConnection.setLayout(new BorderLayout(0, 0));
-										//pnlConnection.setLayout(null);
-										
-				JPanel pnlConnectionSettings = new JPanel();
-				navConnection.add(pnlConnectionSettings, BorderLayout.CENTER);
-				pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
-				pnlConnectionSettings.setLayout(new GridLayout(3, 2, 0, 0));
-				
-				JLabel lblNewLabel = new JLabel("New label");
-				pnlConnectionSettings.add(lblNewLabel);
-				
-				textField = new JTextField();
-				pnlConnectionSettings.add(textField);
-				textField.setColumns(10);
-				
-				textField_1 = new JTextField();
-				pnlConnectionSettings.add(textField_1);
-				textField_1.setColumns(10);
-				
-				JPanel panel_2 = new JPanel();
-				navConnection.add(panel_2, BorderLayout.NORTH);
-				panel_2.setLayout(new BorderLayout(0, 0));
-				
-				JPanel panel_1 = new JPanel();
-				panel_2.add(panel_1, BorderLayout.NORTH);
-				
-				JComboBox comboBox_1 = new JComboBox();
-				panel_1.add(comboBox_1);
-				comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"devBox", "Dans AWS Cluster"}));
-				
-						JButton btnConnect = new JButton("Connect");
-						panel_1.add(btnConnect);
-						btnConnect.setVerticalAlignment(SwingConstants.TOP);
-						btnConnect.setHorizontalAlignment(SwingConstants.LEFT);
 						
-								JButton btnSave_1 = new JButton("Save");
-								panel_1.add(btnSave_1);
-								btnSave_1.setEnabled(false);
-								btnSave_1.setVerticalAlignment(SwingConstants.TOP);
-								btnSave_1.setHorizontalAlignment(SwingConstants.LEFT);
+		JPanel pnlConnectionSettings = new JPanel();
+		navConnection.add(pnlConnectionSettings, BorderLayout.CENTER);
+		pnlConnectionSettings.setAlignmentX(Component.LEFT_ALIGNMENT);
+		pnlConnectionSettings.setLayout(new GridLayout(3, 2, 0, 0));
+				
+		JLabel lblNewLabel = new JLabel("New label");
+		pnlConnectionSettings.add(lblNewLabel);
+				
+		serviceUrl = new JTextField();
+		pnlConnectionSettings.add(serviceUrl);
+		serviceUrl.setColumns(10);
+				
+		JPanel tabConnectionPanel = new JPanel();
+		navConnection.add(tabConnectionPanel, BorderLayout.NORTH);
+		tabConnectionPanel.setLayout(new BorderLayout(0, 0));
+				
+		JPanel conectionPnl = new JPanel();
+		tabConnectionPanel.add(conectionPnl, BorderLayout.NORTH);
+				
+		JComboBox comboBox_1 = new JComboBox();
+		conectionPnl.add(comboBox_1);
+		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"devBox", "Dans AWS Cluster"}));
+				
+		JButton btnConnect = new JButton("Connect");
+		conectionPnl.add(btnConnect);
+		btnConnect.setVerticalAlignment(SwingConstants.TOP);
+		btnConnect.setHorizontalAlignment(SwingConstants.LEFT);
+						
+		JButton btnSave_1 = new JButton("Save");
+		conectionPnl.add(btnSave_1);
+		btnSave_1.setEnabled(false);
+		btnSave_1.setVerticalAlignment(SwingConstants.TOP);
+		btnSave_1.setHorizontalAlignment(SwingConstants.LEFT);
 								
-								JButton btnMakeDefault = new JButton("Make Default");
-								panel_1.add(btnMakeDefault);
-								btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
-								btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
+		JButton btnMakeDefault = new JButton("Make Default");
+		conectionPnl.add(btnMakeDefault);
+		btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
+		btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
 		
-
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				int index = tabbedPane.getSelectedIndex();
@@ -341,19 +374,21 @@ public class MainWindow extends JFrame {
 		
 	}
 
+	/*
+	 * Create the Distributed Hashtable service
+	 */
 	public void createDHService() {
-		//IEmailManager emailMngr = emailSvc.getEmailManager();
-		//DefaultListModel<String> lm = new DefaultListModel<String>();
 		dhService = DHService.createFiveNodeCluster();
 		
 		populateNodes();
 	}
 	
+	/*
+	 * Create the nodes
+	 */
 	public void populateNodes()
 	{
 		nodesList.clear();
-		
-		//nodesList.add(0, "All");
 		
 		List<DNode> list = new ArrayList<DNode>(dhService.getAllNodes());
 		
@@ -369,6 +404,9 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
+	/*
+	 * Populate the keys
+	 */
 	public void PopulateKeys()
 	{
 		if (nodeList.getSelectedIndex() < 0)
@@ -395,23 +433,6 @@ public class MainWindow extends JFrame {
 		
 
 		keyList.repaint();
-	}
-	
-	/*
-	 * Not used
-	 */
-	private <T extends Comparable<? super T>> void sortModel(DefaultListModel model) {
-	    List<T> list = new ArrayList<T>();
-	    for (int i = 0; i < model.size(); i++) {
-	        list.add((T)model.get(i));
-	    }
-	    
-	    Collections.sort(list);
-	    model.removeAllElements();
-	    
-	    for (T s : list) {
-	        model.addElement(s);
-	    }
 	}
 	
 	public void PopulateText()

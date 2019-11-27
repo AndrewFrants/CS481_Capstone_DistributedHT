@@ -15,7 +15,9 @@ public class DNode implements Comparable<DNode> {
 	DNode successor;
 	DNode predecessor;
 	
-	
+	/*
+	 * C'tor
+	 */
 	public DNode(String nodeName) {
 		this.name = nodeName;
 		this.nodeID = DNode.GetComputerBasedHash(nodeName);
@@ -23,22 +25,37 @@ public class DNode implements Comparable<DNode> {
 		setAngle(nodeID);
 	}
 
+	/*
+	 * Get the backing table
+	 */
 	public DHashtable getTable() {
 		return table;
 	}
 
+	/*
+	 * Updating the table
+	 */
 	public void setTable(DHashtable table) {
 		this.table = table;
 	}
 
+	/*
+	 * Get the name of the node
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/*
+	 * Get the node Id
+	 */
 	public Integer getNodeID() {
 		return nodeID;
 	}
 
+	/*
+	 * Set the node angle
+	 */
 	public void setAngle(int nodeID) {
 		int highest_node_val = 255;
 		int lowest_node_val = 0;
@@ -49,26 +66,44 @@ public class DNode implements Comparable<DNode> {
 
 	}
 
+	/*
+	 * Get the node angle
+	 */
 	public Double getAngle() {
 		return angleVal;
 	}
 
+	/* 
+	 * Get the node successor
+	 */
 	public DNode getSuccessor() {
 		return successor;
 	}
 
+	/*
+	 * Set the sucessfor
+	 */
 	public void setSuccessor(DNode successor) {
 		this.successor = successor;
 	}
 
+	/*
+	 * Get the predecessor node
+	 */
 	public DNode getPredecessor() {
 		return predecessor;
 	}
 
+	/*
+	 * Set the predecssecor
+	 */
 	public void setPredecessor(DNode predecessor) {
 		this.predecessor = predecessor;
 	}
 
+	/*
+	 * Assign new key ownership to the node
+	 */
 	public void AssignKeys(DHashEntry... hashEntries) {
 		table.insert(hashEntries);
 	}
@@ -94,6 +129,9 @@ public class DNode implements Comparable<DNode> {
 		return allEntries;
 	}
 
+	/*
+	 * CompareTo for sorting/ordering
+	 */
 	@Override
 	public int compareTo(DNode arg0) {
 		if (arg0 == null || arg0.getNodeID() == this.getNodeID())

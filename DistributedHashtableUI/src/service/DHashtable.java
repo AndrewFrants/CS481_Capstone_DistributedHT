@@ -12,40 +12,50 @@ public class DHashtable {
 
 	HashMap<Integer, DHashEntry> localHT;
 	
+	/*
+	 * Gets the backing hashtable
+	 */
 	public HashMap<Integer, DHashEntry> getHT() {
 		return localHT;
 	}
 
+	/*
+	 * C'tor
+	 */
 	public DHashtable()
 	{
 		localHT = new HashMap<Integer, DHashEntry>();
 	}
 	
-	public DHashEntry getEntry(Integer nodeID)
+	/*
+	 * Get entry of a given value
+	 */
+	public DHashEntry getEntry(Integer angle)
 	{
-		if (localHT.containsKey(nodeID))
-			return localHT.get(nodeID);
+		if (localHT.containsKey(angle))
+			return localHT.get(angle);
 		
-		else {
-			//forward request to another node
-		}
-		/**
 		Set<Integer> set = localHT.keySet();
-		
+
 		for (Integer key : set)
 		{
 			if (angle - key < 0.01 && angle - key > 0.0)
 				return localHT.get(key);
 		}
-		*/
 		return null;
 	}
 	
+	/*
+	 * Insert a new value into DHT
+	 */
 	public void insert(String value)
 	{
 		this.insert(DHashEntry.getHashEntry(value));
 	}
 	
+	/*
+	 * Insert hash entries into the distributed hashtable
+	 */
 	public void insert(DHashEntry... hashEntries)
 	{
 		for (DHashEntry e : hashEntries)
@@ -54,6 +64,9 @@ public class DHashtable {
 		}
 	}
 	
+	/*
+	 * Remove the keys
+	 */
 	public void removeKeys(String... keys)
 	{
 		for (String k : keys)
@@ -75,6 +88,9 @@ public class DHashtable {
 		}
 	}
 	
+	/*
+	 * Move keys above a certain threshold to a new Hashtable
+	 */
 	public DHashtable moveKeysAboveTo(DHashtable newTable, Integer keysAbove)
 	{
 		if (newTable == null)

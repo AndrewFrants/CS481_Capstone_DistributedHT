@@ -13,31 +13,52 @@ public class DHashEntry implements Comparable<DHashEntry> {
 
 	public String value;
 
+	/*
+	 * The c'tor
+	 */
 	public DHashEntry(String value) {
 		this.setKey(ChecksumDemoHashingFunction.hashValue(value));
 		this.setValue(value);
 	}
 
+	/*
+	 * get key
+	 */
 	public Integer getKey() {
 		return key;
 	}
 
+	/*
+	 * set key
+	 */
 	public void setKey(Integer key) {
 		this.key = key;
 	}
 
+	/*
+	 * get the key value
+	 */
 	public String getValue() {
 		return value;
 	}
 
+	/*
+	 * set the value
+	 */
 	public void setValue(String value) {
 		this.value = value;
 	}
 
+	/*
+	 * Convert a string to a hash entry
+	 */
 	public static DHashEntry getHashEntry(String value) {
 		return new DHashEntry(value);
 	}
 
+	/*
+	 * Compare two different hash entries
+	 */
 	@Override
 	public int compareTo(DHashEntry arg0) {
 		if (arg0 == null || arg0.getKey() == this.getKey())
