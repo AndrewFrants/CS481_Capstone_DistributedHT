@@ -32,31 +32,37 @@ public class DHService {
 
 	}
 	
-	/*
-	 * POST <url>/addNode
-	 * {
-	 *    "name" : "blah"
-	 *    /...
-	 * }
+	/* TODO, convert to
+	 * 
+	 * 	POST <url>/addNode
+	 * 	{
+	 *  	  "name" : "blah"
+	 *  	  /...
+	 * 	}
+	 * 
+	 * Simulate adding a node
 	 */
-	public void addNode(DNode newNode)
+	public void addNode(String name)
 	{
-		nodes.put(newNode.getNodeID(), newNode);
-	}
-	
-	/*
-	 * Add a new value
-	 */
-	public void insertValue(String newValue)
-	{
-		int key = ChecksumDemoHashingFunction.hashValue(newValue);
+		DNode newNode = new DNode(name);
 		
+		DNode existingNode = findNodeByName(name);
+		
+		/*
+		 * TODO. Following is a hack, it will not necessarily always return prev node.
+		 */
+		DNode prevNode = findNodeByName(existingNode.nodeID - 1);
+		
+		existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
+		//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
+
+		this.nodes.put(newNode.getNodeID(), newNode);
 	}
 	
 	/*
 	 * Locate what should be the owner of a given file
 	 */
-	public void findOwnerNode(String value)
+	public void insertValue(String value)
 	{
 		/*
 		 * TODO. This part can be/should be optimized to a BST
@@ -141,26 +147,6 @@ public class DHService {
 		
 		// copy values to new node
 		node.getTable().copyValuesTo(table);
-	}
-	
-	/*
-	 * Simulate adding a node
-	 */
-	public void addNode(String name)
-	{
-		DNode newNode = new DNode(name);
-		
-		DNode existingNode = findNodeByName(name);
-		
-		/*
-		 * TODO. Following is a hack, it will not necessarily always return prev node.
-		 */
-		DNode prevNode = findNodeByName(existingNode.nodeID);
-		
-		existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
-		//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
-
-		this.nodes.put(newNode.getNodeID(), newNode);
 	}
 	
 	/*
