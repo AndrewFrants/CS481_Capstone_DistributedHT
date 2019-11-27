@@ -17,6 +17,7 @@ public String getTitle() {
 }
 public void setTitle(String title) {
 	this.title = title;
+	setFile();
 }
 public String getFile() {
 	return file;

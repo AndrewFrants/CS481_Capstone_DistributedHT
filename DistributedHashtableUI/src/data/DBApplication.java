@@ -42,7 +42,7 @@ public class DBApplication {
 		for(Document doc : list) {
 			dbInterface.insertDocument(doc.getTitle(), doc.getFile(), tableName);
 		}
-		System.out.println("Initialization complete");
+		System.out.println("DB Initialization complete");
 		
 	}
 

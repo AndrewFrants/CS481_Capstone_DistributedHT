@@ -1,5 +1,7 @@
 package service;
 
+import java.util.Random;
+
 public class ChecksumDemoHashingFunction {
 
 	/*
@@ -33,14 +35,16 @@ public class ChecksumDemoHashingFunction {
 	 */
 	public static int hashValue(String value)
 	{
-		int hash = 0;
-		
+		int hash = 1;
+
 		for (char c : value.toCharArray())
 		{	
-			hash += c; // increase the spread a bit
+	
+			
+			hash += (c*c); // increase the spread a bit
 		}
 
-		hash = hash%255;
+		hash = hash%512;
 		
 		return hash;
 	}

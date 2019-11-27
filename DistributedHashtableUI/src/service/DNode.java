@@ -57,7 +57,7 @@ public class DNode implements Comparable<DNode> {
 	 * Set the node angle
 	 */
 	public void setAngle(int nodeID) {
-		int highest_node_val = 255;
+		int highest_node_val = 512;
 		int lowest_node_val = 0;
 		double max_degree = 360;
 		double min_degree = 0;

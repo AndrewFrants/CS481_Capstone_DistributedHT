@@ -1,7 +1,7 @@
 package data;
 
 import java.util.*;
-import java.text.*;   // for date and time
+import java.text.*; // for date and time
 import java.net.*;
 
 import com.amazonaws.AmazonClientException;
@@ -28,78 +28,104 @@ import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
 
 public class DBInterface {
-	AmazonDynamoDB dynamoDB;
-	
-	private void init() throws Exception {
-        /*
-         * To configure the Credentials value including the "access_key_id" and "secret_key_id"
-         * which could also be found in ./.aws/credentials
-         */
-		//change the below values to match with your instance 
-		  
-		BasicAWSCredentials awsCreds = new BasicAWSCredentials("AKIAUIHPUI4YQCDDD57X","7ecR7kCa+Ior7Uu6jTa9rPH3xrXIR4FvLaKS/+uL");
-		dynamoDB = AmazonDynamoDBClientBuilder.standard()
-        .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-        .withRegion("us-east-2") //the region of your instance --- the availability zone showed in your EC2 main page 
-        .build();
+	static AmazonDynamoDB dynamoDB;
+
+	private static void init() throws Exception {
+		/*
+		 * To configure the Credentials value including the "access_key_id" and
+		 * "secret_key_id" which could also be found in ./.aws/credentials
+		 */
+		// change the below values to match with your instance
+
+		BasicAWSCredentials awsCreds = new BasicAWSCredentials("AKIAUIHPUI4YTCAA7B7P", "oZSIhlggA1KcWd53SzK9/5udZiH7HTgjwfZWjiH1");
+		dynamoDB = AmazonDynamoDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+				.withRegion("us-east-2") // the region of your instance --- the availability zone showed in your EC2									// main page
+				.build();
 
 	}
-	
-	public void insertDocument(String title, String file, String tableName) throws Exception {
+
+	public static void insertDocument(String title, String file, String tableName) throws Exception {
 		init();
 		try {
+			System.out.println("uploading " + title + " to table " + tableName + " on DynamoDB");
 			// String tableName = tableName;
-	        // Create a table with a primary hash key named 'name', which holds a string
-	        CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)
-	            .withKeySchema(new KeySchemaElement().withAttributeName("Title").withKeyType(KeyType.HASH))
-	            .withAttributeDefinitions(new AttributeDefinition().withAttributeName("Title").withAttributeType(ScalarAttributeType.S))
-	            .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(3L).withWriteCapacityUnits(3L));
+			// Create a table with a primary hash key named 'name', which holds a string
+			CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)
+					.withKeySchema(new KeySchemaElement().withAttributeName("Title").withKeyType(KeyType.HASH))
+					.withAttributeDefinitions(new AttributeDefinition().withAttributeName("Title")
+							.withAttributeType(ScalarAttributeType.S))
+					.withProvisionedThroughput(
+							new ProvisionedThroughput().withReadCapacityUnits(3L).withWriteCapacityUnits(3L));
 
-	        // Create table if it does not exist yet
-	        TableUtils.createTableIfNotExists(dynamoDB, createTableRequest);
-	        // wait for the table to move into ACTIVE state
-	        TableUtils.waitUntilActive(dynamoDB, tableName);
+			// Create table if it does not exist yet
+	
+			TableUtils.createTableIfNotExists(dynamoDB, createTableRequest);
+			// wait for the table to move into ACTIVE state
+			TableUtils.waitUntilActive(dynamoDB, tableName);
+			System.out.println("uploading " + title + " to table " + tableName + " on DynamoDB");
+			// Add an item
+			Map<String, AttributeValue> item;
+			item = newItem(title, file);
+			PutItemRequest putItemRequest = new PutItemRequest(tableName, item);
+			PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
 
-
-	        // Describe our new table
-	       // DescribeTableRequest describeTableRequest = new DescribeTableRequest().withTableName(tableName);
-	       // TableDescription tableDescription = dynamoDB.describeTable(describeTableRequest).getTable();
-	       // System.out.println("Table Description: " + tableDescription);
-	        
-	        // Add an item
-	        Map<String, AttributeValue> item;
-	        item = newItem(title,file);
-	        PutItemRequest putItemRequest = new PutItemRequest(tableName, item);
-	        PutItemResult putItemResult = dynamoDB.putItem(putItemRequest);
-	        System.out.println("Result: " + putItemResult);
-
-	        
-			
+		} catch (AmazonServiceException ase) {
+			System.out.println("Caught an AmazonServiceException, which means your request made it "
+					+ "to AWS, but was rejected with an error response for some reason.");
+			System.out.println("Error Message:    " + ase.getMessage());
+			System.out.println("HTTP Status Code: " + ase.getStatusCode());
+			System.out.println("AWS Error Code:   " + ase.getErrorCode());
+			System.out.println("Error Type:       " + ase.getErrorType());
+			System.out.println("Request ID:       " + ase.getRequestId());
+		} catch (AmazonClientException ace) {
+			System.out.println("Caught an AmazonClientException, which means the client encountered "
+					+ "a serious internal problem while trying to communicate with AWS, "
+					+ "such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
 		}
-		catch (AmazonServiceException ase) {
-	        System.out.println("Caught an AmazonServiceException, which means your request made it "
-	                + "to AWS, but was rejected with an error response for some reason.");
-	        System.out.println("Error Message:    " + ase.getMessage());
-	        System.out.println("HTTP Status Code: " + ase.getStatusCode());
-	        System.out.println("AWS Error Code:   " + ase.getErrorCode());
-	        System.out.println("Error Type:       " + ase.getErrorType());
-	        System.out.println("Request ID:       " + ase.getRequestId());
-	    } catch (AmazonClientException ace) {
-	        System.out.println("Caught an AmazonClientException, which means the client encountered "
-	                + "a serious internal problem while trying to communicate with AWS, "
-	                + "such as not being able to access the network.");
-	        System.out.println("Error Message: " + ace.getMessage());
-	    }
 	}
-		
-		private Map<String, AttributeValue> newItem(String title, String file) {
-		    Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
-		    item.put("Title", new AttributeValue(title));
-		    item.put("File", new AttributeValue(file));
-		    return item;
-		
+
+	private static Map<String, AttributeValue> newItem(String title, String file) {
+		Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
+		item.put("Title", new AttributeValue(title));
+		item.put("File", new AttributeValue(file));
+		return item;
+
 	}
-	
+
+	public static ArrayList<Document> getDocumentList() throws Exception {
+		init();
+		ArrayList<Document> docList = new ArrayList<Document>();
+		ScanRequest scanRequest = new ScanRequest().withTableName("Documents");
+		
 	
 
+		ScanResult scanResult = dynamoDB.scan(scanRequest);
+		System.out.println("test");
+		for (Map<String, AttributeValue> item : scanResult.getItems()) {
+			docList.add(getItem(item));
+		}
+
+		return docList;
+
+	}
+
+	private static Document getItem(Map<String, AttributeValue> attributeList) {
+			 int index = 0;
+			 Document doc = new Document("");
+			 for (Map.Entry<String, AttributeValue> item : attributeList.entrySet()) {
+		            String attributeName = item.getKey();
+		            AttributeValue value = item.getValue();
+		           if(index ==0) {
+		        	  doc.setTitle(value.getS());
+		           }
+		         index++;
+		         
+		         
+			
+		 }	
+ return doc;
+
+
+}
 }

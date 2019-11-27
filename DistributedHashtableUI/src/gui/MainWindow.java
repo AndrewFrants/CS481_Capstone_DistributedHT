@@ -118,8 +118,9 @@ public class MainWindow extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws Exception 
 	 */
-	public MainWindow() {
+	public MainWindow() throws Exception {
 		
 		nodesList = new DefaultListModel<String>();
 		keysList = new DefaultListModel<String>();
@@ -377,7 +378,7 @@ public class MainWindow extends JFrame {
 	/*
 	 * Create the Distributed Hashtable service
 	 */
-	public void createDHService() {
+	public void createDHService() throws Exception {
 		dhService = DHService.createFiveNodeCluster();
 		
 		populateNodes();
@@ -414,7 +415,7 @@ public class MainWindow extends JFrame {
 		
 		String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
 		selectedIndex = selectedIndex.split("\\(")[0].trim();
-		
+		System.out.println(nodeList.getSelectedIndex());
 		if (selectedIndex.equalsIgnoreCase("All"))
 			return;
 		
@@ -430,7 +431,7 @@ public class MainWindow extends JFrame {
 		{
 			keysList.add(keysList.getSize(), en.getValue().split("\n")[0] + " (" + en.key.toString() + ")");
 		}
-		
+		System.out.println(keysList);
 
 		keyList.repaint();
 	}
