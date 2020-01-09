@@ -70,6 +70,8 @@ import java.beans.PropertyChangeEvent;
  * This is the main window for the UI
  * It is built using WindowBuilder
  */
+
+// Palak changed something here
 public class MainWindow extends JFrame {
 
 	/**
