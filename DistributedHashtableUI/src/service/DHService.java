@@ -48,15 +48,18 @@ public class DHService {
 		
 		DNode existingNode = findNodeByName(name);
 		
-		/*
-		 * TODO. Following is a hack, it will not necessarily always return prev node.
-		 */
-		DNode prevNode = findNodeByName(existingNode.nodeID - 1);
-		
-		existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
-		//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
-
-		this.nodes.put(newNode.getNodeID(), newNode);
+		if (existingNode != null)
+		{
+			/*
+			 * TODO. Following is a hack, it will not necessarily always return prev node.
+			 */
+			DNode prevNode = findNodeByName(existingNode.nodeID - 1);
+			
+			existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
+			//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
+	
+			this.nodes.put(newNode.getNodeID(), newNode);
+		}
 	}
 	
 	/*
@@ -192,15 +195,18 @@ public class DHService {
 		{
 			DNode node = new DNode(nodeName);
 			
-			dhService.addNode(node);
+			dhService.addNode(nodeName);
 		}
 		
 		for (int i = 0; i < keyNames.length; i++)
 		{
 			Integer hash = ChecksumDemoHashingFunction.hashValue(keyNames[i]);
 			DNode node = dhService.findNodeByName(hash);
-			System.out.println("Node: " + node.nodeID + " entry: " + hash);
-			node.getTable().insert(keyNames[i]);
+			if (node != null)
+			{
+				System.out.println("Node: " + node.nodeID + " entry: " + hash);
+				node.getTable().insert(keyNames[i]);
+			}
 		}
 		
 		return dhService;
