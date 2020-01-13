@@ -72,7 +72,6 @@ import java.beans.PropertyChangeEvent;
  * It is built using WindowBuilder
  */
 
-// Palak changed something here
 public class MainWindow extends JFrame {
 
 	/**
@@ -157,7 +156,10 @@ public class MainWindow extends JFrame {
 
 		JPanel panel = new JPanel();
 		navMain.add(panel, BorderLayout.NORTH);
-
+		
+		/*
+		 * Adding node implementation
+		 */	
 		JButton btnNew = new JButton("New Node");
 		panel.add(btnNew);
 
@@ -191,7 +193,21 @@ public class MainWindow extends JFrame {
 		panel.add(btnNewEntry);
 
 		/*
-		 * Save buton
+		 * Modify node button
+		 */
+		JButton btnNewModifyNode = new JButton("Change Node");
+		panel.add(btnNewModifyNode);
+	
+		
+		/*
+		 * Modify entry button
+		 */
+		JButton btnNewModifyEntry = new JButton("Change Entry");
+		panel.add(btnNewModifyEntry);
+		
+		
+		/*
+		 * Save button
 		 */
 		JButton btnSave = new JButton("Save");
 		panel.add(btnSave);
