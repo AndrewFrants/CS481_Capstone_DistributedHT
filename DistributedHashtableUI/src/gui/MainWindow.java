@@ -197,7 +197,39 @@ public class MainWindow extends JFrame {
 		 */
 		JButton btnNewModifyNode = new JButton("Change Node");
 		panel.add(btnNewModifyNode);
-	
+		
+		btnNewModifyNode.addActionListener(new ActionListener() {
+			   //removing the node
+			   public void actionPerformed(ActionEvent arg0) {
+			      if (nodeList.getSelectedIndex() < 0)
+			         return;
+			      String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
+			      selectedIndex = selectedIndex.split("\\(")[0].trim();
+			      if (selectedIndex.equalsIgnoreCase("All"))
+			         return;
+			      RemoveNode(selectedIndex);
+			      RefreshControls();
+
+			   //adding node
+			      JTextField replaceTxt = new JTextField("");
+			      JLabel label = new JLabel("Hashed value: 0");
+			      JPanel panel = new JPanel(new GridLayout(0, 2));
+			      panel.add(new JLabel("Add Node: "));
+			      panel.add(replaceTxt);
+			      replaceTxt.addKeyListener(new KeyAdapter() {
+			         @Override
+			         public void keyPressed(KeyEvent e) {
+			            label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+			         }
+			      });
+			      panel.add(label);
+			      int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+			      if (result == JOptionPane.OK_OPTION) {
+			         AddNode(replaceTxt.getText());
+			      }
+			      RefreshControls();
+			   }
+			});	
 		
 		/*
 		 * Modify entry button
