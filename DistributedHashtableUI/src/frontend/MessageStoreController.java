@@ -14,8 +14,8 @@ import java.nio.charset.StandardCharsets;
 @RestController
 public class MessageStoreController {
 
-    //private final String redis_host = System.getenv("REDIS_HOST");
-    //private final int redis_port = Integer.parseInt(System.getenv("REDIS_PORT"));
+    private final String redis_host = System.getenv("REDIS_HOST");
+    private final int redis_port = Integer.parseInt(System.getenv("REDIS_PORT"));
     //private final Jedis jedis = new Jedis(redis_host, redis_port);
 
     @PostMapping("/messages")
@@ -42,7 +42,7 @@ public class MessageStoreController {
     }
 
     @RequestMapping("/messages/{digest}")
-    public String getMessage(@PathVariable final String digest) {
+    public Message getMessage(@PathVariable final String digest) {
 
     	/*
         String message = jedis.get(digest);
@@ -56,6 +56,6 @@ public class MessageStoreController {
         return new Message(message);
         */
     	
-    	return "Hello World";
+    	return null;
     }
 }
