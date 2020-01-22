@@ -67,9 +67,9 @@ public class DHashtable {
 	/*
 	 * Remove the keys
 	 */
-	public void removeKeys(Integer... keys)
+	public void removeKeys(String... keys)
 	{
-		for (Integer k : keys)
+		for (String k : keys)
 		{
 			localHT.remove(k);
 		}
