@@ -78,7 +78,9 @@ public class MainWindow extends JFrame {
 	 * Serial version id (for serialization)
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private JTextField textField;
+	private JTextField textField_1;
+	
 	// This is the main window content pane
 	private JPanel contentPane;
 
@@ -197,7 +199,39 @@ public class MainWindow extends JFrame {
 		 */
 		JButton btnNewModifyNode = new JButton("Change Node");
 		panel.add(btnNewModifyNode);
-	
+		
+		btnNewModifyNode.addActionListener(new ActionListener() {
+			   //removing the node
+			   public void actionPerformed(ActionEvent arg0) {
+			      if (nodeList.getSelectedIndex() < 0)
+			         return;
+			      String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
+			      selectedIndex = selectedIndex.split("\\(")[0].trim();
+			      if (selectedIndex.equalsIgnoreCase("All"))
+			         return;
+			      RemoveNode(selectedIndex);
+			      RefreshControls();
+
+			   //adding node
+			      JTextField replaceTxt = new JTextField("");
+			      JLabel label = new JLabel("Hashed value: 0");
+			      JPanel panel = new JPanel(new GridLayout(0, 2));
+			      panel.add(new JLabel("Add Node: "));
+			      panel.add(replaceTxt);
+			      replaceTxt.addKeyListener(new KeyAdapter() {
+			         @Override
+			         public void keyPressed(KeyEvent e) {
+			            label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+			         }
+			      });
+			      panel.add(label);
+			      int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+			      if (result == JOptionPane.OK_OPTION) {
+			         AddNode(replaceTxt.getText());
+			      }
+			      RefreshControls();
+			   }
+			});	
 		
 		/*
 		 * Modify entry button
@@ -205,6 +239,41 @@ public class MainWindow extends JFrame {
 		JButton btnNewModifyEntry = new JButton("Change Entry");
 		panel.add(btnNewModifyEntry);
 		
+		
+		btnNewModifyEntry.addActionListener(new ActionListener() {
+			   //removing the node
+			   public void actionPerformed(ActionEvent arg0) {
+			      if (keyList.getSelectedIndex() < 0)
+			         return;
+			      String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
+			      selectedIndex = selectedIndex.split("\\(")[0].trim();
+			      if (selectedIndex.equalsIgnoreCase("All"))
+			         return;
+			      RemoveEntry(selectedIndex);
+			      RefreshControls();
+			
+			
+			   //adding new entry
+			      JTextField replaceTxt = new JTextField("");
+			      JLabel label = new JLabel("Hashed value: 0.0000000000000");
+			      JPanel panel = new JPanel(new GridLayout(0, 2));
+			      panel.add(new JLabel("Add Entry: "));
+			      panel.add(replaceTxt);
+			      replaceTxt.addKeyListener(new KeyAdapter() {
+			         @Override
+			         public void keyPressed(KeyEvent e) {
+			              label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+			           }
+			      });
+			      panel.add(label);
+			      int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
+			      if (result == JOptionPane.OK_OPTION) {
+			            AddEntry(replaceTxt.getText());
+			          }
+			      RefreshControls();
+			      
+			   }
+			});
 		
 		/*
 		 * Save button
@@ -347,10 +416,14 @@ public class MainWindow extends JFrame {
 		JLabel lblNewLabel = new JLabel("New label");
 		pnlConnectionSettings.add(lblNewLabel);
 
-		serviceUrl = new JTextField();
-		pnlConnectionSettings.add(serviceUrl);
-		serviceUrl.setColumns(10);
-
+		textField = new JTextField();
+		pnlConnectionSettings.add(textField);
+		textField.setColumns(10);
+		
+		textField_1 = new JTextField();
+		pnlConnectionSettings.add(textField_1);
+		textField_1.setColumns(10);
+		
 		JPanel tabConnectionPanel = new JPanel();
 		navConnection.add(tabConnectionPanel, BorderLayout.NORTH);
 		tabConnectionPanel.setLayout(new BorderLayout(0, 0));
@@ -422,7 +495,7 @@ public class MainWindow extends JFrame {
 		for (DNode node : list) {
 			int count = node.getAllEntries().size();
 
-			nodesList.add(nodesList.getSize(), node.getName() + ", " + "nodeID: " + node.getNodeID() + ", angle: "
+			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID() + ", angle: "
 					+ node.getAngle() + ", Size=" + count + ")");
 		}
 	}
@@ -496,6 +569,16 @@ public class MainWindow extends JFrame {
 
 	public void RemoveNode(String name) {
 		dhService.removeNode(name);
+
+		RefreshControls();
+	}
+	
+	public void RemoveEntry(String text)
+	{
+		//dhService.removeEntry(name);		
+		DNode node = dhService.findNodeByName(text);
+		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
+		//AssignKeys(DHashEntry.getHashEntry(text));
 
 		RefreshControls();
 	}
