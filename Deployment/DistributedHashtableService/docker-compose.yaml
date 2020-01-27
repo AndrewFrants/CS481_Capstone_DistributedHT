@@ -1,0 +1,15 @@
+version: '3'
+services:
+  message-store:
+    build: .
+    image: dht-java
+    container_name: dht-java
+    ports:
+     - "3002:8080"
+    env_file:
+     - message-store.env
+
+networks:
+  default:
+    external:
+      name: dht-net
