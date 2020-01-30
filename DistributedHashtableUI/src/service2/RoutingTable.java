@@ -1,29 +1,26 @@
 package service2;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 
 public class RoutingTable {
-	int size;
-	HashMap<Integer, String> table; 
-	 
+	int nodeID; // ID of the node that owns the routing table
+	int size; // size of the routing table, which is log(n) of the network size
+	int [] n;  // holds value of node incremented by 2^i
+	ArrayList<ArrayList<Integer>>  searchValues; // list of search values for node n
+	int[] sendToNode; // array of nodes to send request to
+	int successor; // ID of successor node
+	int predecessor; // ID of predecessor node
 	
-	public RoutingTable(int bitSize) {
-		size = bitSize - 1;
-		table = new HashMap<Integer, String>();
-		init();
+	
+	public RoutingTable(int nodeID, int size, ArrayList<Integer> listOfActiveNodes) {
 		
-						
-	}
-	
-	private void init() {
-		for(int i = 0; i < size;i++) {
-			table.put(i, null);
-		}
-		
-		
-	}
-	
-	
+		this.nodeID = nodeID;
+		this.size = size;
+		n = new int[size];
+		searchValues = new ArrayList<ArrayList<Integer>>();
+		sendToNode = new int[size];
 
+		
+	}
 }

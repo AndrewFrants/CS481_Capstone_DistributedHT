@@ -1,5 +1,6 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +15,10 @@ public class DNode implements Comparable<DNode> {
 	Double angleVal;
 	DNode successor;
 	DNode predecessor;
-	
+	public RoutingTable router;
+	ArrayList<Integer> keyResponsability;
+	int size;  // size of network 
+
 	/*
 	 * C'tor
 	 */
@@ -23,6 +27,20 @@ public class DNode implements Comparable<DNode> {
 		this.nodeID = DNode.GetComputerBasedHash(nodeName);
 		table = new DHashtable();
 		setAngle(nodeID);
+		this.size = 3;
+		successor = null;
+		predecessor = null;
+	
+		setKeyResponsability();
+		router = new RoutingTable(this);
+
+	}
+	
+	public void setKeyResponsability() {
+		keyResponsability = new ArrayList<Integer>();
+		for(int i = 0; i < Math.pow(2, size); i++) {
+			keyResponsability.add(i);
+		}
 	}
 
 	/*
@@ -141,6 +159,27 @@ public class DNode implements Comparable<DNode> {
 			return -1;
 
 		return 1;
+	}
+	
+	public boolean sendJoinRequest(DNode receivingNode) {
+		// https request sent to frontend of receiving node
+		if(!receivingNode.receiveJoinRequest(this))
+			return false;
+			if(receivingNode.predecessor == null) {
+				System.out.println("take all inbetween");
+			}
+			else {
+				System.out.println("more complex work too follow");
+			}
+			return true;
+	
+	}
+	
+	public boolean receiveJoinRequest(DNode incomingNode) {
+		if (incomingNode.size == this.size) 
+		return true;
+	return false;
+		
 	}
 
 	/*
