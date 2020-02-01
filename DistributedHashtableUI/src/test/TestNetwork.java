@@ -22,13 +22,16 @@ public class TestNetwork {
 		 System.out.println("Node ip name: " + node1.getName());
 		 System.out.println("Node ID: " + node1.getNodeID());
 		 node1.router.printRoutingTable();
-		
+			System.out.println("node 1 key responsability" + node1.keyResponsability.toString());
 		 DNode node2 = new DNode("1234325.467 ");
 		 System.out.println("Node ip name: " + node2.getName());
 		 System.out.println("Node ID: " + node2.getNodeID());
 		node2.router.printRoutingTable();	 
 		
+		System.out.println("node: " + node2.getNodeID() +  " /key responsability" + node2.keyResponsability.toString());
 		System.out.println(node1.sendJoinRequest(node2));
+		System.out.println("node: " + node1.getNodeID() +  " /key responsability" +node1.keyResponsability.toString());
+		System.out.println("node: "  + node2.getNodeID() +  " /key responsability" + node2.keyResponsability.toString());
 	}
 
 }

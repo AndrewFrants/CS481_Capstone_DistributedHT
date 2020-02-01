@@ -16,8 +16,8 @@ public class DNode implements Comparable<DNode> {
 	DNode successor;
 	DNode predecessor;
 	public RoutingTable router;
-	ArrayList<Integer> keyResponsability;
-	int size;  // size of network 
+	public ArrayList<Integer> keyResponsability;
+	int size; // size of network
 
 	/*
 	 * C'tor
@@ -30,15 +30,15 @@ public class DNode implements Comparable<DNode> {
 		this.size = 3;
 		successor = null;
 		predecessor = null;
-	
+
 		setKeyResponsability();
 		router = new RoutingTable(this);
 
 	}
-	
+
 	public void setKeyResponsability() {
 		keyResponsability = new ArrayList<Integer>();
-		for(int i = 0; i < Math.pow(2, size); i++) {
+		for (int i = 0; i < Math.pow(2, size); i++) {
 			keyResponsability.add(i);
 		}
 	}
@@ -79,7 +79,7 @@ public class DNode implements Comparable<DNode> {
 		int lowest_node_val = 0;
 		double max_degree = 360;
 		double min_degree = 0;
-		angleVal = (double) nodeID/((double)(highest_node_val - lowest_node_val))*((max_degree - min_degree)) 
+		angleVal = (double) nodeID / ((double) (highest_node_val - lowest_node_val)) * ((max_degree - min_degree))
 				+ min_degree;
 
 	}
@@ -91,7 +91,7 @@ public class DNode implements Comparable<DNode> {
 		return angleVal;
 	}
 
-	/* 
+	/*
 	 * Get the node successor
 	 */
 	public DNode getSuccessor() {
@@ -160,26 +160,77 @@ public class DNode implements Comparable<DNode> {
 
 		return 1;
 	}
-	
+
 	public boolean sendJoinRequest(DNode receivingNode) {
 		// https request sent to frontend of receiving node
-		if(!receivingNode.receiveJoinRequest(this))
+		if (!receivingNode.receiveJoinRequest(this))
 			return false;
-			if(receivingNode.predecessor == null) {
-				System.out.println("take all inbetween");
-			}
-			else {
-				System.out.println("more complex work too follow");
-			}
-			return true;
-	
-	}
-	
-	public boolean receiveJoinRequest(DNode incomingNode) {
-		if (incomingNode.size == this.size) 
+
+		else {
+
+			System.out.println("more complex work to follow");
+			this.updateRoutingTable(0, receivingNode);
+		}
 		return true;
-	return false;
-		
+
+	}
+
+	public boolean receiveJoinRequest(DNode incomingNode) {
+		if (incomingNode.size == this.size) {
+			this.updateRoutingTable(1, incomingNode);
+			return true;
+		}
+		return false;
+
+	}
+
+	public void updateRoutingTable(int flag, DNode otherNode) {
+		if (flag == 0) {
+			// update requesting node
+			if (otherNode.predecessor == null) {
+				this.successor = otherNode;
+				this.predecessor = otherNode;
+				// update receiving node
+				if(this.predecessor == null) {
+					
+				
+				keyResponsability.clear();
+				}
+				if (this.nodeID > otherNode.nodeID) {
+					
+
+					for (int i = otherNode.nodeID + 1; i <= this.nodeID; i++) {
+						keyResponsability.add(i);
+					}
+
+				}
+			}
+
+		} else {
+			// give values in between other node and this node
+			if (this.nodeID < otherNode.nodeID) {
+				if(this.predecessor == null) {
+					
+					
+					keyResponsability.clear();
+					}
+				if (otherNode.predecessor == null) {
+					
+					this.successor = otherNode;
+					this.predecessor = otherNode;
+					//
+					for (int i = this.nodeID + 1; i <= otherNode.nodeID; i++) {
+						keyResponsability.remove(i);
+					}
+
+				}
+
+				this.successor = otherNode;
+				this.predecessor = otherNode;
+				// take values in between other node and this node
+
+			}
+		}
 	}
 
 	/*
