@@ -16,7 +16,7 @@ public class DNode implements Comparable<DNode> {
 	DNode successor;
 	DNode predecessor;
 	public RoutingTable router;
-	public ArrayList<Integer> keyResponsability;
+	public ArrayList<Integer> keyList;
 	int size; // size of network
 
 	/*
@@ -30,17 +30,9 @@ public class DNode implements Comparable<DNode> {
 		this.size = 3;
 		successor = null;
 		predecessor = null;
-
-		setKeyResponsability();
+		keyList = new ArrayList<Integer>();
 		router = new RoutingTable(this);
 
-	}
-
-	public void setKeyResponsability() {
-		keyResponsability = new ArrayList<Integer>();
-		for (int i = 0; i < Math.pow(2, size); i++) {
-			keyResponsability.add(i);
-		}
 	}
 
 	/*
@@ -167,71 +159,25 @@ public class DNode implements Comparable<DNode> {
 			return false;
 
 		else {
-
-			System.out.println("more complex work to follow");
-			this.updateRoutingTable(0, receivingNode);
+			DNodeJoin.updateNodes(this, receivingNode);
+			
 		}
 		return true;
 
 	}
 
 	public boolean receiveJoinRequest(DNode incomingNode) {
-		if (incomingNode.size == this.size) {
-			this.updateRoutingTable(1, incomingNode);
+		
+		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
+			DNodeJoin.updateNodes(this, incomingNode);
 			return true;
 		}
 		return false;
 
 	}
 
-	public void updateRoutingTable(int flag, DNode otherNode) {
-		if (flag == 0) {
-			// update requesting node
-			if (otherNode.predecessor == null) {
-				this.successor = otherNode;
-				this.predecessor = otherNode;
-				// update receiving node
-				if(this.predecessor == null) {
-					
-				
-				keyResponsability.clear();
-				}
-				if (this.nodeID > otherNode.nodeID) {
-					
 
-					for (int i = otherNode.nodeID + 1; i <= this.nodeID; i++) {
-						keyResponsability.add(i);
-					}
-
-				}
-			}
-
-		} else {
-			// give values in between other node and this node
-			if (this.nodeID < otherNode.nodeID) {
-				if(this.predecessor == null) {
-					
-					
-					keyResponsability.clear();
-					}
-				if (otherNode.predecessor == null) {
-					
-					this.successor = otherNode;
-					this.predecessor = otherNode;
-					//
-					for (int i = this.nodeID + 1; i <= otherNode.nodeID; i++) {
-						keyResponsability.remove(i);
-					}
-
-				}
-
-				this.successor = otherNode;
-				this.predecessor = otherNode;
-				// take values in between other node and this node
-
-			}
-		}
-	}
+	
 
 	/*
 	 * @Override public int compareTo(Object o) { if (o == null || o instanceof
