@@ -10,14 +10,14 @@ import java.util.List;
 public class DNode implements Comparable<DNode> {
 
 	DHashtable table;
-	Integer nodeID;
+	public Integer nodeID;
 	String name;
 	Double angleVal;
-	DNode successor;
-	DNode predecessor;
+	public DNode successor;
+	public DNode predecessor;
 	public RoutingTable router;
 	public ArrayList<Integer> keyList;
-	int size; // size of network
+	public int size; // size of network
 
 	/*
 	 * C'tor
@@ -67,7 +67,7 @@ public class DNode implements Comparable<DNode> {
 	 * Set the node angle
 	 */
 	public void setAngle(int nodeID) {
-		int highest_node_val = 512;
+		int highest_node_val = 8;
 		int lowest_node_val = 0;
 		double max_degree = 360;
 		double min_degree = 0;
@@ -151,6 +151,31 @@ public class DNode implements Comparable<DNode> {
 			return -1;
 
 		return 1;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((nodeID == null) ? 0 : nodeID.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DNode other = (DNode) obj;
+		if (nodeID == null) {
+			if (other.nodeID != null)
+				return false;
+		} else if (!nodeID.equals(other.nodeID))
+			return false;
+		return true;
 	}
 
 	public boolean sendJoinRequest(DNode receivingNode) {

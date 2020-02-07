@@ -20,7 +20,7 @@ public class TestNetwork {
 		}
 		 
 		 
-		 DNode node1 = new DNode("dsfsdf");
+		 DNode node1 = new DNode("23.232.32122");
 		 DNode node2 = new DNode("123325.467 ");
 		 
 		 
@@ -31,7 +31,6 @@ public class TestNetwork {
 		 System.out.println("Node ip name: " + node2.getName());
 		 System.out.println("Node ID: " + node2.getNodeID());
 		 node2.router.printRoutingTable();	
-		
 		
 		node1.sendJoinRequest(node2);
 		

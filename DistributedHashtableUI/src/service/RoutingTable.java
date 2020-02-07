@@ -7,7 +7,7 @@ import java.util.Collections;
 public class RoutingTable {
 	public int nodeID; // ID of the node that owns the routing table
 	public int size; // size of the routing table, which is the size of the network size or log(n) of
-						// the total number of possible nodes
+
 	public int[] n; // holds value of nodes incremented by 2^i
 	public ArrayList<ArrayList<Integer>> searchValues; // list of search values for node n
 	public int[] forwardToNode; // array of nodes to send request to
@@ -45,17 +45,9 @@ public class RoutingTable {
 				}
 				x++;
 			}
+	
 			searchValues.add(currentIndex);
-
 		}
-
-	}
-
-	private void setSuccessorNode(DNode node) {
-
-	}
-
-	private void setPredecessorNode() {
 
 	}
 
