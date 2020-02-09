@@ -1,4 +1,4 @@
-package webservice.capstone.controller;
+package webservice.controller;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,24 +11,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import service.DHService;
+import webservice.DhtWebService;
 import webservice.capstone.entry.*;
+import webservice.entry.Entry;
 
 @RestController
-public class EntryServiceController {
-   private static Map<String, Entry> entryRepo = new HashMap<>();
+public class NodesController {
+   
+	
    static {
-      Entry honey = new Entry();
-      honey.setId("1");
-      honey.setName("Honey");
-      entryRepo.put(honey.getId(), honey);
-      
-      Entry almond = new Entry();
-      almond.setId("2");
-      almond.setName("Almond");
-      entryRepo.put(almond.getId(), almond);
+	   // initialize mock service
+	   DhtWebService.DhtService = DHService.createFiveNodeCluster(); 
    }
    
-   @RequestMapping(value = "/entries/{id}", method = RequestMethod.DELETE)
+   @RequestMapping(value = "/node/{id}", method = RequestMethod.DELETE)
    public ResponseEntity<Object> delete(@PathVariable("id") String id) { 
 	   entryRepo.remove(id);
       return new ResponseEntity<>("Entry is deleted successsfully", HttpStatus.OK);

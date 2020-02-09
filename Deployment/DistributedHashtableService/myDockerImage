@@ -1,0 +1,2 @@
+FROM nginx
+COPY myHtml /usr/share/nginx/html

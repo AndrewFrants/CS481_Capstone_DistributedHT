@@ -53,13 +53,13 @@ public class DHService {
 			/*
 			 * TODO. Following is a hack, it will not necessarily always return prev node.
 			 */
-			DNode prevNode = findNodeByName(existingNode.nodeID - 1);
+			//DNode prevNode = findNodeByName(existingNode.nodeID - 1);
 			
 			existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
 			//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
-	
-			this.nodes.put(newNode.getNodeID(), newNode);
 		}
+		
+		this.nodes.put(newNode.getNodeID(), newNode);
 	}
 	
 	/*
@@ -72,6 +72,9 @@ public class DHService {
 		 */
 		Integer key = ChecksumDemoHashingFunction.hashValue(value);
 		Set<Integer> keysenu = nodes.keySet();
+		
+		if (key == 1)
+			key = 1;
 		
 		for (Integer ikey : keysenu)
 		{
@@ -111,6 +114,7 @@ public class DHService {
 		Iterator<Integer> iter = numbersList.iterator();
 		int prev = 0;
 		int first = 0;
+		int index = 0;
 		
 		while (iter.hasNext())
 		{
@@ -119,7 +123,7 @@ public class DHService {
 			if (first == 0)
 				first = curr;
 			
-			if (prev != 0 && hash >= prev && hash <= curr)
+			if (index != 0 && hash >= prev && hash <= curr)
 			{
 				return this.nodes.get(prev);
 			}
@@ -129,6 +133,7 @@ public class DHService {
 			}
 			
 			prev = curr;
+			index++;
 		}
 		
 		return null;
@@ -206,10 +211,15 @@ public class DHService {
 		for (int i = 0; i < keyNames.length; i++)
 		{
 			Integer hash = ChecksumDemoHashingFunction.hashValue(keyNames[i]);
+			if (hash == 1)
+				hash = 1;
 			DNode node = dhService.findNodeByName(hash);
 			if (node != null)
 			{
 				System.out.println("Node: " + node.nodeID + " entry: " + hash);
+				if (hash == 1)
+					hash = 1;
+				
 				node.getTable().insert(keyNames[i]);
 			}
 		}
