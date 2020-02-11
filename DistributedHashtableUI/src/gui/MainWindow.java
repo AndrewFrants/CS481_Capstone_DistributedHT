@@ -472,7 +472,7 @@ public class MainWindow extends JFrame {
 	}
 
 	/*
-	 * Create the Distributed Hashtable service
+	 * Create the Distributed Hashtable service 
 	 */
 	public void createDHService() throws Exception {
 		dhService = DHService.createFiveNodeCluster();

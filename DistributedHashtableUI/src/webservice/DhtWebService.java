@@ -1,13 +1,17 @@
-package webservice.capstone;
+package webservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-public class CapstoneApplication {
+import service.DHService;
 
+@SpringBootApplication
+public class DhtWebService {
+
+	public static DHService DhtService;
+	
 	public static void main(String[] args) {
-		SpringApplication.run(CapstoneApplication.class, args);
+		SpringApplication.run(DhtWebService.class, args);
 	}
 
 }

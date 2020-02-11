@@ -1,4 +1,4 @@
-package webservice.capstone.entry;
+package webservice.entry;
 
 public class Entry {
 	   private String id;
