@@ -6,10 +6,7 @@ public abstract class DNodeJoin {
 	
 	
 	public static void updateNodes(DNode thisNode, DNode otherNode) {
-		updateKeyList(thisNode, otherNode);
-		updateSuccessor(thisNode, otherNode);
-		updatePredecessor(thisNode, otherNode);
-		updateRoutingTable(thisNode, otherNode);
+
 	}
 	
 
@@ -34,6 +31,7 @@ public abstract class DNodeJoin {
 				}
 			}
 		}
+		
 
 	}
 	
@@ -47,6 +45,17 @@ public abstract class DNodeJoin {
 	public static void updatePredecessor(DNode thisNode, DNode otherNode) {
 		if(thisNode.predecessor == null) {
 			thisNode.predecessor = otherNode;
+		}
+		
+		else if(thisNode.nodeID > otherNode.nodeID || thisNode.nodeID < otherNode.successor.nodeID) {
+			otherNode.successor = thisNode.successor;
+			otherNode.predecessor = thisNode;
+			
+		}
+		
+		else {
+			otherNode.successor = thisNode;
+			otherNode.predecessor = thisNode.predecessor;
 		}
 		
 	}

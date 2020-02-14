@@ -45,7 +45,15 @@ public class TestNetwork {
 		 System.out.println("Node ip name: " + node2.getName());
 		 System.out.println("Node ID: " + node2.getNodeID());
 		 node2.router.printRoutingTable();	
-		
+		 
+		 DNode node3 = new DNode("test");
+		 System.out.println(node3.nodeID);
+		 
+		 node3.sendJoinRequest(node1);
+		 
+		 System.out.println("ID: " +node1.nodeID + " pred: "  + node1.predecessor.nodeID + " suc: " + node1.successor.nodeID);
+		 System.out.println("ID: " +node2.nodeID + " pred: "  + node2.predecessor.nodeID + " suc: " + node2.successor.nodeID);
+		 System.out.println("ID: " +node3.nodeID + " pred: "  + node3.predecessor.nodeID + " suc: " + node3.successor.nodeID);
 	}
 
 }

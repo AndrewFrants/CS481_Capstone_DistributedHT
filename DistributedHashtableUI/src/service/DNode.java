@@ -184,9 +184,12 @@ public class DNode implements Comparable<DNode> {
 			return false;
 
 		else {
-			DNodeJoin.updateNodes(this, receivingNode);
-			
+			DNodeJoin.updatePredecessor(this, receivingNode);
+			DNodeJoin.updateSuccessor(this, receivingNode);
+
+			// communicate back with other node to update it's successor/predecessor and their successor/predecessor 
 		}
+		
 		return true;
 
 	}
@@ -194,7 +197,7 @@ public class DNode implements Comparable<DNode> {
 	public boolean receiveJoinRequest(DNode incomingNode) {
 		
 		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
-			DNodeJoin.updateNodes(this, incomingNode);
+			// DNodeJoin.updateNodes(this, incomingNode);
 			return true;
 		}
 		return false;
