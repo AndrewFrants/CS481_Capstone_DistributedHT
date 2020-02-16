@@ -35,20 +35,30 @@ public class NodesController {
 	      return new ResponseEntity<>(obj, HttpStatus.OK);
    }
    
-   @RequestMapping(value = "/nodes")
+   @RequestMapping()
    public ResponseEntity<Object> getEntry() {
       return new ResponseEntity<>(getWS().getAllNodes(), HttpStatus.OK);
    }
    
-   @RequestMapping(value = "/node/{id}", method = RequestMethod.GET)
-   public ResponseEntity<Object> delete(@PathVariable("id") String id) { 
-	   return HttpResponse(getWS().findNodeByName(id));
+   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+   public ResponseEntity<Object> get(@PathVariable("id") String id) {
+	   DNode node = getWS().findNodeByName(id);
+	   
+	   return new ResponseEntity<>(node, HttpStatus.OK);
+   }
+
+   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+   public ResponseEntity<Object> delete(@PathVariable("id") String id) {
+	   DNode node = getWS().findNodeByName(id);
+	   getWS().removeNode(node.getName());
+	   
+	   return HttpResponse(HttpStatus.NO_CONTENT);
    }
    
-   @RequestMapping(value = "/nodes", method = RequestMethod.POST)
+   @RequestMapping(method = RequestMethod.POST)
    public ResponseEntity<Object> createEntry(@RequestBody String newNode) {
 	   getWS().addNode(newNode);
-      return new ResponseEntity<>("Entry is created successfully", HttpStatus.CREATED);
+      return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
    }
    
 }

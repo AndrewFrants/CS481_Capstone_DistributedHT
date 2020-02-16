@@ -16,6 +16,8 @@ import webservice.entry.Entry;
 
 @RestController
 public class EntryServiceController {
+	
+	/* For reference only
    private static Map<String, Entry> entryRepo = new HashMap<>();
    static {
       Entry honey = new Entry();
@@ -53,4 +55,5 @@ public class EntryServiceController {
    public ResponseEntity<Object> getEntry() {
       return new ResponseEntity<>(entryRepo.values(), HttpStatus.OK);
    }
+ 	*/
 }
