@@ -28,7 +28,7 @@ public class NodesController {
 	
    static {
 	   // initialize mock service
-	   DhtWebService.DhtService = DHService.createFiveNodeCluster(); 
+	   DhtWebService.DhtService = DHService.createFiveNodeCluster();
    }
    
    private ResponseEntity<Object> HttpResponse(Object obj) {
@@ -49,6 +49,8 @@ public class NodesController {
 
    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
    public ResponseEntity<Object> delete(@PathVariable("id") String id) {
+	   createEntry("newNodeName");
+	   
 	   DNode node = getWS().findNodeByName(id);
 	   getWS().removeNode(node.getName());
 	   

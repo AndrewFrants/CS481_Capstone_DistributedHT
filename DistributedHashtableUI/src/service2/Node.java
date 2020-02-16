@@ -14,6 +14,7 @@ public class Node {
 	int successor;  //Node's  successor
 	ArrayList<Integer> keyResponsability; //List of keys this Node is responsible for
 	int nodeID;	//unique node ID
+	
 //	double angle;  //mapped angle of the nodeID on the Hash Ring
 	String ipAddress; //address of the server/node
 	RoutingTable routingTable; //routing table for the node

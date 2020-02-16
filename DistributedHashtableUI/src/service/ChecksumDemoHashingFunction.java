@@ -38,9 +38,7 @@ public class ChecksumDemoHashingFunction {
 		int hash = 1;
 
 		for (char c : value.toCharArray())
-		{	
-	
-			
+		{
 			hash += (c*c); // increase the spread a bit
 		}
 

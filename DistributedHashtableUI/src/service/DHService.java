@@ -13,6 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import data.IDhtNodes;
+import data.InMemoryNodes;
+
 
 /**
  * This is the entry point into the service
@@ -20,15 +23,17 @@ import java.util.Set;
  */
 public class DHService {
 
-	HashMap<Integer, DNode> nodes;
+	//HashMap<Integer, DNode> nodes;
 	Integer networkBitSize;
 
+	IDhtNodes dhtNodes;
+	
 	/*
 	 * C'tor
 	 */
 	public DHService()
 	{
-		nodes = new HashMap<Integer, DNode>();
+		dhtNodes = new InMemoryNodes();
 
 	}
 	
@@ -44,22 +49,7 @@ public class DHService {
 	 */
 	public void addNode(String name)
 	{
-		DNode newNode = new DNode(name);
-		
-		DNode existingNode = findNodeByName(name);
-		
-		if (existingNode != null)
-		{
-			/*
-			 * TODO. Following is a hack, it will not necessarily always return prev node.
-			 */
-			//DNode prevNode = findNodeByName(existingNode.nodeID - 1);
-			
-			existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
-			//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
-		}
-		
-		this.nodes.put(newNode.getNodeID(), newNode);
+		dhtNodes.addNode(name);
 	}
 	
 	/*
@@ -93,12 +83,7 @@ public class DHService {
 	 */
 	public DNode findNodeByName(String name)
 	{
-		int hash = ChecksumDemoHashingFunction.hashValue(name);
-		
-		if (this.nodes.containsKey(hash))
-			return this.nodes.get(hash);
-		
-		return findNodeByName(hash);
+		return dhtNodes.findNodeByName(name);
 	}
 	
 	/*
@@ -106,37 +91,7 @@ public class DHService {
 	 */
 	public DNode findNodeByName(Integer hash)
 	{
-		Set<Integer> keysenu = nodes.keySet();
-		List<Integer> numbersList = new ArrayList<Integer>(keysenu);
-		
-		Collections.sort(numbersList);
-		
-		Iterator<Integer> iter = numbersList.iterator();
-		int prev = 0;
-		int first = 0;
-		int index = 0;
-		
-		while (iter.hasNext())
-		{
-			Integer curr = iter.next();
-
-			if (first == 0)
-				first = curr;
-			
-			if (index != 0 && hash >= prev && hash <= curr)
-			{
-				return this.nodes.get(prev);
-			}
-			else if (!iter.hasNext())
-			{
-				return this.nodes.get(curr);
-			}
-			
-			prev = curr;
-			index++;
-		}
-		
-		return null;
+		return dhtNodes.findNodeByName(hash);
 	}
 	
 	/*
@@ -144,17 +99,7 @@ public class DHService {
 	 */
 	public void removeNode(String name)
 	{
-		DNode node = findNodeByName(name);
-		
-		DHashtable table = node.getTable();
-		
-		nodes.remove(node.getNodeID());
-		
-		// find the next node
-		node = findNodeByName(name);
-		
-		// copy values to new node
-		node.getTable().copyValuesTo(table);
+		dhtNodes.removeNode(name);
 	}
 	
 	//removing entry
@@ -162,6 +107,7 @@ public class DHService {
 	{
 		
 	}
+
 	/*
 	 * This is a 4 node sample cluster for testing/demo'ing
 	 */
@@ -234,13 +180,6 @@ public class DHService {
 	 */
 	public List<DNode> getAllNodes()
 	{
-		List<DNode> allEntries = new LinkedList<DNode>();
-		
-		for (Integer key : nodes.keySet())
-		{
-			allEntries.add(nodes.get(key));
-		}
-		
-		return allEntries;
+		return dhtNodes.getAllNodes();
 	}
 }
