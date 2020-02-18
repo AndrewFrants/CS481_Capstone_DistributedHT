@@ -249,7 +249,7 @@ public class MainWindow extends JFrame {
 			      selectedIndex = selectedIndex.split("\\(")[0].trim();
 			      if (selectedIndex.equalsIgnoreCase("All"))
 			         return;
-			      dhService.RemoveEntry(selectedIndex);
+			      RemoveEntry(selectedIndex);
 			      RefreshControls();
 			
 			
@@ -268,7 +268,7 @@ public class MainWindow extends JFrame {
 			      panel.add(label);
 			      int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
 			      if (result == JOptionPane.OK_OPTION) {
-			    	  dhService.AddEntry(replaceTxt.getText());
+			            AddEntry(replaceTxt.getText());
 			          }
 			      RefreshControls();
 			      
@@ -360,7 +360,7 @@ public class MainWindow extends JFrame {
 						JOptionPane.PLAIN_MESSAGE);
 
 				if (result == JOptionPane.OK_OPTION) {
-					dhService.AddEntry(replaceTxt.getText());
+					AddEntry(replaceTxt.getText());
 				}
 
 				RefreshControls();
@@ -559,11 +559,27 @@ public class MainWindow extends JFrame {
 		RefreshControls();
 	}
 
+	public void AddEntry(String text) {
+		DNode node = dhService.findNodeByName(text);
+
+		node.AssignKeys(DHashEntry.getHashEntry(text));
+
+		RefreshControls();
+	}
+
 	public void RemoveNode(String name) {
 		dhService.removeNode(name);
 
 		RefreshControls();
 	}
 	
+	public void RemoveEntry(String text)
+	{
+		//dhService.removeEntry(name);		
+		DNode node = dhService.findNodeByName(text);
+		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
+		//AssignKeys(DHashEntry.getHashEntry(text));
 
+		RefreshControls();
+	}
 }

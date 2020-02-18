@@ -165,27 +165,6 @@ public class DHService {
 	/*
 	 * This is a 4 node sample cluster for testing/demo'ing
 	 */
-	
-	//adding entry
-	public void AddEntry(String text) {
-		DNode node = findNodeByName(text);
-
-		node.AssignKeys(DHashEntry.getHashEntry(text));
-
-		//RefreshControls();
-	}
-	
-	// removing entry
-	public void RemoveEntry(String text)
-	{
-		//dhService.removeEntry(name);		
-		DNode node = findNodeByName(text);
-		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
-		//AssignKeys(DHashEntry.getHashEntry(text));
-
-		//RefreshControls();
-	}
-
 	public static DHService createFiveNodeCluster()
 	{
 		DHService dhService = new DHService();
