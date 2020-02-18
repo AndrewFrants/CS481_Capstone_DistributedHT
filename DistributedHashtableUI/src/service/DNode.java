@@ -212,6 +212,72 @@ public class DNode implements Comparable<DNode> {
 		}
 		
 	}
+	
+	// This function is called by the node requesting to join,
+	// after it finds it's "range" between the two nodes it sets its successor and
+	// predecessor based on their location.
+	
+	public void updateRequestingNodeUponJoin(DNode recNode, DNode connectingNode) {
+		int recID = recNode.nodeID;
+		int conID = connectingNode.nodeID;
+		
+		if(conID > recID && nodeID > recID && nodeID < conID) {
+			this.setPredecessor(connectingNode);
+			this.setSuccessor(recNode);
+		}
+		else if(conID < recID && (nodeID > conID || nodeID < recID)) {
+			this.setPredecessor(connectingNode);
+			this.setSuccessor(recNode);
+		}
+		
+		else {
+			this.setPredecessor(recNode);
+			this.setSuccessor(connectingNode);
+		}
+	}
+	
+	// This function updates the receiving node that found if the requesting node is 
+	// within range.  Depending on the location of the receiving node it will either
+	// update its predecessor or successor.
+	
+	public void updateReceivingNodeUponJoin(DNode reqNode, DNode connectingNode) {
+		int reqID = reqNode.nodeID;
+		int conID = connectingNode.nodeID;
+		
+		if(conID > nodeID && conID > reqID && nodeID < reqID) {
+		this.setSuccessor(reqNode);	
+		}	
+		
+		else if(conID < nodeID && (reqID > nodeID || reqID < conID)) {
+			this.setSuccessor(reqNode);
+		}
+		else {
+		this.setPredecessor(reqNode);	
+		}
+					
+	}
+	
+	// This function updates the connecting node (which is either the successor or the
+	// predecessor of the Receiving Node) upon a requesting node finding a receiving node
+	// within it's range.  This will either update its successor or predecessor based
+	// on the requesting node's position.
+	
+	public void updateConnectingNodeUponJoinRequest(DNode reqNode, DNode recNode) {
+		int reqID = reqNode.nodeID;
+		int recID = recNode.nodeID;
+		
+		if(nodeID > recID && nodeID > reqID && recID < reqID) {
+		this.setPredecessor(reqNode);	
+		}	
+		
+		else if(nodeID < recID && (reqID > recID|| reqID < nodeID)) {
+			this.setPredecessor(reqNode);
+		}
+		else {
+		this.setSuccessor(reqNode);	
+		}
+	}
+	
 
 	public boolean receiveJoinRequest(DNode incomingNode) {
 		
