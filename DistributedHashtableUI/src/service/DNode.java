@@ -193,6 +193,25 @@ public class DNode implements Comparable<DNode> {
 		return true;
 
 	}
+	
+	public boolean findIfRequestingNodeIsInRange(DNode reqNode) {
+		int reqID = reqNode.nodeID;
+		int sucID = this.successor.nodeID;
+		int predID = this.predecessor.nodeID;
+		
+		if(predID < sucID && reqID < sucID && reqID > predID) {
+			return true;
+		}
+		
+		else if( predID > sucID && (reqID > predID || reqID < sucID)) {
+			return true;
+		}
+		
+		else {
+			return false;
+		}
+		
+	}
 
 	public boolean receiveJoinRequest(DNode incomingNode) {
 		
