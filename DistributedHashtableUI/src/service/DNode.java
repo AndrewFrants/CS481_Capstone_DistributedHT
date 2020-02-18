@@ -178,42 +178,73 @@ public class DNode implements Comparable<DNode> {
 		return true;
 	}
 
+	// this node has sent a join request to another node
 	public boolean sendJoinRequest(DNode receivingNode) {
 		// https request sent to frontend of receiving node
-		if (!receivingNode.receiveJoinRequest(this))
+		if (!receivingNode.receiveJoinRequest(this)) 
 			return false;
 
 		else {
-			DNodeJoin.updatePredecessor(this, receivingNode);
-			DNodeJoin.updateSuccessor(this, receivingNode);
-
-			// communicate back with other node to update it's successor/predecessor and their successor/predecessor 
+		DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
+		updateRequestingNodeUponJoin(receivingNode, connecting);
+		receivingNode.updateReceivingNodeUponJoin(this, connecting);
+		connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
 		}
 		
 		return true;
 
 	}
 	
-	public boolean findIfRequestingNodeIsInRange(DNode reqNode) {
+	// this node has received a join request from an incoming node
+	public boolean receiveJoinRequest(DNode incomingNode) {
+		
+		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
+			 DNodeJoin.updateNodes(this, incomingNode);
+			return true;
+		}
+		return false;
+
+	}
+	
+	// This node find's if a requesting node is within this node(receivers)
+	// range.  Meaning it is in the span between either this node
+	// and its successor or predecessor.
+	public DNode findIfRequestingNodeIsInRange(DNode reqNode) {
 		int reqID = reqNode.nodeID;
 		int sucID = this.successor.nodeID;
 		int predID = this.predecessor.nodeID;
 		
-		if(predID < sucID && reqID < sucID && reqID > predID) {
-			return true;
+		// in range
+		if(predID < sucID && reqID < nodeID && reqID > predID) {
+			return this.predecessor;
 		}
 		
-		else if( predID > sucID && (reqID > predID || reqID < sucID)) {
-			return true;
+		else if(predID < sucID && reqID > nodeID && reqID < sucID) {
+			return this.successor;
+		}
+		// in range
+		else if( predID > sucID && nodeID > predID && reqID > predID && reqID < nodeID) {
+			return this.predecessor;
+		}
+		else if( predID > sucID && nodeID < predID && (reqID > predID || reqID < nodeID)) {
+			return this.predecessor;
+		}
+		else if( predID > sucID && nodeID > predID && reqID > predID && (reqID > nodeID || reqID < sucID)
+) {
+			return this.successor;
 		}
 		
+		else if(predID > sucID && nodeID < predID && reqID > nodeID && reqID < sucID)
+		{
+			return this.successor;
+		}
 		else {
-			return false;
+			return null;
 		}
 		
 	}
 	
-	// This function is called by the node requesting to join,
+	// This is called by the node requesting to join,
 	// after it finds it's "range" between the two nodes it sets its successor and
 	// predecessor based on their location.
 	
@@ -224,19 +255,22 @@ public class DNode implements Comparable<DNode> {
 		if(conID > recID && nodeID > recID && nodeID < conID) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
+			// take keys from recNode (successor)
 		}
 		else if(conID < recID && (nodeID > conID || nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
+			//take keys from recNode (successor)
 		}
 		
 		else {
 			this.setPredecessor(recNode);
 			this.setSuccessor(connectingNode);
+			// take keys from connectingNode (successor)
 		}
 	}
 	
-	// This function updates the receiving node that found if the requesting node is 
+	// Updates the receiving node that found if the requesting node is 
 	// within range.  Depending on the location of the receiving node it will either
 	// update its predecessor or successor.
 	
@@ -253,11 +287,13 @@ public class DNode implements Comparable<DNode> {
 		}
 		else {
 		this.setPredecessor(reqNode);	
+		DNodeJoin.updateKeyList(this, reqNode);
+		// give keys to requesting node
 		}
 					
 	}
 	
-	// This function updates the connecting node (which is either the successor or the
+	// Updates the connecting node (which is either the successor or the
 	// predecessor of the Receiving Node) upon a requesting node finding a receiving node
 	// within it's range.  This will either update its successor or predecessor based
 	// on the requesting node's position.
@@ -268,10 +304,14 @@ public class DNode implements Comparable<DNode> {
 		
 		if(nodeID > recID && nodeID > reqID && recID < reqID) {
 		this.setPredecessor(reqNode);	
+		DNodeJoin.updateKeyList(this, reqNode);
+		// give keys to requesting node
 		}	
 		
 		else if(nodeID < recID && (reqID > recID|| reqID < nodeID)) {
 			this.setPredecessor(reqNode);
+			DNodeJoin.updateKeyList(this, reqNode);
+			// give keys to requesting node
 		}
 		else {
 		this.setSuccessor(reqNode);	
@@ -279,15 +319,6 @@ public class DNode implements Comparable<DNode> {
 	}
 	
 
-	public boolean receiveJoinRequest(DNode incomingNode) {
-		
-		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
-			// DNodeJoin.updateNodes(this, incomingNode);
-			return true;
-		}
-		return false;
-
-	}
 
 
 	
