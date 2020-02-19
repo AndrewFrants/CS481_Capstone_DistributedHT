@@ -13,6 +13,12 @@ public class RoutingTable {
 	public int[] forwardToNode; // array of nodes to send request to
 	public String[] addresses; // IP addresses to forward
 
+	/*
+	 * Default constructor for deserialization
+	 */
+	public RoutingTable() {
+	}
+	
 	public RoutingTable(DNode node) {
 
 		this.nodeID = node.getNodeID();
@@ -22,7 +28,6 @@ public class RoutingTable {
 		forwardToNode = new int[size];
 		addresses = new String[size];
 		initialize(node);
-
 	}
 
 	private void initialize(DNode node) {

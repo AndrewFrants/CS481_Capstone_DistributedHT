@@ -41,10 +41,10 @@ public class NodesController {
    }
    
    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-   public ResponseEntity<Object> get(@PathVariable("id") String id) {
+   public ResponseEntity<DNode> get(@PathVariable("id") String id) {
 	   DNode node = getWS().findNodeByName(id);
 	   
-	   return new ResponseEntity<>(node, HttpStatus.OK);
+	   return new ResponseEntity<DNode>(node, HttpStatus.OK);
    }
 
    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

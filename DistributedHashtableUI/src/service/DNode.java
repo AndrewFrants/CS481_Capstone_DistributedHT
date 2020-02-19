@@ -20,6 +20,13 @@ public class DNode implements Comparable<DNode> {
 	public int size; // size of network
 
 	/*
+	 * Default constructor for deserialization
+	 */
+	public DNode() {
+
+	}
+	
+	/*
 	 * C'tor
 	 */
 	public DNode(String nodeName) {
