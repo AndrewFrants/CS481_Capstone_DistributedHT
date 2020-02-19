@@ -193,9 +193,15 @@ public class DNode implements Comparable<DNode> {
 
 		else {
 		DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
+		
+		if(connecting != null) {
 		updateRequestingNodeUponJoin(receivingNode, connecting);
 		receivingNode.updateReceivingNodeUponJoin(this, connecting);
 		connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
+		}
+		else {
+			sendJoinRequest(receivingNode.successor);
+		}
 		}
 		
 		return true;
@@ -216,31 +222,43 @@ public class DNode implements Comparable<DNode> {
 	// This node find's if a requesting node is within this node(receivers)
 	// range.  Meaning it is in the span between either this node
 	// and its successor or predecessor.
+	
+	// this method needs to be cleaned up
 	public DNode findIfRequestingNodeIsInRange(DNode reqNode) {
 		int reqID = reqNode.nodeID;
+		
+		if(this.successor == null || this.predecessor == null) {
+			return this;
+		}
+		
+		
 		int sucID = this.successor.nodeID;
 		int predID = this.predecessor.nodeID;
 		
-		// in range
-		if(predID < sucID && reqID < nodeID && reqID > predID) {
+		if(predID == sucID) {
+			return this.successor;
+		}
+		
+		else if(predID < sucID && reqID < nodeID && reqID > predID) {
 			return this.predecessor;
 		}
 		
 		else if(predID < sucID && reqID > nodeID && reqID < sucID) {
 			return this.successor;
 		}
-		// in range
+		
 		else if( predID > sucID && nodeID > predID && reqID > predID && reqID < nodeID) {
 			return this.predecessor;
 		}
 		else if( predID > sucID && nodeID < predID && (reqID > predID || reqID < nodeID)) {
 			return this.predecessor;
 		}
-		else if( predID > sucID && nodeID > predID && reqID > predID && (reqID > nodeID || reqID < sucID)
-) {
+		else if( predID > sucID && nodeID > predID && reqID > predID && (reqID > nodeID || reqID < sucID)) {
 			return this.successor;
 		}
-		
+		else if( predID > sucID && nodeID > predID && (reqID < sucID || reqID > nodeID)) {
+			return this.successor;
+		}
 		else if(predID > sucID && nodeID < predID && reqID > nodeID && reqID < sucID)
 		{
 			return this.successor;
@@ -257,6 +275,12 @@ public class DNode implements Comparable<DNode> {
 	
 	public void updateRequestingNodeUponJoin(DNode recNode, DNode connectingNode) {
 		int recID = recNode.nodeID;
+	//	int conID = -1;
+		if(recNode.predecessor == null || recNode.successor == null) {
+			this.setPredecessor(recNode);
+			this.setSuccessor(recNode);
+			return;
+		}
 		int conID = connectingNode.nodeID;
 		
 		if(conID > recID && nodeID > recID && nodeID < conID) {
@@ -264,7 +288,15 @@ public class DNode implements Comparable<DNode> {
 			this.setSuccessor(recNode);
 			// take keys from recNode (successor)
 		}
-		else if(conID < recID && (nodeID > conID || nodeID < recID)) {
+		
+	
+		else if(conID < recID && (nodeID > conID && nodeID < recID)) {
+			this.setPredecessor(connectingNode);
+			this.setSuccessor(recNode);
+			//take keys from recNode (successor)
+		}
+		
+		else if(recID < conID && (nodeID < conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
 			//take keys from recNode (successor)
