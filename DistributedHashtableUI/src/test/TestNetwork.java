@@ -22,10 +22,15 @@ public class TestNetwork {
 		 
 		 DNode node1 = new DNode("23.232.32122");
 		 System.out.println("NODE 1 CREATED NODE ID: " + node1.nodeID +" \n  suc: " + node1.successor + "  pred: " + node1.predecessor + "\n");
+		 System.out.println("NODE 1 KEY LIST: " + node1.keyList);
 		 DNode node2 = new DNode("123325.467 ");
 		 System.out.println("NODE 2 CREATED NODE ID: " + node2.nodeID +" \n  suc: " + node2.successor + "  pred: " + node2.predecessor + "\n");
+		 System.out.println("NODE 2 KEY LIST: " + node2.keyList);
 		 node1.sendJoinRequest(node2);
 		 System.out.println("NODE 1 SENDS JOIN REQUEST TO NODE 2");
+	
+		 System.out.println("NODE 1 KEY LIST: " + node1.keyList);	 
+		 System.out.println("NODE 2 KEY LIST: " + node2.keyList);
 		 System.out.println("NODE 1 AFTER JOIN: " + node1.nodeID +" \n  suc: " + node1.successor.nodeID + " pred: " + node1.predecessor.nodeID + "\n");
 		 System.out.println("NODE 2 AFTER JOIN: " + node2.nodeID +" \n suc: " + node2.successor.nodeID + "  pred: " + node2.predecessor.nodeID + "\n");
 		 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -34,6 +39,9 @@ public class TestNetwork {
 		 System.out.println("NODE 3 SENDS JOIN REQUEST TO NODE 1");
 		
 		  node3.sendJoinRequest(node1);
+			 System.out.println("NODE 1 KEY LIST: " + node1.keyList);	 
+			 System.out.println("NODE 2 KEY LIST: " + node2.keyList);
+			 System.out.println("NODE 3 KEY LIST: " + node3.keyList);
 		  System.out.println("NODE 1 AFTER JOIN ID: " + node1.nodeID +" \n  suc: " + node1.successor.nodeID + "  pred: " + node1.predecessor.nodeID + "\n");
 		  System.out.println("NODE 2 AFTER JOIN ID: " + node2.nodeID +" \n  suc: " + node2.successor.nodeID + "  pred: " + node2.predecessor.nodeID + "\n");
 		  System.out.println("NODE 3 AFTER JOIN ID: " + node3.nodeID +" \n  suc: " + node3.successor.nodeID + "  pred: " + node3.predecessor.nodeID + "\n");
@@ -42,6 +50,10 @@ public class TestNetwork {
 		  System.out.println("NODE 4 CREATED NODE ID: " + node4.nodeID +" \n  suc: " + node4.successor + "  pred: " + node4.predecessor + "\n");
 		  node4.sendJoinRequest(node1);
 		  System.out.println("NODE 4 SENDS JOIN REQUEST TO NODE 2");
+			 System.out.println("NODE 1 KEY LIST: " + node1.keyList);	 
+			 System.out.println("NODE 2 KEY LIST: " + node2.keyList);
+			 System.out.println("NODE 3 KEY LIST: " + node3.keyList);
+			 System.out.println("NODE 4 KEY LIST: " + node4.keyList);
 		  System.out.println("NODE 1 AFTER JOIN ID: " + node1.nodeID +" \n  suc: " + node1.successor.nodeID + "  pred: " + node1.predecessor.nodeID + "\n");
 		  System.out.println("NODE 2 AFTER JOIN ID: " + node2.nodeID +" \n  suc: " + node2.successor.nodeID + "  pred: " + node2.predecessor.nodeID + "\n");
 		  System.out.println("NODE 3 AFTER JOIN ID: " + node3.nodeID +" \n  suc: " + node3.successor.nodeID + "  pred: " + node3.predecessor.nodeID + "\n");
