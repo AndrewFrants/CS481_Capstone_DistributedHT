@@ -12,9 +12,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import data.IDhtNodes;
 import data.InMemoryNodes;
+
 
 
 /**
@@ -22,7 +22,8 @@ import data.InMemoryNodes;
  * it provides service level functionality
  */
 public class DHService {
-
+	
+//	public DNode node;
 	//HashMap<Integer, DNode> nodes;
 	Integer networkBitSize;
 
@@ -88,6 +89,7 @@ public class DHService {
 		return dhtNodes.findNodeByName(name);
 	}
 	
+	
 	/*
 	 * Find the node by a hash code
 	 */
@@ -104,15 +106,31 @@ public class DHService {
 		dhtNodes.removeNode(name);
 	}
 	
-	//removing entry
-	public void removeEntry(String name) 
-	{
-		
-	}
 
 	/*
 	 * This is a 4 node sample cluster for testing/demo'ing
 	 */
+	
+	//adding entry
+		public void AddEntry(String text) {
+			DNode node = findNodeByName(text);
+
+			node.AssignKeys(DHashEntry.getHashEntry(text));
+
+			//RefreshControls();
+		}
+		
+		// removing entry
+		public void RemoveEntry(String text)
+		{
+			//dhService.removeEntry(name);		
+			DNode node = findNodeByName(text);
+			node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
+			//AssignKeys(DHashEntry.getHashEntry(text));
+
+			//RefreshControls();
+		}
+
 	public static DHService createFiveNodeCluster()
 	{
 		DHService dhService = new DHService();
@@ -174,9 +192,7 @@ public class DHService {
 		
 		return dhService;
 	}
-	
 
-	
 	/*
 	 * Returns all the nodes for visualization
 	 */
@@ -184,4 +200,6 @@ public class DHService {
 	{
 		return dhtNodes.getAllNodes();
 	}
+
+
 }

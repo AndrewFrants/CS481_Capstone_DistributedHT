@@ -13,7 +13,7 @@ public abstract class DNodeJoin {
 	public static void updateKeyList(DNode thisNode, DNode otherNode) {	
 		// handles base case of when the first two nodes on a network join together..
 		
-		if (thisNode.predecessor == null) {
+		thisNode.keyList.clear();
 
 
 			if (thisNode.nodeID < otherNode.nodeID) {
@@ -33,9 +33,10 @@ public abstract class DNodeJoin {
 		}
 		
 
-	}
+	
 	
 	public static void updateRoutingTable(DNode thisNode, DNode otherNode) {
+
 		for(int i = 0; i < thisNode.size; i++) {
 			thisNode.router.forwardToNode[i] = otherNode.nodeID;
 			thisNode.router.addresses[i] = otherNode.name;

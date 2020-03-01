@@ -14,6 +14,12 @@ public class DHashEntry implements Comparable<DHashEntry>, Serializable {
 	public Integer key;
 
 	public String value;
+	
+	/*
+	 * Default constructor for deserialization
+	 */
+	public DHashEntry() {
+	}
 
 	public DHashEntry() {
 	

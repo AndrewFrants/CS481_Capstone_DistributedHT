@@ -26,6 +26,13 @@ public class DNode implements Comparable<DNode>, Serializable {
 	}
 	
 	/*
+	 * Default constructor for deserialization
+	 */
+	public DNode() {
+
+	}
+	
+	/*
 	 * C'tor
 	 */
 	public DNode(String nodeName) {
@@ -184,31 +191,190 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return true;
 	}
 
+	// this node has sent a join request to another node
 	public boolean sendJoinRequest(DNode receivingNode) {
 		// https request sent to frontend of receiving node
-		if (!receivingNode.receiveJoinRequest(this))
+		if (!receivingNode.receiveJoinRequest(this)) 
 			return false;
 
 		else {
-			DNodeJoin.updatePredecessor(this, receivingNode);
-			DNodeJoin.updateSuccessor(this, receivingNode);
-
-			// communicate back with other node to update it's successor/predecessor and their successor/predecessor 
+		DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
+		
+		// if the connecting node exists, the requesting node has found it's range placement
+		// initialize it's successor/predecessor, keylist
+		// change receiving and connecting node's id
+		if(connecting != null) {
+		updateRequestingNodeUponJoin(receivingNode, connecting);
+		receivingNode.updateReceivingNodeUponJoin(this, connecting);
+		connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
+		}
+		// forward request to the receiving node's successor
+		// this will later need to be changed to go into routing table and find "closest" node, to 
+		// to keep logn search time.
+		
+		else {
+			sendJoinRequest(receivingNode.successor);
+		}
 		}
 		
 		return true;
 
 	}
-
+	
+	// this node has received a join request from an incoming node
 	public boolean receiveJoinRequest(DNode incomingNode) {
 		
 		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
-			// DNodeJoin.updateNodes(this, incomingNode);
+			 DNodeJoin.updateNodes(this, incomingNode);
 			return true;
 		}
 		return false;
 
 	}
+	
+	// This node find's if a requesting node is within this node(receivers)
+	// range.  Meaning it is in the span between either this node
+	// and its successor or predecessor.
+	
+	// this method needs to be cleaned up, expressions can probably be reduced
+	public DNode findIfRequestingNodeIsInRange(DNode reqNode) {
+		int reqID = reqNode.nodeID;
+		
+		if(this.successor == null || this.predecessor == null) {
+			return this;
+		}
+		
+		
+		int sucID = this.successor.nodeID;
+		int predID = this.predecessor.nodeID;
+		
+		if(predID == sucID) {
+			return this.successor;
+		}
+		else if(predID < sucID && reqID < nodeID && reqID > predID) {
+			return this.predecessor;
+		}	
+		else if(predID < sucID && reqID > nodeID && reqID < sucID) {
+			return this.successor;
+		}		
+		else if( predID > sucID && nodeID > predID && reqID > predID && reqID < nodeID) {
+			return this.predecessor;
+		}
+		else if( predID > sucID && nodeID < predID && (reqID > predID || reqID < nodeID)) {
+			return this.predecessor;
+		}
+		else if( predID > sucID && nodeID > predID && reqID > predID && (reqID > nodeID || reqID < sucID)) {
+			return this.successor;
+		}
+		else if( predID > sucID && nodeID > predID && (reqID < sucID || reqID > nodeID)) {
+			return this.successor;
+		}
+		else if(predID > sucID && nodeID < predID && reqID > nodeID && reqID < sucID)
+		{
+			return this.successor;
+		}
+		else {
+			return null;
+		}
+		
+	}
+	
+	// This is called by the node requesting to join,
+	// after it finds it's "range" between the two nodes it sets its successor and
+	// predecessor based on their location.
+	
+	public void updateRequestingNodeUponJoin(DNode recNode, DNode connectingNode) {
+		int recID = recNode.nodeID;
+	//	int conID = -1;
+		if(recNode.predecessor == null || recNode.successor == null) {
+			this.setPredecessor(recNode);
+			this.setSuccessor(recNode);
+			DNodeJoin.updateKeyList(this, recNode);
+			return;
+		}
+		int conID = connectingNode.nodeID;
+		
+		if(conID > recID && nodeID > recID && nodeID < conID) {
+			this.setPredecessor(connectingNode);
+			this.setSuccessor(recNode);
+			DNodeJoin.updateKeyList(this, recNode);
+			// take keys from recNode (successor)
+		}
+		
+	
+		else if(conID < recID && (nodeID > conID && nodeID < recID)) {
+			this.setPredecessor(connectingNode);
+			this.setSuccessor(recNode);
+			DNodeJoin.updateKeyList(this, recNode);
+			//take keys from recNode (successor)
+		}
+		
+	
+		
+		else if(recID < conID && (nodeID < conID && nodeID < recID)) {
+			this.setPredecessor(connectingNode);
+			this.setSuccessor(recNode);
+			DNodeJoin.updateKeyList(this, connectingNode);
+			//take keys from recNode (successor)
+		}
+		
+		else {
+			this.setPredecessor(recNode);
+			this.setSuccessor(connectingNode);
+			DNodeJoin.updateKeyList(this, recNode);
+			// take keys from connectingNode (successor)
+		}
+	}
+	
+	// Updates the receiving node that found if the requesting node is 
+	// within range.  Depending on the location of the receiving node it will either
+	// update its predecessor or successor.
+	
+	public void updateReceivingNodeUponJoin(DNode reqNode, DNode connectingNode) {
+		int reqID = reqNode.nodeID;
+		int conID = connectingNode.nodeID;
+		
+		if(conID > nodeID && conID > reqID && nodeID < reqID) {
+		this.setSuccessor(reqNode);	
+		}	
+		
+		else if(conID < nodeID && (reqID > nodeID || reqID < conID)) {
+			this.setSuccessor(reqNode);
+		}
+		else {
+		this.setPredecessor(reqNode);	
+		DNodeJoin.updateKeyList(this, reqNode);
+		// give keys to requesting node
+		}
+					
+	}
+	
+	// Updates the connecting node (which is either the successor or the
+	// predecessor of the Receiving Node) upon a requesting node finding a receiving node
+	// within it's range.  This will either update its successor or predecessor based
+	// on the requesting node's position.
+	
+	public void updateConnectingNodeUponJoinRequest(DNode reqNode, DNode recNode) {
+		int reqID = reqNode.nodeID;
+		int recID = recNode.nodeID;
+		
+		if(nodeID > recID && nodeID > reqID && recID < reqID) {
+		this.setPredecessor(reqNode);	
+		DNodeJoin.updateKeyList(this, reqNode);
+		// give keys to requesting node
+		}	
+		
+		else if(nodeID < recID && (reqID > recID|| reqID < nodeID)) {
+			this.setPredecessor(reqNode);
+			DNodeJoin.updateKeyList(this, reqNode);
+			// give keys to requesting node
+		}
+		else {
+		this.setSuccessor(reqNode);	
+		}
+	}
+	
+
 
 
 	

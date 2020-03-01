@@ -14,9 +14,10 @@ public class RoutingTable implements Serializable {
 	public int[] forwardToNode; // array of nodes to send request to
 	public String[] addresses; // IP addresses to forward
 
-	public RoutingTable()
-	{
-		
+	/*
+	 * Default constructor for deserialization
+	 */
+	public RoutingTable() {
 	}
 	
 	public RoutingTable(DNode node) {
@@ -28,7 +29,6 @@ public class RoutingTable implements Serializable {
 		forwardToNode = new int[size];
 		addresses = new String[size];
 		initialize(node);
-
 	}
 
 	private void initialize(DNode node) {
