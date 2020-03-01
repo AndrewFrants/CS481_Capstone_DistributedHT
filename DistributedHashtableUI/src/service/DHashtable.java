@@ -1,5 +1,6 @@
 package service;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
@@ -8,7 +9,7 @@ import java.util.Set;
  * Distributed hashtable, there is an instance of 
  * this on every node
  */
-public class DHashtable {
+public class DHashtable implements Serializable {
 
 	HashMap<Integer, DHashEntry> localHT;
 	
@@ -84,7 +85,9 @@ public class DHashtable {
 		
 		for (Integer key : set)
 		{
-			localHT.put(key, table.getHT().get(key));
+			if (!localHT.containsKey(key)) {
+				localHT.put(key, table.getHT().get(key));
+			}
 		}
 	}
 	

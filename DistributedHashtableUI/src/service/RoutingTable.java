@@ -1,10 +1,11 @@
 package service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class RoutingTable {
+public class RoutingTable implements Serializable {
 	public int nodeID; // ID of the node that owns the routing table
 	public int size; // size of the routing table, which is the size of the network size or log(n) of
 
@@ -13,6 +14,11 @@ public class RoutingTable {
 	public int[] forwardToNode; // array of nodes to send request to
 	public String[] addresses; // IP addresses to forward
 
+	public RoutingTable()
+	{
+		
+	}
+	
 	public RoutingTable(DNode node) {
 
 		this.nodeID = node.getNodeID();

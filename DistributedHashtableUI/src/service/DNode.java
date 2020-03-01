@@ -1,5 +1,6 @@
 package service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /*
  * This class is a node on a network
  */
-public class DNode implements Comparable<DNode> {
+public class DNode implements Comparable<DNode>, Serializable {
 
 	DHashtable table;
 	public Integer nodeID;
@@ -19,6 +20,11 @@ public class DNode implements Comparable<DNode> {
 	public ArrayList<Integer> keyList;
 	public int size; // size of network
 
+	public DNode()
+	{
+		
+	}
+	
 	/*
 	 * C'tor
 	 */

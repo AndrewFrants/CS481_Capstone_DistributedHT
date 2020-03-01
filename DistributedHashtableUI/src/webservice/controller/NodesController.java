@@ -1,6 +1,7 @@
 package webservice.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import service.DHService;
 import service.DNode;
@@ -37,12 +46,55 @@ public class NodesController {
    
    @RequestMapping()
    public ResponseEntity<Object> getEntry() {
-      return new ResponseEntity<>(getWS().getAllNodes(), HttpStatus.OK);
+	 //Create a new ObjectMapper object
+       ObjectMapper mapper = new ObjectMapper();
+
+       List<DNode> nodes = getWS().getAllNodes();
+       
+       String res = null;
+		try {
+			res = mapper.writeValueAsString(nodes);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	       
+      return new ResponseEntity<>(res, HttpStatus.OK);
    }
    
    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
    public ResponseEntity<Object> get(@PathVariable("id") String id) {
 	   DNode node = getWS().findNodeByName(id);
+	   
+	   return new ResponseEntity<>(node, HttpStatus.OK);
+   }
+   
+   @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+   public ResponseEntity<Object> get(@PathVariable("id") String id, @RequestBody String patchNodeStr) {
+	   
+       ObjectMapper mapper = new ObjectMapper();
+       
+       DNode patchNode = null;
+       
+        try {
+        	patchNode = mapper.readValue(patchNodeStr, DNode.class);
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+        
+        if (patchNode != null) {
+		   DNode tableNode = getWS().findNodeByName(patchNode.getName());
+		   patchNode.getTable().copyValuesTo(tableNode.getTable());
+        }
+        
+ 	   return HttpResponse(HttpStatus.ACCEPTED);
+   }
+   
+   @RequestMapping(value = "hash/{id}", method = RequestMethod.GET)
+   public ResponseEntity<Object> getByHash(@PathVariable("id") String id) {
+	   DNode node = getWS().findNodeByName(Integer.parseInt(id));
 	   
 	   return new ResponseEntity<>(node, HttpStatus.OK);
    }
@@ -62,5 +114,4 @@ public class NodesController {
 	   getWS().addNode(newNode);
       return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
    }
-   
 }

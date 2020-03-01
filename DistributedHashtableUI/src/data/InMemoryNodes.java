@@ -122,4 +122,10 @@ public class InMemoryNodes implements IDhtNodes {
 		return allEntries;
 	}
 
+	@Override
+	public void updateNode(DNode n) {
+	   DNode patchNode = findNodeByName(n.getName());
+	   n.getTable().copyValuesTo(patchNode.getTable());
+	}
+
 }

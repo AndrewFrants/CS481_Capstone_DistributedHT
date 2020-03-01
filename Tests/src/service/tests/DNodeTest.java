@@ -1,15 +1,18 @@
-package test;
+package service.tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.jupiter.api.AfterAll;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
 
 import service.DNode;
 import service.*;
+
 class DNodeTest {
 	private static DNode node1;
 	private static DNode node2;

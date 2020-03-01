@@ -22,30 +22,43 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import data.WebServiceNodes;
 import service.*;
 
-public class NodesControllerTests {
+public class WebServiceNodesTests {
 
-	final static boolean isProxyEnabled = true;
+	WebServiceNodes nodes;
 	
 	@BeforeEach
 	void setUp() throws Exception {
+	
+		nodes = new WebServiceNodes();
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
 	}
 
+	/* for Andrew: Sample code
+	   for (Customer customer : customers) {
+    		System.out.println(customer);
+		}
+	 */
 	@Test
 	public void testGetNodes() {
 		
-	    final String uri = "http://localhost:8080/nodes";
-	     
-	    String value = getUri(uri);
-	    
-	    System.out.print(value);
+		nodes = new WebServiceNodes();
+		List<DNode> allNodes = nodes.getAllNodes();
+
+		allNodes.forEach(n -> {
+		    System.out.println(n.getName());
+		});
+		
 	}
 	
+	/*
 	@Test
 	public void testAddAndRemoveNode() {
 
@@ -69,7 +82,7 @@ public class NodesControllerTests {
 	    
 	    value = getUri(uri);
 	    
-	    //Assert.assertFalse(value.contains("newNodeName"));
+	    Assert.assertFalse(value.contains("newNodeName"));
 	}
 	
 	public RestTemplate getProxyRestTemplate() {
@@ -90,6 +103,7 @@ public class NodesControllerTests {
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    return restTemplate.getForObject(uri, String.class);
 	}
+	*/
 }
 	
 

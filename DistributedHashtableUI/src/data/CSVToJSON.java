@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
+//import net.minidev.json.JSONArray;
+//import net.minidev.json.JSONObject;
  
 public class CSVToJSON {
 
@@ -25,10 +25,11 @@ public class CSVToJSON {
 			
 			String[] attributes = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 			
+			/* Andrew: Commented out JSONObject was not found...
 			JSONObject movie = new JSONObject();
 			movie.put("movieID", attributes[0]);
 			movie.put("title", attributes[2]);
-			movie.put("color", attributes[1]);
+			movie.pu2t("color", attributes[1]);
 			movie.put("duration", attributes[3]);
 			movie.put("director", attributes[4]);
 			
@@ -59,10 +60,12 @@ public class CSVToJSON {
 									"\n Year: " + attributes[12] + 
 									"\n IMDB Score " + attributes[13];
 											
-									
+			
 			try (FileWriter file = new FileWriter("JSON\\" + attributes[0] + ".json")) {
 				file.write(movie.toJSONString());
+			 
 		}
+		*/
 		
 	}
 

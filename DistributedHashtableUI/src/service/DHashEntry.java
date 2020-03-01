@@ -3,16 +3,22 @@
  */
 package service;
 
+import java.io.Serializable;
+
 /**
  * @author andreyf Option 1. Caller sends key Option 2. Caller passes file and
  *         we hash the file, e.g. SHA-1
  */
-public class DHashEntry implements Comparable<DHashEntry> {
+public class DHashEntry implements Comparable<DHashEntry>, Serializable {
 
 	public Integer key;
 
 	public String value;
 
+	public DHashEntry() {
+	
+	}
+	
 	/*
 	 * The c'tor
 	 */

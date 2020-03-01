@@ -34,4 +34,9 @@ public interface IDhtNodes {
 	 * Get all nodes
 	 */
 	List<DNode> getAllNodes();
+	
+	/*
+	 * Update the node
+	 */
+	void updateNode(DNode n);
 }

@@ -61,19 +61,21 @@ public class DHService {
 		 * TODO. This part can be/should be optimized to a BST
 		 */
 		Integer key = ChecksumDemoHashingFunction.hashValue(value);
-		Set<Integer> keysenu = nodes.keySet();
+		List<DNode> allNodes = dhtNodes.getAllNodes();
 		
 		if (key == 1)
 			key = 1;
 		
-		for (Integer ikey : keysenu)
+		for (DNode node : allNodes)
 		{
-			Integer nodeID = ikey;
+			Integer nodeID = node.getNodeID();
 			
-			if (ikey >= nodeID)
+			if (key >= nodeID)
 			{
 				// assign this value to a node
-				nodes.get(nodeID).AssignKeys(DHashEntry.getHashEntry(value));
+				node.AssignKeys(DHashEntry.getHashEntry(value));
+				dhtNodes.updateNode(node);
+				return;
 			}
 		}
 	}
