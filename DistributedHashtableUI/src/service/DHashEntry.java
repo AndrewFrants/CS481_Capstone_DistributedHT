@@ -21,10 +21,6 @@ public class DHashEntry implements Comparable<DHashEntry>, Serializable {
 	public DHashEntry() {
 	}
 
-	public DHashEntry() {
-	
-	}
-	
 	/*
 	 * The c'tor
 	 */

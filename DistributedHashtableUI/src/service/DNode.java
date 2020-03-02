@@ -20,11 +20,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public ArrayList<Integer> keyList;
 	public int size; // size of network
 
-	public DNode()
-	{
-		
-	}
-	
 	/*
 	 * Default constructor for deserialization
 	 */
