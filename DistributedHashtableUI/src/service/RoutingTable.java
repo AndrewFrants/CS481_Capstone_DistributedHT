@@ -11,7 +11,7 @@ public class RoutingTable implements Serializable {
 
 	public int[] n; // holds value of nodes incremented by 2^i
 	public ArrayList<ArrayList<Integer>> searchValues; // list of search values for node n
-	public int[] forwardToNode; // array of nodes to send request to
+	public DNode[] forwardToNode; // array of nodes to send request to
 	public String[] addresses; // IP addresses to forward
 
 	/*
@@ -26,7 +26,7 @@ public class RoutingTable implements Serializable {
 		this.size = node.size; // make size private, replace with getters/setters
 		n = new int[size]; //
 		searchValues = new ArrayList<ArrayList<Integer>>();
-		forwardToNode = new int[size];
+		forwardToNode = new DNode[size];
 		addresses = new String[size];
 		initialize(node);
 	}
@@ -40,7 +40,7 @@ public class RoutingTable implements Serializable {
 				n[i] = n[i] - (int) Math.pow(2, size);
 			}
 			addresses[i] = node.getName();
-			forwardToNode[i] = nodeID;
+			forwardToNode[i] = node;
 
 			ArrayList<Integer> currentIndex = new ArrayList<Integer>();
 			for (int j = 0; j < (int) Math.pow(2, i); j++) {
@@ -56,12 +56,16 @@ public class RoutingTable implements Serializable {
 		}
 
 	}
+	
+	public DNode [] getForwardNodeList() {
+		return forwardToNode;
+	}
 
 	public void printRoutingTable() {
 		for (int i = 0; i < size; i++) {
 			ArrayList<Integer> current = searchValues.get(i);
 			System.out.println("index: " + i + " ideal forward: " + n[i] + " key search vals:  " + current
-					+ " forward node " + forwardToNode[i] + " address: " + addresses[i] + "\n");
+					+ " forward node " + forwardToNode[i].nodeID + " address: " + addresses[i] + "\n");
 
 		}
 	}
