@@ -2,6 +2,7 @@ package service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,7 +11,8 @@ import java.util.List;
  */
 public class DNode implements Comparable<DNode>, Serializable {
 
-	DHashtable table;
+	DHashtable table; // we wont need this in actual implementation
+	public HashMap<Integer, String> localTable;
 	public Integer nodeID;
 	String name;
 	Double angleVal;
@@ -40,7 +42,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		predecessor = null;
 		keyList = new ArrayList<Integer>();
 		router = new RoutingTable(this);
-
+		localTable = new HashMap<Integer, String>();
 	}
 
 	/*
@@ -376,6 +378,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	}
 	
 	public int[] getKeyRange() {
+
 		int[] range = new int[2];
 		
 		range[0] = keyList.get(0);
@@ -383,7 +386,38 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		return range;
 	}
+	// Traverses the chord network to find the node with the key responsibility and inserts the file into that local node
+	public void insert(String file) {
+		int fileID = ChecksumDemoHashingFunction.hashValue(file);
+		
+		if(keyList.contains(fileID)) {
+			localTable.put(fileID, file);
+		}
+		
+		else {
+			// will need to replace successor with using the routing table
+			successor.insert(file);
+			// forward request based on routing table
+		}
+		
+	}
 	
+	// Traverses the chord network to find the node with the key responsibility and 
+	public String get(String title) {
+		int fileID = ChecksumDemoHashingFunction.hashValue(title);
+		
+		if(keyList.contains(fileID)) {
+			String file = localTable.get(fileID);
+			return file;
+		}
+		
+		// uses recursion might not be best to retrieve a file
+		// will need to replace successor with using the routing table
+		else {
+			return successor.get(title);
+		}
+		
+	}
 	/*
 	 * @Override public int compareTo(Object o) { if (o == null || o instanceof
 	 * DNode || ((DNode)o).getHash() == this.getHash()) return 0;
@@ -392,4 +426,19 @@ public class DNode implements Comparable<DNode>, Serializable {
 	 * 
 	 * return 1; }
 	 */
+	
+	// Remove file from node if this node contains it, otherwise forward the request
+	public void remove(String file) {
+		int fileID = ChecksumDemoHashingFunction.hashValue(file);
+		
+		if(keyList.contains(fileID)) {
+			localTable.remove(fileID);
+		}
+		
+		else {
+			// will need to replace successor with using the routing table
+			successor.remove(file);
+			// forward request based on routing table
+		}
+	}
 }
