@@ -66,6 +66,7 @@ import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import javax.swing.ListSelectionModel;
 
 /*
  * This is the main window for the UI
@@ -316,6 +317,7 @@ public class MainWindow extends JFrame {
 		nodeListPanel.setLayout(new BorderLayout(50, 50));
 
 		nodeList = new JList(nodesList);
+		nodeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		nodeListPanel.add(nodeList, BorderLayout.CENTER);
 
 		JPanel keyListPanel = new JPanel();
@@ -323,6 +325,7 @@ public class MainWindow extends JFrame {
 		keyListPanel.setLayout(new BorderLayout(0, 0));
 
 		keyList = new JList(keysList);
+		keyList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		nodeList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
 				PopulateKeys();

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import data.IDhtNodes;
 import data.InMemoryNodes;
+import data.WebServiceNodes;
 
 
 
@@ -34,7 +35,7 @@ public class DHService {
 	 */
 	public DHService()
 	{
-		dhtNodes = new InMemoryNodes();
+		dhtNodes = new WebServiceNodes();
 
 	}
 	

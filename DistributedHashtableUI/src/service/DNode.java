@@ -50,6 +50,10 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return table;
 	}
 
+	public RoutingTable getRoutingTable() {
+		return router;
+	}
+
 	/*
 	 * Updating the table
 	 */
