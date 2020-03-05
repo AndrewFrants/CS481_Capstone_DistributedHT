@@ -2,6 +2,7 @@ package data;
 
 import java.util.List;
 
+import service.DHashEntry;
 import service.DNode;
 
 /*
@@ -38,5 +39,20 @@ public interface IDhtNodes {
 	/*
 	 * Update the node
 	 */
-	void updateNode(DNode n);
+	void updateNode(DNode n);	
+	
+	
+	// for entries
+	
+	//gets all entries 
+	List <List <DHashEntry>> getAllEntries();
+	
+	//gets entries for a specific node
+	List<DHashEntry> getAllEntriesforNode(String id);
+	
+	//adds entry
+	void AddEntry(String text);
+	
+	//removing entry
+	void RemoveEntry(String text);
 }

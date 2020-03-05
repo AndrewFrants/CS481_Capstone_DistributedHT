@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import service.ChecksumDemoHashingFunction;
+import service.DHashEntry;
 import service.DHashtable;
 import service.DNode;
 
@@ -126,6 +127,40 @@ public class InMemoryNodes implements IDhtNodes {
 	public void updateNode(DNode n) {
 	   DNode patchNode = findNodeByName(n.getName());
 	   n.getTable().copyValuesTo(patchNode.getTable());
+	}
+	
+	@Override
+	//gets all entries 
+	public List<List<DHashEntry>> getAllEntries() {
+		   List<DNode> nodes = new LinkedList<DNode>();
+		   List<List<DHashEntry>> list = new ArrayList<List<DHashEntry>>();
+
+		   for (int i = 0; i < nodes.size(); i++) {
+			   list.add(nodes.get(i).getAllEntries());
+		   }
+		   return (list);
+	}
+	
+	@Override
+	//gets  entries for a specific node
+	public List<DHashEntry> getAllEntriesforNode(String id) {
+		DNode node = findNodeByName(id);
+		List<DHashEntry> specificEntries = node.getAllEntries();
+		return(specificEntries);
+	}
+	
+	@Override
+	//adds entry
+	public void AddEntry(String text) {
+		DNode node = findNodeByName(text);
+		node.AssignKeys(DHashEntry.getHashEntry(text));
+	}
+	
+	@Override
+	//removing entry
+	public void RemoveEntry(String text) {
+		DNode node = findNodeByName(text);
+		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
 	}
 
 }

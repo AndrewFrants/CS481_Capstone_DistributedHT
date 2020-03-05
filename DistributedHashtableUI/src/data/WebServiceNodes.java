@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,6 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import service.ChecksumDemoHashingFunction;
+import service.DHashEntry;
 import service.DNode;
 
 /**
@@ -162,5 +165,37 @@ public class WebServiceNodes implements IDhtNodes {
 	    List<T> list = response.getBody();
 	    return list;
 	    */
+	}
+	
+	////NEED TO CHANGE ALL METHODS BELOW
+	
+	// adding entry
+	public void AddEntry(String text) {
+		DNode node = findNodeByName(text);
+		node.AssignKeys(DHashEntry.getHashEntry(text));
+	}
+	
+	//removing entry
+	public void RemoveEntry(String text) {
+		DNode node = findNodeByName(text);
+		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
+	}
+	
+	//gets all entries 
+	public List<List<DHashEntry>> getAllEntries() {
+		   List<DNode> nodes = new LinkedList<DNode>();
+		   List<List<DHashEntry>> list = new ArrayList<List<DHashEntry>>();
+
+		   for (int i = 0; i < nodes.size(); i++) {
+			   list.add(nodes.get(i).getAllEntries());
+		   }
+		   return (list);
+	}
+	
+	//gets  entries for a specific node
+	public List<DHashEntry> getAllEntriesforNode(String id) {
+		DNode node = findNodeByName(id);
+		List<DHashEntry> specificEntries = node.getAllEntries();
+		return(specificEntries);
 	}
 }
