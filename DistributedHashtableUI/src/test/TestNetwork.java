@@ -11,6 +11,7 @@ import service.DNodeJoin;
 public class TestNetwork {
 
 	public static void main(String[] args) {
+		/**
 		DHService service = new DHService();
 
 		InetAddress ip = null;
@@ -111,7 +112,7 @@ public class TestNetwork {
 		DNodeJoin.updateRoutingTable(node1);
 		node1.router.printRoutingTable();
 
-		/**
+		
 		 * System.out.println("Node ip name: " + node1.getName());
 		 * System.out.println("Node ID: " + node1.getNodeID());
 		 * node1.router.printRoutingTable();
@@ -146,13 +147,13 @@ public class TestNetwork {
 		 * node2.predecessor.nodeID + " suc: " + node2.successor.nodeID);
 		 * System.out.println("ID: " +node3.nodeID + " pred: " +
 		 * node3.predecessor.nodeID + " suc: " + node3.successor.nodeID);
-		 */
-
-		DNode nodeA = new DNode("A.12342.13.1254");
-		DNode nodeB = new DNode("B.12342.13.354");
-		DNode nodeC = new DNode("C.12342.123.124");
-		DNode nodeD = new DNode("D.12342.13.12354");
-		DNode nodeE = new DNode("E.42.123.354");
+		 
+	*/
+		DNode nodeA = new DNode("A.12342.13.1254EFDASD");
+		DNode nodeB = new DNode("B.12342.13.354GHJGFJG");
+		DNode nodeC = new DNode("C.12342.123.124259029303");
+		DNode nodeD = new DNode("D.12342.13.12354XCBVZJKZKJV");
+		DNode nodeE = new DNode("E.42.123.354AFKJHAFKJHKAJ");
 
 		System.out.println("Node A id: " + nodeA.nodeID);
 		System.out.println("Node B id: " + nodeB.nodeID);
@@ -164,7 +165,7 @@ public class TestNetwork {
 		nodeC.sendJoinRequest(nodeB);
 		nodeD.sendJoinRequest(nodeA);
 		nodeE.sendJoinRequest(nodeD);
-
+		
 		System.out.println("Node A's routing table " + nodeA.nodeID);
 		nodeA.router.printRoutingTable();
 		System.out.println("Node B's routing table " + nodeB.nodeID);
@@ -177,14 +178,19 @@ public class TestNetwork {
 		nodeE.router.printRoutingTable();
 		
 		System.out.println("Node A ID: " + nodeA.nodeID + " suc: " + nodeA.successor.nodeID + " pred: " + nodeA.predecessor.nodeID);
+		System.out.println("Key Range: " + nodeA.getKeyRange()[0] + " - " + nodeA.getKeyRange()[1]);
 		System.out.println("Node B ID: " + nodeB.nodeID + " suc: " + nodeB.successor.nodeID + " pred: " + nodeB.predecessor.nodeID);
+		System.out.println("Key Range: " + nodeB.getKeyRange()[0] + " - " + nodeB.getKeyRange()[1]);
 		System.out.println("Node C ID: " + nodeC.nodeID + " suc: " + nodeC.successor.nodeID + " pred: " + nodeC.predecessor.nodeID);
+		System.out.println("Key Range: " + nodeC.getKeyRange()[0] + " - " + nodeC.getKeyRange()[1]);
 		System.out.println("Node D ID: " + nodeD.nodeID + " suc: " + nodeD.successor.nodeID + " pred: " + nodeD.predecessor.nodeID);
+		System.out.println("Key Range: " + nodeD.getKeyRange()[0] + " - " + nodeD.getKeyRange()[1]);
 		System.out.println("Node E ID: " + nodeE.nodeID + " suc: " + nodeE.successor.nodeID + " pred: " + nodeE.predecessor.nodeID);
+		System.out.println("Key Range: " + nodeE.getKeyRange()[0] + " - " + nodeE.getKeyRange()[1]);
 		
 		DNode[] nodeList = {nodeA, nodeB, nodeC, nodeD, nodeE};
 		
-		for(int i = 0; i < 500; i++ ) {
+		for(int i = 0; i < 100; i++ ) {
 		Random r = new Random();
 		int val = r.nextInt(5);
 		DNodeJoin.updateRoutingTable(nodeList[val]);

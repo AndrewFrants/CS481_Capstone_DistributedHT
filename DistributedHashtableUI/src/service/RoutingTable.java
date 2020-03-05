@@ -63,9 +63,9 @@ public class RoutingTable implements Serializable {
 
 	public void printRoutingTable() {
 		for (int i = 0; i < size; i++) {
-			ArrayList<Integer> current = searchValues.get(i);
-			System.out.println("index: " + i + " ideal forward: " + n[i] + " key search vals:  " + current
-					+ " forward node " + forwardToNode[i].nodeID + " address: " + addresses[i] + "\n");
+		
+			System.out.println("ID + 2^" + i + ": "  + n[i] 
+					+ " forward to: " + forwardToNode[i].nodeID + " address: " + addresses[i] + "\n");
 
 		}
 	}

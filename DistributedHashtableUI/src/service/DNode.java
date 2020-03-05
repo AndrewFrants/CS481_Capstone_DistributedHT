@@ -35,7 +35,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		this.nodeID = DNode.GetComputerBasedHash(nodeName);
 		table = new DHashtable();
 		setAngle(nodeID);
-		this.size = 4;
+		this.size = 16;
 		successor = null;
 		predecessor = null;
 		keyList = new ArrayList<Integer>();
@@ -293,14 +293,14 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setSuccessor(connectingNode);
 			this.setPredecessor(recNode);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from recNode (successor)
-			
+			DNodeJoin.updateRoutingTable(this);
 		}
 		
 	
 		else if(conID < recID && (nodeID > conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
-			DNodeJoin.updateKeyList(this, recNode);
+			DNodeJoin.updateKeyList(this, connectingNode);
 			DNodeJoin.updateRoutingTable(this);
 			//take keys from recNode (successor)
 		}
@@ -373,6 +373,15 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else {
 		this.setSuccessor(reqNode);	
 		}
+	}
+	
+	public int[] getKeyRange() {
+		int[] range = new int[2];
+		
+		range[0] = keyList.get(0);
+		range[1] = keyList.get(keyList.size() - 1);
+		
+		return range;
 	}
 	
 	/*

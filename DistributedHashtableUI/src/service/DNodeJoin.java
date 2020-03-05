@@ -39,9 +39,8 @@ public abstract class DNodeJoin {
 			RoutingTable successorTable = thisNode.successor.router;
 
 			DNode[] sucNodeList = successorTable.getForwardNodeList();
-			System.out.println(sucNodeList.length);
 			thisNode.router.forwardToNode[0] = thisNode.successor; // sets the first entry in the routing table to the
-																	// successor
+			thisNode.router.addresses[0] = thisNode.successor.name; // successor
 			/*
 			 * !!Make sure to update successor's predecessor successor's node to thisNode!!
 			 */
@@ -53,28 +52,39 @@ public abstract class DNodeJoin {
 						thisNode.router.forwardToNode[i].nodeID, thisNode.size);
 				int sucDist = CalculateDistance.calculateClockWiseDistance(thisNode.router.n[i],
 						thisNode.successor.nodeID, thisNode.size);
+
 				for (int j = 0; j < sucNodeList.length; j++) {
 
 					// calculates the clockwise distance of the successor's list the beginning range
 					// for n
 					int sucListDist = CalculateDistance.calculateClockWiseDistance(thisNode.router.n[i],
 							sucNodeList[j].nodeID, thisNode.size);
+
 					// calculates the clockwise distance of the the node's list the beginning range
 					// for n
 
 					if (sucDist < curDist && sucDist < shortestDist) {
+
 						shortestDist = sucDist;
 						closestNode = thisNode.successor;
 					} else if (sucListDist < curDist && sucListDist < shortestDist) {
+
 						shortestDist = sucListDist;
 						closestNode = sucNodeList[j];
-					} else if(sucListDist < shortestDist){
+					} else if (sucListDist < shortestDist) {
 						shortestDist = curDist;
 						closestNode = thisNode.router.forwardToNode[i];
 					}
+
 				}
+
+				if (closestNode.nodeID == thisNode.nodeID) {
+					closestNode = thisNode.successor;
+				}
+
 				thisNode.router.forwardToNode[i] = closestNode;
 				thisNode.router.addresses[i] = closestNode.name;
+
 			}
 		}
 
