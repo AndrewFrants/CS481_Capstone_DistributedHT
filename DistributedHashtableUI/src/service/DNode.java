@@ -77,7 +77,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	 * Set the node angle
 	 */
 	public void setAngle(int nodeID) {
-		int highest_node_val = 8;
+		int highest_node_val = 65536;
 		int lowest_node_val = 0;
 		double max_degree = 360;
 		double min_degree = 0;
@@ -377,6 +377,9 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}
 	}
 	
+	// get's the key range of the node that has 2 entries
+	// the first element being the start
+	// the second element being the end
 	public int[] getKeyRange() {
 
 		int[] range = new int[2];
