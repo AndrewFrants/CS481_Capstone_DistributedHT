@@ -35,7 +35,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		this.nodeID = DNode.GetComputerBasedHash(nodeName);
 		table = new DHashtable();
 		setAngle(nodeID);
-		this.size = 3;
+		this.size = 4;
 		successor = null;
 		predecessor = null;
 		keyList = new ArrayList<Integer>();
@@ -290,8 +290,8 @@ public class DNode implements Comparable<DNode>, Serializable {
 		int conID = connectingNode.nodeID;
 		
 		if(conID > recID && nodeID > recID && nodeID < conID) {
-			this.setPredecessor(connectingNode);
-			this.setSuccessor(recNode);
+			this.setSuccessor(connectingNode);
+			this.setPredecessor(recNode);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from recNode (successor)
 			
 		}

@@ -42,7 +42,7 @@ public class ChecksumDemoHashingFunction {
 			hash += (c*c); // increase the spread a bit
 		}
 
-		hash = hash%8;
+		hash = hash%16;
 		
 		return hash;
 	}
