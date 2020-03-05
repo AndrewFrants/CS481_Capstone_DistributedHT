@@ -114,21 +114,22 @@ public class DHService {
 	
 	//adding entry
 		public void AddEntry(String text) {
-			DNode node = findNodeByName(text);
-
-			node.AssignKeys(DHashEntry.getHashEntry(text));
-
+			//DNode node = findNodeByName(text);
+			//node.AssignKeys(DHashEntry.getHashEntry(text));
+			dhtNodes.AddEntry(text);
 			//RefreshControls();
 		}
 		
 		// removing entry
 		public void RemoveEntry(String text)
 		{
-			//dhService.removeEntry(name);		
-			DNode node = findNodeByName(text);
-			node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
+			//dhService.removeEntry(name);
+			
+			//DNode node = findNodeByName(text);
+			//node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
+			
 			//AssignKeys(DHashEntry.getHashEntry(text));
-
+			dhtNodes.RemoveEntry(text);
 			//RefreshControls();
 		}
 

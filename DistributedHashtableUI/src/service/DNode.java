@@ -2,6 +2,7 @@ package service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,7 +11,8 @@ import java.util.List;
  */
 public class DNode implements Comparable<DNode>, Serializable {
 
-	DHashtable table;
+	DHashtable table; // we wont need this in actual implementation
+	public HashMap<Integer, String> localTable;
 	public Integer nodeID;
 	String name;
 	Double angleVal;
@@ -35,12 +37,12 @@ public class DNode implements Comparable<DNode>, Serializable {
 		this.nodeID = DNode.GetComputerBasedHash(nodeName);
 		table = new DHashtable();
 		setAngle(nodeID);
-		this.size = 3;
+		this.size = 16;
 		successor = null;
 		predecessor = null;
 		keyList = new ArrayList<Integer>();
 		router = new RoutingTable(this);
-
+		localTable = new HashMap<Integer, String>();
 	}
 
 	/*
@@ -79,7 +81,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	 * Set the node angle
 	 */
 	public void setAngle(int nodeID) {
-		int highest_node_val = 8;
+		int highest_node_val = 65536;
 		int lowest_node_val = 0;
 		double max_degree = 360;
 		double min_degree = 0;
@@ -210,7 +212,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		// forward request to the receiving node's successor
 		// this will later need to be changed to go into routing table and find "closest" node, to 
 		// to keep logn search time.
-		
 		else {
 			sendJoinRequest(receivingNode.successor);
 		}
@@ -284,27 +285,29 @@ public class DNode implements Comparable<DNode>, Serializable {
 	
 	public void updateRequestingNodeUponJoin(DNode recNode, DNode connectingNode) {
 		int recID = recNode.nodeID;
-	//	int conID = -1;
+
 		if(recNode.predecessor == null || recNode.successor == null) {
 			this.setPredecessor(recNode);
 			this.setSuccessor(recNode);
 			DNodeJoin.updateKeyList(this, recNode);
+			DNodeJoin.updateRoutingTable(this);
 			return;
 		}
 		int conID = connectingNode.nodeID;
 		
 		if(conID > recID && nodeID > recID && nodeID < conID) {
-			this.setPredecessor(connectingNode);
-			this.setSuccessor(recNode);
-			DNodeJoin.updateKeyList(this, recNode);
-			// take keys from recNode (successor)
+			this.setSuccessor(connectingNode);
+			this.setPredecessor(recNode);
+			DNodeJoin.updateKeyList(this, recNode);// take keys from recNode (successor)
+			DNodeJoin.updateRoutingTable(this);
 		}
 		
 	
 		else if(conID < recID && (nodeID > conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
-			DNodeJoin.updateKeyList(this, recNode);
+			DNodeJoin.updateKeyList(this, connectingNode);
+			DNodeJoin.updateRoutingTable(this);
 			//take keys from recNode (successor)
 		}
 		
@@ -313,15 +316,17 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else if(recID < conID && (nodeID < conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
-			DNodeJoin.updateKeyList(this, connectingNode);
-			//take keys from recNode (successor)
+			DNodeJoin.updateKeyList(this, connectingNode);//take keys from recNode (successor)
+			DNodeJoin.updateRoutingTable(this);
+			
 		}
 		
 		else {
 			this.setPredecessor(recNode);
 			this.setSuccessor(connectingNode);
-			DNodeJoin.updateKeyList(this, recNode);
-			// take keys from connectingNode (successor)
+			DNodeJoin.updateKeyList(this, recNode);// take keys from connectingNode (successor)
+			DNodeJoin.updateRoutingTable(this);
+			
 		}
 	}
 	
@@ -342,8 +347,9 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}
 		else {
 		this.setPredecessor(reqNode);	
-		DNodeJoin.updateKeyList(this, reqNode);
-		// give keys to requesting node
+		DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
+		DNodeJoin.updateRoutingTable(this);
+		
 		}
 					
 	}
@@ -359,25 +365,66 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		if(nodeID > recID && nodeID > reqID && recID < reqID) {
 		this.setPredecessor(reqNode);	
-		DNodeJoin.updateKeyList(this, reqNode);
-		// give keys to requesting node
+		DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
+		DNodeJoin.updateRoutingTable(this);
+		
 		}	
 		
 		else if(nodeID < recID && (reqID > recID|| reqID < nodeID)) {
 			this.setPredecessor(reqNode);
-			DNodeJoin.updateKeyList(this, reqNode);
-			// give keys to requesting node
+			DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
+			DNodeJoin.updateRoutingTable(this);
+			
 		}
 		else {
 		this.setSuccessor(reqNode);	
 		}
 	}
 	
+	// get's the key range of the node that has 2 entries
+	// the first element being the start
+	// the second element being the end
+	public int[] getKeyRange() {
 
-
-
+		int[] range = new int[2];
+		
+		range[0] = keyList.get(0);
+		range[1] = keyList.get(keyList.size() - 1);
+		
+		return range;
+	}
+	// Traverses the chord network to find the node with the key responsibility and inserts the file into that local node
+	public void insert(String file) {
+		int fileID = ChecksumDemoHashingFunction.hashValue(file);
+		
+		if(keyList.contains(fileID)) {
+			localTable.put(fileID, file);
+		}
+		
+		else {
+			// will need to replace successor with using the routing table
+			successor.insert(file);
+			// forward request based on routing table
+		}
+		
+	}
 	
-
+	// Traverses the chord network to find the node with the key responsibility and 
+	public String get(String title) {
+		int fileID = ChecksumDemoHashingFunction.hashValue(title);
+		
+		if(keyList.contains(fileID)) {
+			String file = localTable.get(fileID);
+			return file;
+		}
+		
+		// uses recursion might not be best to retrieve a file
+		// will need to replace successor with using the routing table
+		else {
+			return successor.get(title);
+		}
+		
+	}
 	/*
 	 * @Override public int compareTo(Object o) { if (o == null || o instanceof
 	 * DNode || ((DNode)o).getHash() == this.getHash()) return 0;
@@ -386,4 +433,19 @@ public class DNode implements Comparable<DNode>, Serializable {
 	 * 
 	 * return 1; }
 	 */
+	
+	// Remove file from node if this node contains it, otherwise forward the request
+	public void remove(String file) {
+		int fileID = ChecksumDemoHashingFunction.hashValue(file);
+		
+		if(keyList.contains(fileID)) {
+			localTable.remove(fileID);
+		}
+		
+		else {
+			// will need to replace successor with using the routing table
+			successor.remove(file);
+			// forward request based on routing table
+		}
+	}
 }
