@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /*
  * This class is a node on a network
  */
@@ -18,6 +20,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	Double angleVal;
 	public DNode successor;
 	public DNode predecessor;
+	@JsonIgnore
 	public RoutingTable router;
 	public ArrayList<Integer> keyList;
 	public int size; // size of network
@@ -52,6 +55,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return table;
 	}
 
+	@JsonIgnore
 	public RoutingTable getRoutingTable() {
 		return router;
 	}
@@ -384,6 +388,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	// get's the key range of the node that has 2 entries
 	// the first element being the start
 	// the second element being the end
+	@JsonIgnore
 	public int[] getKeyRange() {
 
 		int[] range = new int[2];

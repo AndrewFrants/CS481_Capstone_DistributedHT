@@ -35,7 +35,9 @@ public class DHService {
 	 */
 	public DHService()
 	{
-		dhtNodes = new WebServiceNodes();
+		// when you change this to webservice
+		// nodes, Create starts failing
+		dhtNodes = new InMemoryNodes();
 
 	}
 	

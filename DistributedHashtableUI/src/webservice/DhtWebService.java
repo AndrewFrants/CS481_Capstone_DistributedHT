@@ -13,5 +13,4 @@ public class DhtWebService {
 	public static void main(String[] args) {
 		SpringApplication.run(DhtWebService.class, args);
 	}
-
 }

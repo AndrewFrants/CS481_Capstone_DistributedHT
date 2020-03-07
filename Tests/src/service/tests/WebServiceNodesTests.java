@@ -7,7 +7,9 @@ package service.tests;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +60,33 @@ public class WebServiceNodesTests {
 		
 	}
 	
+	@Test
+	public void testgetEntries() {
+		
+		
+		
+		
+		nodes = new WebServiceNodes();
+		List<DNode> allNodes = nodes.getAllNodes();
+		List<DNode> nodess = new LinkedList<DNode>();
+
+		   List<List<DHashEntry>> list = new ArrayList<List<DHashEntry>>();
+		   for (int i = 0; i < nodess.size(); i++) {
+			   list.add(nodess.get(i).getAllEntries());
+			   System.out.println(list);
+		   }
+		
+		
+		allNodes.forEach(n -> {
+		    System.out.println(n.getName());
+		});
+		
+
+		
+	}
+		
+	}
+	
 	/*
 	@Test
 	public void testAddAndRemoveNode() {
@@ -104,6 +133,6 @@ public class WebServiceNodesTests {
 	    return restTemplate.getForObject(uri, String.class);
 	}
 	*/
-}
+
 	
 

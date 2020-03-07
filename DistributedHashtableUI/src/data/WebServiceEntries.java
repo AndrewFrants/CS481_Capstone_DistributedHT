@@ -1,3 +1,5 @@
+package data;
+
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
