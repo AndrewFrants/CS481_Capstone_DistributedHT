@@ -20,7 +20,7 @@ public class TestMain {
 		// Test the hasher
 		System.out.println(ChecksumDemoHashingFunction.hashValue("1afaS2s=2abcdef"));
 		
-		DHService dhs = DHService.createFiveNodeCluster();
+		DHService dhs = DHService.createFiveNodeCluster(false);
 		
 	}
 

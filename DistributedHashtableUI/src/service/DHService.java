@@ -12,8 +12,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import data.IDhtEntries;
 import data.IDhtNodes;
 import data.InMemoryNodes;
+import data.WebServiceEntries;
 import data.WebServiceNodes;
 
 
@@ -30,6 +33,8 @@ public class DHService {
 
 	IDhtNodes dhtNodes;
 	
+	//IDhtEntries dhtEntries;
+	
 	/*
 	 * C'tor
 	 */
@@ -38,7 +43,20 @@ public class DHService {
 		// when you change this to webservice
 		// nodes, Create starts failing
 		dhtNodes = new InMemoryNodes();
-
+	}
+	
+	public DHService(Boolean web)
+	{
+		if (web)
+		{
+			// when you change this to webservice
+			// nodes, Create starts failing
+			dhtNodes = new WebServiceNodes();
+		}
+		else	
+		{
+			dhtNodes = new InMemoryNodes();
+		}
 	}
 	
 	/* TODO, convert to
@@ -135,9 +153,9 @@ public class DHService {
 			//RefreshControls();
 		}
 
-	public static DHService createFiveNodeCluster()
+	public static DHService createFiveNodeCluster(Boolean web)
 	{
-		DHService dhService = new DHService();
+		DHService dhService = new DHService(web);
 		
 		String[] nodeNames = new String[] { "Andrews PC", 
 											"Daniyal Server",

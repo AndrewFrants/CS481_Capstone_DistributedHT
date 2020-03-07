@@ -35,7 +35,7 @@ public class NodesController {
 	
    static {
 	   // initialize mock service
-	   DhtWebService.DhtService = DHService.createFiveNodeCluster();
+	   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
    }
    
    private ResponseEntity<Object> HttpResponse(Object obj) {

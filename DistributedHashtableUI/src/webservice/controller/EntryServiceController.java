@@ -27,7 +27,7 @@ public class EntryServiceController {
 
 	static {
 		   // initialize mock service
-		   DhtWebService.DhtService = DHService.createFiveNodeCluster();
+		   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
 	   }
 
 	//prints all entries   
