@@ -24,7 +24,6 @@ import service.DHService;
 import service.DNode;
 import webservice.DhtWebService;
 import webservice.entry.*;
-import webservice.entry.Entry;
 
 @RestController
 @RequestMapping("/nodes")

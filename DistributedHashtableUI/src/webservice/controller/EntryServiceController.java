@@ -73,7 +73,6 @@ public class EntryServiceController {
 	   @RequestMapping(value = "entries/{id}", method = RequestMethod.POST)
 	   public ResponseEntity<Object> createEntry(@PathVariable("id") String id) {
 			
-		   getWS().RoutingTable
 		   return new ResponseEntity<>("Entry is created successfully", HttpStatus.CREATED);
 	   }
 	   
