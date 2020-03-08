@@ -32,7 +32,7 @@ public class DHService {
 	Integer networkBitSize;
 
 	IDhtNodes dhtNodes;
-	
+	DNode node;
 	//IDhtEntries dhtEntries;
 	
 	/*
@@ -42,9 +42,9 @@ public class DHService {
 	{
 		// when you change this to webservice
 		// nodes, Create starts failing
-		dhtNodes = new InMemoryNodes();
+		dhtNodes = new WebServiceNodes();
 	}
-	
+
 	public DHService(Boolean web)
 	{
 		if (web)
@@ -58,6 +58,8 @@ public class DHService {
 			dhtNodes = new InMemoryNodes();
 		}
 	}
+	
+	
 	
 	/* TODO, convert to
 	 * 
@@ -78,6 +80,8 @@ public class DHService {
 		// update peer
 		// Case 3 IF not peer
 		// send to successor
+
+	
 		dhtNodes.addNode(name);
 	}
 	

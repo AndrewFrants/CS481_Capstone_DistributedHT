@@ -256,7 +256,7 @@ public class MainWindow extends JFrame {
 			
 			   //adding new entry
 			      JTextField replaceTxt = new JTextField("");
-			      JLabel label = new JLabel("Hashed value: 0.0000000000000");
+			      JLabel label = new JLabel("Hashed value: 0");
 			      JPanel panel = new JPanel(new GridLayout(0, 2));
 			      panel.add(new JLabel("Add Entry: "));
 			      panel.add(replaceTxt);

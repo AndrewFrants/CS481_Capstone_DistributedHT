@@ -294,7 +294,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setPredecessor(recNode);
 			this.setSuccessor(recNode);
 			DNodeJoin.updateKeyList(this, recNode);
-			DNodeJoin.updateRoutingTable(this);
+		//	DNodeJoin.updateRoutingTable(this);
 			return;
 		}
 		int conID = connectingNode.nodeID;
@@ -303,7 +303,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setSuccessor(connectingNode);
 			this.setPredecessor(recNode);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from recNode (successor)
-			DNodeJoin.updateRoutingTable(this);
+		//	DNodeJoin.updateRoutingTable(this);
 		}
 		
 	
@@ -311,7 +311,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
 			DNodeJoin.updateKeyList(this, connectingNode);
-			DNodeJoin.updateRoutingTable(this);
+		//	DNodeJoin.updateRoutingTable(this);
 			//take keys from recNode (successor)
 		}
 		
@@ -321,7 +321,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
 			DNodeJoin.updateKeyList(this, connectingNode);//take keys from recNode (successor)
-			DNodeJoin.updateRoutingTable(this);
+		//	DNodeJoin.updateRoutingTable(this);
 			
 		}
 		
@@ -329,7 +329,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setPredecessor(recNode);
 			this.setSuccessor(connectingNode);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from connectingNode (successor)
-			DNodeJoin.updateRoutingTable(this);
+		//	DNodeJoin.updateRoutingTable(this);
 			
 		}
 	}
@@ -352,7 +352,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else {
 		this.setPredecessor(reqNode);	
 		DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
-		DNodeJoin.updateRoutingTable(this);
+	//	DNodeJoin.updateRoutingTable(this);
 		
 		}
 					
