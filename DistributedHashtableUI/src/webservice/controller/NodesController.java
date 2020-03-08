@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import service.DHServerInstance;
 import service.DHService;
 import service.DNode;
 import webservice.DhtWebService;
@@ -29,10 +30,10 @@ import webservice.DhtWebService;
 public class NodesController {
    
 
-	public DHService getWS() {
+	public DHServerInstance getWS() {
 		return DhtWebService.DhtService;
 	}
-	
+	/**
    static {
 	   // initialize mock service
 	   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
@@ -112,4 +113,5 @@ public class NodesController {
 	   getWS().addNode(newNode);
       return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
    }
+   */
 }

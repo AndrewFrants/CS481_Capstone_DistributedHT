@@ -26,6 +26,7 @@ public interface IDhtNodes {
 	 */
 	void addNode(String name);
 	
+	void addNode(DNode node);
 	/*
 	 * Remove a node
 	 */
@@ -52,7 +53,9 @@ public interface IDhtNodes {
 	
 	//adds entry
 	void AddEntry(String text);
-	
+	void AddEntry(DNode node);
 	//removing entry
 	void RemoveEntry(String text);
+
+	
 }

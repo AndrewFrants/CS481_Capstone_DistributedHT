@@ -32,7 +32,7 @@ public class DHService {
 	Integer networkBitSize;
 
 	IDhtNodes dhtNodes;
-	
+	DNode node;
 	//IDhtEntries dhtEntries;
 	
 	/*
@@ -42,9 +42,9 @@ public class DHService {
 	{
 		// when you change this to webservice
 		// nodes, Create starts failing
-		dhtNodes = new InMemoryNodes();
+		dhtNodes = new WebServiceNodes();
 	}
-	
+
 	public DHService(Boolean web)
 	{
 		if (web)
@@ -59,6 +59,8 @@ public class DHService {
 		}
 	}
 	
+	
+	
 	/* TODO, convert to
 	 * 
 	 * 	POST <url>/addNode
@@ -71,6 +73,8 @@ public class DHService {
 	 */
 	public void addNode(String name)
 	{
+
+	
 		dhtNodes.addNode(name);
 	}
 	

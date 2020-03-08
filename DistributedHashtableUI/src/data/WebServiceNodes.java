@@ -33,9 +33,9 @@ import service.DNode;
  */
 public class WebServiceNodes implements IDhtNodes {
 
-    final String uri = "http://localhost:8081/nodes";
+    final String uri = "http://localhost:8080/nodes";
     
-    static boolean isProxyEnabled = true;
+    static boolean isProxyEnabled = false;
     
 	@Override
 	public DNode findNodeByName(String name) {
@@ -62,9 +62,22 @@ public class WebServiceNodes implements IDhtNodes {
 	    restTemplate.postForObject(uri, request, String.class);
 
 	}
+	
 
-	@Override
-	public void removeNode(String name) {
+	public void addNode(DNode node) {
+
+	    HttpHeaders headers = new HttpHeaders();
+	    
+	    
+	    HttpEntity<DNode> request = new HttpEntity<>(node, headers);
+		
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    restTemplate.postForObject(uri, request, String.class);
+
+	}
+
+	
+	public void removeNode(DNode name) {
 
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    
@@ -171,9 +184,14 @@ public class WebServiceNodes implements IDhtNodes {
 	
 	// adding entry
 	public void AddEntry(String text) {
-		DNode node = findNodeByName(text);
-		node.AssignKeys(DHashEntry.getHashEntry(text));
+		 HttpHeaders headers = new HttpHeaders();
+		  HttpEntity<String> request = new HttpEntity<>(text, headers);
+		    RestTemplate restTemplate = getProxyRestTemplate();
+		    restTemplate.postForObject(uri, request, String.class);
+		 
 	}
+	
+
 	
 	//removing entry
 	public void RemoveEntry(String text) {
@@ -197,5 +215,11 @@ public class WebServiceNodes implements IDhtNodes {
 		DNode node = findNodeByName(id);
 		List<DHashEntry> specificEntries = node.getAllEntries();
 		return(specificEntries);
+	}
+
+	@Override
+	public void removeNode(String name) {
+		// TODO Auto-generated method stub
+		
 	}
 }

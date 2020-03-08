@@ -74,11 +74,9 @@ public class InMemoryNodes implements IDhtNodes {
 	}
 	
 	@Override
-	public void addNode(String name) {
+	public void addNode(DNode newNode) {
 		
-		DNode newNode = new DNode(name);
-		
-		DNode existingNode = findNodeByName(name);
+		DNode existingNode = findNodeByName(newNode.getName());
 		
 		if (existingNode != null)
 		{
@@ -93,6 +91,14 @@ public class InMemoryNodes implements IDhtNodes {
 		
 		this.nodes.put(newNode.getNodeID(), newNode);
 		
+	}
+	
+	@Override
+	public void addNode(String name) {
+		
+		DNode newNode = new DNode(name);
+		
+		addNode(newNode);
 	}
 
 	@Override
@@ -126,7 +132,8 @@ public class InMemoryNodes implements IDhtNodes {
 	@Override
 	public void updateNode(DNode n) {
 	   DNode patchNode = findNodeByName(n.getName());
-	   n.getTable().copyValuesTo(patchNode.getTable());
+	   if(patchNode != null)
+		   n.getTable().copyValuesTo(patchNode.getTable());
 	}
 	
 	@Override
@@ -162,5 +169,7 @@ public class InMemoryNodes implements IDhtNodes {
 		DNode node = findNodeByName(text);
 		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
 	}
+
+
 
 }
