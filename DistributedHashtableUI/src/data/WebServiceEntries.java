@@ -29,13 +29,13 @@ public class WebServiceEntries {
     
     static boolean isProxyEnabled = false;
     
-    public WebServiceNodes()
+    public WebServiceEntries()
     {
     	String fqdn = String.format("%s:%s", host, port);
     	targetHostNodesController = String.format(uriFmt, fqdn);
     }
     
-    public WebServiceNodes(String host, String port)
+    public WebServiceEntries(String host, String port)
     {
     	String fqdn = String.format("%s:%s", host, port);
     	targetHostNodesController = String.format(uriFmt, fqdn);
@@ -51,7 +51,7 @@ public class WebServiceEntries {
 	    HttpEntity<String> request = new HttpEntity<>(name, headers);
 		
 	    RestTemplate restTemplate = getProxyRestTemplate();
-	    restTemplate.postForObject(uri, request, String.class);
+	    restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
 
 	public RestTemplate getProxyRestTemplate() {

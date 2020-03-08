@@ -19,6 +19,7 @@ import service.DNode;
 import webservice.DhtWebService;
 
 @RestController
+@RequestMapping("/entries")
 public class EntryServiceController {
 	
 	public DHService getWS() {

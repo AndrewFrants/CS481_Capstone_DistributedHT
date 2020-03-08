@@ -13,3 +13,30 @@
 # For more details
 
 See file "Kubernetes Instructions.docx"
+
+# Miscelaneous
+
+### HOW TO RUN from Command line
+
+1. Find Java-JDK directory
+    This may help: java -XshowSettings:properties -version
+
+3. Configure the Java Home JDK folder, Run:
+
+    set JAVA_HOME=C:\Program Files\Java\jre1.8.0_211
+    Note: The path from step 1; your path may be different!
+
+2. Open command prompt, navigate to folder DistributedHashtableUI (e.g.)
+    pushd C:\Users\andreyf\OneDrive\BC\Fall 19\Capstone\DistributedHashtable\DistributedHashtableUI
+
+3. Run:
+    mvnw spring-boot:run
+
+3a Run with a specific port:
+    mvnw spring-boot:run -Drun.arguments="--server.port=9000"
+
+3b Run with specifying a specific poirt
+
+    mvnw spring-boot:run -Drun.arguments="--server.port=9000,--customArgument=custom"
+
+4. When you see "Started DhtWebService in 3.6 seconds" that means it started!

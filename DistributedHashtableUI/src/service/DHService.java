@@ -32,7 +32,7 @@ public class DHService {
 	Integer networkBitSize;
 
 	IDhtNodes dhtNodes;
-	DNode node;
+	
 	//IDhtEntries dhtEntries;
 	
 	/*
@@ -42,9 +42,9 @@ public class DHService {
 	{
 		// when you change this to webservice
 		// nodes, Create starts failing
-		dhtNodes = new WebServiceNodes();
+		dhtNodes = new InMemoryNodes();
 	}
-
+	
 	public DHService(Boolean web)
 	{
 		if (web)
@@ -58,8 +58,6 @@ public class DHService {
 			dhtNodes = new InMemoryNodes();
 		}
 	}
-	
-	
 	
 	/* TODO, convert to
 	 * 
@@ -80,8 +78,6 @@ public class DHService {
 		// update peer
 		// Case 3 IF not peer
 		// send to successor
-
-	
 		dhtNodes.addNode(name);
 	}
 	
@@ -133,7 +129,10 @@ public class DHService {
 		return dhtNodes.findNodeByName(name);
 	}
 	
-	
+	/*
+	 * 
+	 */
+
 	/*
 	 * Find the node by a hash code
 	 */
@@ -157,6 +156,13 @@ public class DHService {
 	
 	//adding entry
 		public void AddEntry(String text) {
+			
+			// If current node owns this entry
+			//    currentNode.getTable.Insert()
+			// If current node does not own entry
+			// 	  WebServicesNodes.insert(text); //forward to successor
+			//
+			
 			//DNode node = findNodeByName(text);
 			//node.AssignKeys(DHashEntry.getHashEntry(text));
 			dhtNodes.AddEntry(text);

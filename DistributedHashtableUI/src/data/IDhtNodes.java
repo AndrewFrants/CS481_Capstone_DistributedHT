@@ -27,10 +27,6 @@ public interface IDhtNodes {
 	void addNode(String name);
 	
 	void addNode(DNode node);
-	/*
-	 * Add a node
-	 */
-	void addNode(DNode name);
 	
 	
 	/*

@@ -18,7 +18,6 @@ public class DHServerInstance {
 	}
 	public DHServerInstance(Boolean web)
 	{
-		
 		if (web)
 		{
 			// when you change this to webservice

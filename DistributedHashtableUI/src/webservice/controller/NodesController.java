@@ -83,8 +83,10 @@ public class NodesController {
 		}
         
         if (patchNode != null) {
-		   DNode tableNode = getWS().findNodeByName(patchNode.getName());
-		   patchNode.getTable().copyValuesTo(tableNode.getTable());
+		   
+        	DNode tableNode = getWS().findNodeByName(patchNode.getName());
+		    patchNode.getTable().copyValuesTo(tableNode.getTable());
+		   
         }
         
  	   return HttpResponse(HttpStatus.ACCEPTED);

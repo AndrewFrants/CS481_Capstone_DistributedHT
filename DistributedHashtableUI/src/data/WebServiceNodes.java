@@ -58,10 +58,6 @@ public class WebServiceNodes implements IDhtNodes {
     {
     	return new WebServiceNodes(host, port);
     }
-
-    final String uri = "http://localhost:8080/nodes";
-    
-    static boolean isProxyEnabled = false;
     
 	@Override
 	public DNode findNodeByName(String name) {
@@ -97,19 +93,6 @@ public class WebServiceNodes implements IDhtNodes {
 		
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    restTemplate.postForObject(targetHostNodesController, request, String.class);
-	}
-	
-
-	public void addNode(DNode node) {
-
-	    HttpHeaders headers = new HttpHeaders();
-	    
-	    
-	    HttpEntity<DNode> request = new HttpEntity<>(node, headers);
-		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    restTemplate.postForObject(uri, request, String.class);
-
 	}
 
 	
@@ -231,7 +214,7 @@ public class WebServiceNodes implements IDhtNodes {
 		 HttpHeaders headers = new HttpHeaders();
 		  HttpEntity<String> request = new HttpEntity<>(text, headers);
 		    RestTemplate restTemplate = getProxyRestTemplate();
-		    restTemplate.postForObject(uri, request, String.class);
+		    restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
 	
 
