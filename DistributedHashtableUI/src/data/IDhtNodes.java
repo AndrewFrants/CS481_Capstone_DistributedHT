@@ -27,6 +27,12 @@ public interface IDhtNodes {
 	void addNode(String name);
 	
 	/*
+	 * Add a node
+	 */
+	void addNode(DNode name);
+	
+	
+	/*
 	 * Remove a node
 	 */
 	void removeNode(String name);

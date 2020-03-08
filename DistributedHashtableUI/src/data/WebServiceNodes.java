@@ -28,25 +28,47 @@ import service.DHashEntry;
 import service.DNode;
 
 /**
- * @author andreyf
+ * @author Andrew
  * This is the webservice version of the Nodes Collection
  */
 public class WebServiceNodes implements IDhtNodes {
 
-    final String uri = "http://localhost:8081/nodes";
+    final String uriFmt = "http://%s/nodes/";
     
-    static boolean isProxyEnabled = true;
+    String targetHostNodesController;
+    
+    String host = "localhost";
+    String port = "8080";
+    
+    static boolean isProxyEnabled = false;
+    
+    public WebServiceNodes()
+    {
+    	String fqdn = String.format("%s:%s", host, port);
+    	targetHostNodesController = String.format(uriFmt, fqdn);
+    }
+    
+    public WebServiceNodes(String host, String port)
+    {
+    	String fqdn = String.format("%s:%s", host, port);
+    	targetHostNodesController = String.format(uriFmt, fqdn);
+    }
+    
+    public WebServiceNodes getProxyFor(String host, String port)
+    {
+    	return new WebServiceNodes(host, port);
+    }
     
 	@Override
 	public DNode findNodeByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		int hash = ChecksumDemoHashingFunction.hashValue(name);
+		return findNodeByName(hash);
 	}
 
 	@Override
 	public DNode findNodeByName(Integer hash) {
 
-		return getNodeByPath(uri + "/hash/" + hash);
+		return getNodeByPath(targetHostNodesController + "hash/" + hash);
 	}
 
 	@Override
@@ -59,8 +81,18 @@ public class WebServiceNodes implements IDhtNodes {
 	    HttpEntity<DNode> request = new HttpEntity<>(node, headers);
 		
 	    RestTemplate restTemplate = getProxyRestTemplate();
-	    restTemplate.postForObject(uri, request, String.class);
+	    restTemplate.postForObject(targetHostNodesController, request, String.class);
+	}
+	
+	@Override
+	public void addNode(DNode node) {
 
+	    HttpHeaders headers = new HttpHeaders();
+
+	    HttpEntity<DNode> request = new HttpEntity<>(node, headers);
+		
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
 
 	@Override
@@ -68,13 +100,13 @@ public class WebServiceNodes implements IDhtNodes {
 
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    
-	    restTemplate.delete("http://localhost:8080/nodes/" + name);
+	    restTemplate.delete(targetHostNodesController + name);
 
 	}
 
 	@Override
 	public List<DNode> getAllNodes() {
-		return getNodes("http://localhost:8080/nodes/");
+		return getNodes(targetHostNodesController);
 	}
 
 	public RestTemplate getProxyRestTemplate() {
@@ -112,7 +144,7 @@ public class WebServiceNodes implements IDhtNodes {
 	 */
 	
 	public void updateNode(DNode n) {
-		String url = uri + "/" + n.getName();
+		String url = targetHostNodesController + n.getName();
 		
 		RestTemplate restTemplate = getProxyRestTemplate();
 	    ObjectMapper mapper = new ObjectMapper();
@@ -173,12 +205,19 @@ public class WebServiceNodes implements IDhtNodes {
 	public void AddEntry(String text) {
 		DNode node = findNodeByName(text);
 		node.AssignKeys(DHashEntry.getHashEntry(text));
+		this.updateNode(node);
+	}
+	
+	public void AddEntry(DNode node, String text) {
+		node.AssignKeys(DHashEntry.getHashEntry(text));
+		this.updateNode(node);
 	}
 	
 	//removing entry
 	public void RemoveEntry(String text) {
 		DNode node = findNodeByName(text);
 		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
+		this.updateNode(node);
 	}
 	
 	//gets all entries 

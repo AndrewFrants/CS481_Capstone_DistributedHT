@@ -23,7 +23,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	@JsonIgnore
 	public RoutingTable router;
 	public ArrayList<Integer> keyList;
-	public int size; // size of network
+	public int size; // size of networks
 
 	/*
 	 * Default constructor for deserialization
@@ -150,8 +150,8 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public List<DHashEntry> getAllEntries() {
 		List<DHashEntry> allEntries = new LinkedList<DHashEntry>();
 
-		for (Integer key : table.getHT().keySet()) {
-			allEntries.add(table.getHT().get(key));
+		for (Integer key : table.getLocalHT().keySet()) {
+			allEntries.add(table.getLocalHT().get(key));
 		}
 
 		return allEntries;

@@ -71,7 +71,26 @@ public class DHService {
 	 */
 	public void addNode(String name)
 	{
+		// Case 1 IF node is myself
+		// just send to network
+		// Case 2 ELSE is this my peer?
+		// update own links
+		// update peer
+		// Case 3 IF not peer
+		// send to successor
 		dhtNodes.addNode(name);
+	}
+	
+	public void addNode(DNode node)
+	{
+		// Case 1 IF node is myself
+		// just send to network
+		// Case 2 ELSE is this my peer?
+		// update own links
+		// update peer
+		// Case 3 IF not peer
+		// send to successor
+		dhtNodes.addNode(node);
 	}
 	
 	/*

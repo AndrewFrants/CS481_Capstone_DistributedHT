@@ -72,7 +72,9 @@ public class EntryServiceController {
 	   //creates an  entry
 	   @RequestMapping(value = "entries/{id}", method = RequestMethod.POST)
 	   public ResponseEntity<Object> createEntry(@PathVariable("id") String id) {
-			
+
+		   DhtWebService.DhtService.AddEntry(id);
+		   
 		   return new ResponseEntity<>("Entry is created successfully", HttpStatus.CREATED);
 	   }
 	   

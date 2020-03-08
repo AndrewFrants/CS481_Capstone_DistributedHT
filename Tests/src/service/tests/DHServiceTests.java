@@ -64,7 +64,7 @@ private DHService dhService;
 		
 	@Test
 	void testFiveClusteredDHService() {
-		DHService fiveNodeCluster = DHService.createFiveNodeCluster();
+		DHService fiveNodeCluster = DHService.createFiveNodeCluster(false);
 		List<DNode> fiveNodeClusterNodes = fiveNodeCluster.getAllNodes();
 		assertEquals(4, fiveNodeClusterNodes.size());
 	}

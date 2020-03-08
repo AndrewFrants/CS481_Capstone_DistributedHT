@@ -20,6 +20,27 @@ import service.DNode;
 
 public class WebServiceEntries {
 
+    final String uriFmt = "http://%s/entries/";
+    
+    String targetHostNodesController;
+    
+    String host = "localhost";
+    String port = "8080";
+    
+    static boolean isProxyEnabled = false;
+    
+    public WebServiceNodes()
+    {
+    	String fqdn = String.format("%s:%s", host, port);
+    	targetHostNodesController = String.format(uriFmt, fqdn);
+    }
+    
+    public WebServiceNodes(String host, String port)
+    {
+    	String fqdn = String.format("%s:%s", host, port);
+    	targetHostNodesController = String.format(uriFmt, fqdn);
+    }
+    
 	/*
 	 * Find the node by name
 	 */
@@ -32,12 +53,6 @@ public class WebServiceEntries {
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    restTemplate.postForObject(uri, request, String.class);
 	}
-	
-
-    final String uri = "http://localhost:8081/nodes";
-    
-    static boolean isProxyEnabled = true;
-    
 
 	public RestTemplate getProxyRestTemplate() {
 		if (isProxyEnabled) {

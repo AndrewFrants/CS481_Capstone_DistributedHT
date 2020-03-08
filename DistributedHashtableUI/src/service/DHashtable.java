@@ -16,8 +16,12 @@ public class DHashtable implements Serializable {
 	/*
 	 * Gets the backing hashtable
 	 */
-	public HashMap<Integer, DHashEntry> getHT() {
+	public HashMap<Integer, DHashEntry> getLocalHT() {
 		return localHT;
+	}
+
+	public void setLocalHT(HashMap<Integer, DHashEntry> ht) {
+		localHT = ht;
 	}
 
 	/*
@@ -81,12 +85,12 @@ public class DHashtable implements Serializable {
 	 */
 	public void copyValuesTo(DHashtable table)
 	{
-		Set<Integer> set = table.getHT().keySet();
+		Set<Integer> set = table.getLocalHT().keySet();
 		
 		for (Integer key : set)
 		{
 			if (!localHT.containsKey(key)) {
-				localHT.put(key, table.getHT().get(key));
+				localHT.put(key, table.getLocalHT().get(key));
 			}
 		}
 	}
@@ -113,7 +117,7 @@ public class DHashtable implements Serializable {
 		}
 		
 		// remove added keys from old owner
-		set = newTable.getHT().keySet();
+		set = newTable.getLocalHT().keySet();
 		
 		for (Integer key : set)
 		{

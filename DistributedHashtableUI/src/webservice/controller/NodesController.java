@@ -99,8 +99,7 @@ public class NodesController {
 
    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
    public ResponseEntity<Object> delete(@PathVariable("id") String id) {
-	   createEntry("newNodeName");
-	   
+
 	   DNode node = getWS().findNodeByName(id);
 	   getWS().removeNode(node.getName());
 	   
@@ -108,8 +107,16 @@ public class NodesController {
    }
    
    @RequestMapping(method = RequestMethod.POST)
-   public ResponseEntity<Object> createEntry(@RequestBody String newNode) {
-	   getWS().addNode(newNode);
+   public ResponseEntity<Object> createNode(@RequestBody DNode newNode) {
+	  getWS().addNode(newNode);
       return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
    }
+   
+   /*
+   @RequestMapping(method = RequestMethod.POST)
+   public ResponseEntity<Object> createEntry(@RequestBody String newNode) {
+	  getWS().addNode(newNode);
+      return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
+   }
+   */
 }
