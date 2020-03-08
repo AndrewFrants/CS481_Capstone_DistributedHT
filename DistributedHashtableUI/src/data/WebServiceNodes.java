@@ -222,4 +222,10 @@ public class WebServiceNodes implements IDhtNodes {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void AddEntry(DNode node) {
+		// TODO Auto-generated method stub
+		
+	}
 }

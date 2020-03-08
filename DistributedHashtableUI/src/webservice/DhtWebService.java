@@ -9,7 +9,7 @@ import service.DHService;
 @SpringBootApplication
 public class DhtWebService {
 
-	public static DHServerInstance DhtService;
+	public static DHService DhtService;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(DhtWebService.class, args);

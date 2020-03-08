@@ -90,7 +90,7 @@ public class DHServerInstance {
 		}
 		
 		else {
-			dhtNodes.addEntry(file); 
+			dhtNodes.AddEntry(file); 
 		}
 		
 	}

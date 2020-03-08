@@ -53,6 +53,7 @@ public class DHServerInstanceTest {
 		assertEquals(node2, instance.currentNode.successor);
 	}
 	
+	
 }
 	
 

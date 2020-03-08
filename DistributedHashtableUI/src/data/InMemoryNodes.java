@@ -170,6 +170,12 @@ public class InMemoryNodes implements IDhtNodes {
 		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
 	}
 
+	@Override
+	public void AddEntry(DNode node) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import service.DHServerInstance;
 import service.DHService;
 import service.DHashEntry;
 //import service.DHashtable;
@@ -22,15 +21,15 @@ import webservice.DhtWebService;
 @RestController
 public class EntryServiceController {
 	
-	public DHServerInstance getWS() {
+	public DHService getWS() {
 		return DhtWebService.DhtService;
 	}
 
 	static {
 		   // initialize mock service
-		//   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
+		   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
 	   }
-	/**
+
 	//prints all entries   
 	@RequestMapping(value = "entries", method = RequestMethod.GET)
 	   public ResponseEntity<List <List <DHashEntry>>> getallentries() {
@@ -76,5 +75,5 @@ public class EntryServiceController {
 			
 		   return new ResponseEntity<>("Entry is created successfully", HttpStatus.CREATED);
 	   }
-	   */
+	   
 }
