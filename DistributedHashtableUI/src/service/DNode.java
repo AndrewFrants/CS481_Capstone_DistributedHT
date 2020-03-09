@@ -48,6 +48,16 @@ public class DNode implements Comparable<DNode>, Serializable {
 		localTable = new HashMap<Integer, String>();
 	}
 
+	@JsonIgnore
+	public String getNodeAddress() {
+		return "http://" + this.nodeID;
+	}
+	
+	@JsonIgnore
+	public Boolean isUrlPointingAt(String url) {
+		return 0 == this.getNodeAddress().compareToIgnoreCase(url);
+	}
+	
 	/*
 	 * Get the backing table
 	 */
@@ -398,6 +408,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		return range;
 	}
+	
 	// Traverses the chord network to find the node with the key responsibility and inserts the file into that local node
 	public void insert(String file) {
 		int fileID = ChecksumDemoHashingFunction.hashValue(file);

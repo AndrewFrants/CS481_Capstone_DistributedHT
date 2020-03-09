@@ -14,4 +14,9 @@ public interface IDhtEntries {
 	 */
 	void insert(String name);
 	
+	
+	/*
+	 * Insert into node
+	 */
+	void insert(DNode node, String name);
 }

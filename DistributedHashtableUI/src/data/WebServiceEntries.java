@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -16,13 +17,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import service.DHashEntry;
 import service.DNode;
 
-public class WebServiceEntries {
+public class WebServiceEntries implements IDhtEntries {
 
     final String uriFmt = "http://%s/entries/";
     
-    String targetHostNodesController;
+    String targetHostEntriesController;
     
     String host = "localhost";
     String port = "8080";
@@ -32,26 +34,85 @@ public class WebServiceEntries {
     public WebServiceEntries()
     {
     	String fqdn = String.format("%s:%s", host, port);
-    	targetHostNodesController = String.format(uriFmt, fqdn);
+    	targetHostEntriesController = String.format(uriFmt, fqdn);
     }
     
     public WebServiceEntries(String host, String port)
     {
     	String fqdn = String.format("%s:%s", host, port);
-    	targetHostNodesController = String.format(uriFmt, fqdn);
+    	targetHostEntriesController = String.format(uriFmt, fqdn);
     }
     
+    public WebServiceEntries(String fqdn)
+    {
+    	targetHostEntriesController = String.format(uriFmt, fqdn);
+    }
+    
+    public WebServiceEntries getProxyFor(DNode node)
+    {
+    	return new WebServiceEntries(node.getName());
+    }
+    
+    public WebServiceEntries getProxyFor(String host, String port)
+    {
+    	return new WebServiceEntries(host, port);
+    }
+    
+    
+	/*
+	 * Insert
+	 */
+    @Override
+	public void insert(String name) {
+		
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.setContentType(MediaType.APPLICATION_JSON);
+
+	    ObjectMapper mapper = new ObjectMapper();
+	       
+	    String serializedEntry = null;
+	       
+	    try {
+	    	serializedEntry = mapper.writeValueAsString(DHashEntry.getHashEntry(name));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+    	HttpEntity<String> entity = new HttpEntity<String>(serializedEntry ,headers);
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
+	}
+	
 	/*
 	 * Find the node by name
 	 */
-	void insert(String name) {
+    @Override
+	public void insert(DNode node, String name) {
 		
-	    HttpHeaders headers = new HttpHeaders();
+		if (node.isUrlPointingAt(this.targetHostEntriesController))
+		{
+	    	HttpHeaders headers = new HttpHeaders();
+	    	headers.setContentType(MediaType.APPLICATION_JSON);
 
-	    HttpEntity<String> request = new HttpEntity<>(name, headers);
-		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    restTemplate.postForObject(targetHostNodesController, request, String.class);
+		    ObjectMapper mapper = new ObjectMapper();
+		       
+		    String serializedEntry = null;
+		       
+		    try {
+		    	serializedEntry = mapper.writeValueAsString(DHashEntry.getHashEntry(name));
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+	    	HttpEntity<String> entity = new HttpEntity<String>(serializedEntry ,headers);
+		    RestTemplate restTemplate = getProxyRestTemplate();
+		    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
+		}
+		else {
+			this.getProxyFor(node).insert(name);
+		}
 	}
 
 	public RestTemplate getProxyRestTemplate() {

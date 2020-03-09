@@ -33,7 +33,7 @@ public class DHService {
 
 	IDhtNodes dhtNodes;
 	
-	//IDhtEntries dhtEntries;
+	IDhtEntries dhtEntries;
 	
 	/*
 	 * C'tor
@@ -52,6 +52,7 @@ public class DHService {
 			// when you change this to webservice
 			// nodes, Create starts failing
 			dhtNodes = new WebServiceNodes();
+			dhtEntries = new WebServiceEntries();
 		}
 		else	
 		{
@@ -101,23 +102,30 @@ public class DHService {
 		/*
 		 * TODO. This part can be/should be optimized to a BST
 		 */
-		Integer key = ChecksumDemoHashingFunction.hashValue(value);
-		List<DNode> allNodes = dhtNodes.getAllNodes();
-		
-		if (key == 1)
-			key = 1;
-		
-		for (DNode node : allNodes)
+		if (this.dhtEntries == null)
 		{
-			Integer nodeID = node.getNodeID();
+			Integer key = ChecksumDemoHashingFunction.hashValue(value);
+			List<DNode> allNodes = dhtNodes.getAllNodes();
 			
-			if (key >= nodeID)
+			if (key == 1)
+				key = 1;
+			
+			for (DNode node : allNodes)
 			{
-				// assign this value to a node
-				node.AssignKeys(DHashEntry.getHashEntry(value));
-				dhtNodes.updateNode(node);
-				return;
+				Integer nodeID = node.getNodeID();
+				
+				if (key >= nodeID)
+				{
+					// assign this value to a node
+					node.AssignKeys(DHashEntry.getHashEntry(value));
+					dhtNodes.updateNode(node);
+					return;
+				}
 			}
+		}
+		else 
+		{
+			this.dhtEntries.insert(value);
 		}
 	}
 	
@@ -165,8 +173,10 @@ public class DHService {
 			
 			//DNode node = findNodeByName(text);
 			//node.AssignKeys(DHashEntry.getHashEntry(text));
-			dhtNodes.AddEntry(text);
+			//dhtNodes.AddEntry(text);
 			//RefreshControls();
+			
+			insertValue(text);
 		}
 		
 		// removing entry

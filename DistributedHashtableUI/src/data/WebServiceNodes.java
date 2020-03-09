@@ -54,6 +54,16 @@ public class WebServiceNodes implements IDhtNodes {
     	targetHostNodesController = String.format(uriFmt, fqdn);
     }
     
+    public WebServiceNodes(String fqdn)
+    {
+    	targetHostNodesController = String.format(uriFmt, fqdn);
+    }
+    
+    public WebServiceNodes getProxyFor(DNode node)
+    {
+    	return new WebServiceNodes(node.getName());
+    }
+    
     public WebServiceNodes getProxyFor(String host, String port)
     {
     	return new WebServiceNodes(host, port);
@@ -144,21 +154,30 @@ public class WebServiceNodes implements IDhtNodes {
 	 */
 	
 	public void updateNode(DNode n) {
-		String url = targetHostNodesController + n.getName();
 		
-		RestTemplate restTemplate = getProxyRestTemplate();
-	    ObjectMapper mapper = new ObjectMapper();
-	       
-	    String updatedNode = null;
-	       
-	    try {
-	    	updatedNode = mapper.writeValueAsString(n);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (n.isUrlPointingAt(targetHostNodesController))
+		{
+			String url = targetHostNodesController + n.getName();
+			
+			RestTemplate restTemplate = getProxyRestTemplate();
+		    ObjectMapper mapper = new ObjectMapper();
+		       
+		    String updatedNode = null;
+		       
+		    try {
+		    	updatedNode = mapper.writeValueAsString(n);
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		     
+			restTemplate.patchForObject(url, updatedNode, String.class);
 		}
-	     
-		restTemplate.patchForObject(url, updatedNode, String.class);
+		else
+		{
+			WebServiceNodes wsn = this.getProxyFor(n);
+			wsn.updateNode(n);
+		}
 	}
 	
 	private List<DNode> getNodes(String uri) {
