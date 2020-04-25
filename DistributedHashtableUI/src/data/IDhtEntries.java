@@ -2,6 +2,7 @@ package data;
 
 import java.util.List;
 
+import service.DHashEntry;
 import service.DNode;
 
 /*
@@ -14,7 +15,9 @@ public interface IDhtEntries {
 	 */
 	void insert(String name);
 	
-	
+    public DHashEntry get(String name);
+    
+    public DHashEntry get(DNode node, String name);
 	/*
 	 * Insert into node
 	 */

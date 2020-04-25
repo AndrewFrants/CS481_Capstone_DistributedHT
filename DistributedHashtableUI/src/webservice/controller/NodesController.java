@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import service.DHService;
+import service.DHashEntry;
 import service.DNode;
 import webservice.DhtWebService;
 
@@ -32,11 +33,6 @@ public class NodesController {
 	public DHService getWS() {
 		return DhtWebService.DhtService;
 	}
-	
-   static {
-	   // initialize mock service
-	   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
-   }
    
    private ResponseEntity<Object> HttpResponse(Object obj) {
 	      return new ResponseEntity<>(obj, HttpStatus.OK);
@@ -62,9 +58,32 @@ public class NodesController {
    
    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
    public ResponseEntity<DNode> get(@PathVariable("id") String id) {
+
 	   DNode node = getWS().findNodeByName(id);
+	   Integer hash = Integer.parseInt(id);
+	   
+	   System.out.println(String.format("Retrieved node: %d from memory, looking for %d", node.nodeID, hash));
+	   
+	   if (node.nodeID != hash)
+	   {
+		   DNode networkNode = DhtWebService.dhtServiceInstance.getNode(hash);
+		   
+		   if (networkNode != null)
+		   {
+			   node = networkNode;
+			   System.out.println(String.format("Memory node did not match issued DHT request, received: %d, expected: %d", node.nodeID, hash));
+		   }
+	   }
 	   
 	   return new ResponseEntity<DNode>(node, HttpStatus.OK);
+   }
+   
+   @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
+   public ResponseEntity<List<DHashEntry>> getEntries(@PathVariable("id") String id) {
+	   // TODO: change this to read from instance
+	   DNode node = getWS().findNodeByName(id);
+	   List<DHashEntry> specificEntries = node.getAllEntries();
+	   return new ResponseEntity<List<DHashEntry>>(specificEntries, HttpStatus.OK);
    }
    
    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)

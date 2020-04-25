@@ -40,7 +40,7 @@ public class WebServiceNodes implements IDhtNodes {
     String host = "localhost";
     String port = "8080";
     
-    static boolean isProxyEnabled = false;
+    public static boolean isProxyEnabled = false;
     
     public WebServiceNodes()
     {
@@ -78,8 +78,22 @@ public class WebServiceNodes implements IDhtNodes {
 	@Override
 	public DNode findNodeByName(Integer hash) {
 
-		return getNodeByPath(targetHostNodesController + "hash/" + hash);
+		return getNodeByPath(targetHostNodesController + hash);
 	}
+	
+	@Override
+	public DNode findNodeByName(DNode n, Integer hash) {
+
+		if (n.isUrlPointingAt(targetHostNodesController))
+		{
+			return findNodeByName(hash);
+		}
+		else
+		{
+			return this.getProxyFor(n).findNodeByName(hash);
+		}
+	}
+
 
 	@Override
 	public void addNode(String name) {
@@ -182,31 +196,29 @@ public class WebServiceNodes implements IDhtNodes {
 	
 	private List<DNode> getNodes(String uri) {
 		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	       ObjectMapper mapper = new ObjectMapper();
-	       
-	       //java.lang.reflect.Type typeOfListOfFoo = new com.google.gson.reflect.TypeToken<List<DNode>>();
-	       //.getType()
-	       DNode[] nodes = null;
-	       
-	        try {
-				nodes = mapper.readValue(restTemplate.getForObject(uri, String.class), DNode[].class);
-			} catch (JsonMappingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RestClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	   RestTemplate restTemplate = getProxyRestTemplate();
+       ObjectMapper mapper = new ObjectMapper();
+       
+       DNode[] nodes = null;
+       
+        try {
+			nodes = mapper.readValue(restTemplate.getForObject(uri, String.class), DNode[].class);
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RestClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		   List<DNode> list = new ArrayList<DNode>();
-		   for (DNode node : nodes) {
-	    		list.add(node);
-		   }
-		   return list;
+	   List<DNode> list = new ArrayList<DNode>();
+	   for (DNode node : nodes) {
+    		list.add(node);
+	   }
+	   return list;
 	       /*
 	    ResponseEntity<List<T>> response = restTemplate.exchange(
 	      uri,

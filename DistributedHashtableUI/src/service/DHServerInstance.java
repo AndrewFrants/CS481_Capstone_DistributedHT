@@ -4,6 +4,7 @@ import data.IDhtEntries;
 import data.IDhtNodes;
 import data.InMemoryNodes;
 import data.WebServiceNodes;
+import webservice.DhtWebService;
 
 public class DHServerInstance {
 	Integer networkBitSize;
@@ -11,6 +12,11 @@ public class DHServerInstance {
 	public IDhtNodes dhtNodes;
 	public IDhtEntries dhtEntries;
 	
+	/*
+	Example of loading resources
+	https://howtodoinjava.com/spring-boot2/read-file-from-resources/
+	*/
+
 	public DHServerInstance()
 	{
 		dhtNodes = new WebServiceNodes();
@@ -23,14 +29,22 @@ public class DHServerInstance {
 		dhtNodes = new WebServiceNodes();
 		currentNode = new DNode(address);
 		
+		DhtLogger.log.info("initialize address={} joinNetwork={}", address, joinNetwork);
+
 		if (joinNetwork)
 		{
 			this.addNode(this.currentNode);
+		}
+		else
+		{
+			DhtWebService.DhtService.addNode(currentNode);
 		}
 	}
 	
 	public DHServerInstance(String address, Boolean joinNetwork, Boolean web)
 	{
+		DhtLogger.log.info("initialize address={} joinNetwork={}", address, joinNetwork, web);
+
 		if (web)
 		{
 			// when you change this to webservice
@@ -42,17 +56,24 @@ public class DHServerInstance {
 			{
 				this.addNode(this.currentNode);
 			}
+			else
+			{
+				DhtWebService.DhtService.addNode(currentNode);
+			}
 		}
 		else	
 		{
-			currentNode = new DNode("ip address");
+			currentNode = new DNode(address);
 			dhtNodes = new InMemoryNodes();
 		}
 	}
 	
 	public void addNode(DNode reqNode)
 	{
+		DhtLogger.log.info("Node name={} nodeID={} joining the network", reqNode.name, reqNode.nodeID);
+
 		if(currentNode.nodeID == reqNode.nodeID) {
+			DhtLogger.log.info("Adding the node {} to thisinstance={} partition {}", reqNode.name, currentNode.name, currentNode.nodeID);
 			dhtNodes.addNode(reqNode);
 		}
 		
@@ -111,9 +132,56 @@ public class DHServerInstance {
 		
 	}
 	
+	public DNode getNode(Integer nodeId)
+	{
+		System.out.println(String.format("getNode %d request for node: %d", this.currentNode.nodeID, nodeId));
+		
+		if (this.currentNode.nodeID.equals(nodeId)) // insert any preceding keys here
+		{
+			System.out.println(String.format("Returning current node: %d", this.currentNode.nodeID));
+			
+			return this.currentNode;
+		}
+		else
+		{
+			String successorName = null;
+			Integer successorNodeId = null;
+			
+			if (this.currentNode.successor != null) {
+				successorName = this.currentNode.successor.name;
+				successorNodeId = this.currentNode.successor.nodeID;
+				
+				System.out.println(String.format("Forwarding getNode %d to successor %s (%d)", nodeId, successorName, successorNodeId));
+				return dhtNodes.findNodeByName(this.currentNode.successor, nodeId);
+			}
+					
+			return null;
+		}
+	}
+	
+	public DHashEntry getEntry(String entry)
+	{
+		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
+		
+		if (this.currentNode.successor == null ||
+			(this.currentNode.nodeID > fileID &&
+			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
+		{
+			System.out.println(String.format("Inserted key %s into node %s (%s)", entry, this.currentNode.nodeID, this.currentNode.name));
+			return this.currentNode.getTable().getLocalHT().get(DHashEntry.getHashEntry(entry));
+		}
+		else
+		{
+
+			System.out.println(String.format("Forwarding %s to successor %s (%s)", entry, this.currentNode.successor.name, this.currentNode.nodeID));
+			return dhtEntries.get(this.currentNode.successor, entry);
+		}
+	}
+	
 	public void addEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
+		
 		if (this.currentNode.successor == null ||
 			(this.currentNode.nodeID > fileID &&
 			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
@@ -124,8 +192,15 @@ public class DHServerInstance {
 		}
 		else
 		{
-
-			System.out.println(String.format("Forwarding %s to successor %s (%s)", entry, this.currentNode.successor.name, this.currentNode.nodeID));
+			String successorName = null;
+			Integer successorNodeId = null;
+			
+			if (this.currentNode.successor != null) {
+				successorName = this.currentNode.successor.name;
+				successorNodeId = this.currentNode.successor.nodeID;	
+			}
+			
+			System.out.println(String.format("Forwarding %s to successor %s (%s)", entry, successorName, this.currentNode.nodeID));
 			dhtEntries.insert(this.currentNode.successor, entry);
 		}
 	}

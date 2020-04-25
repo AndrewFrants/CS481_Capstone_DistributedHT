@@ -37,6 +37,7 @@ public class InMemoryNodes implements IDhtNodes {
 		
 		return findNodeByName(hash);
 	}
+	
 
 	@Override
 	public DNode findNodeByName(Integer hash) {
@@ -72,6 +73,42 @@ public class InMemoryNodes implements IDhtNodes {
 		
 		return null;
 	}
+	
+	@Override
+	public DNode findNodeByName(DNode n, Integer hash) {
+		Set<Integer> keysenu = nodes.keySet();
+		List<Integer> numbersList = new ArrayList<Integer>(keysenu);
+		
+		Collections.sort(numbersList);
+		
+		Iterator<Integer> iter = numbersList.iterator();
+		int prev = 0;
+		int first = 0;
+		int index = 0;
+		
+		while (iter.hasNext())
+		{
+			Integer curr = iter.next();
+
+			if (first==0)
+				first = curr;
+			
+			if (index != 0 && hash >= prev && hash <= curr)
+			{
+				return this.nodes.get(prev);
+			}
+			else if (!iter.hasNext())
+			{
+				return this.nodes.get(curr);
+			}
+			
+			prev = curr;
+			index++;
+		}
+		
+		return null;
+	}
+	
 	
 	@Override
 	public void addNode(DNode newNode) {

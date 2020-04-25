@@ -13,6 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import data.IDhtEntries;
 import data.IDhtNodes;
 import data.InMemoryNodes;
@@ -35,6 +38,8 @@ public class DHService {
 	
 	IDhtEntries dhtEntries;
 	
+	Logger log = LoggerFactory.getLogger(DHService.class);
+	
 	/*
 	 * C'tor
 	 */
@@ -47,6 +52,8 @@ public class DHService {
 	
 	public DHService(Boolean web)
 	{
+		log.info("initialize web={}", web);
+
 		if (web)
 		{
 			// when you change this to webservice
@@ -60,37 +67,15 @@ public class DHService {
 		}
 	}
 	
-	/* TODO, convert to
-	 * 
-	 * 	POST <url>/addNode
-	 * 	{
-	 *  	  "name" : "blah"
-	 *  	  /...
-	 * 	}
-	 * 
-	 * Simulate adding a node
-	 */
 	public void addNode(String name)
 	{
-		// Case 1 IF node is myself
-		// just send to network
-		// Case 2 ELSE is this my peer?
-		// update own links
-		// update peer
-		// Case 3 IF not peer
-		// send to successor
+		log.debug("addNode(String) {}", name);
 		dhtNodes.addNode(name);
 	}
 	
 	public void addNode(DNode node)
 	{
-		// Case 1 IF node is myself
-		// just send to network
-		// Case 2 ELSE is this my peer?
-		// update own links
-		// update peer
-		// Case 3 IF not peer
-		// send to successor
+		log.debug("addNode(DNode)", node.name);
 		dhtNodes.addNode(node);
 	}
 	
@@ -99,6 +84,8 @@ public class DHService {
 	 */
 	public void insertValue(String value)
 	{
+		log.debug("insertValue(DNode) {}", value);
+		
 		/*
 		 * TODO. This part can be/should be optimized to a BST
 		 */
@@ -119,6 +106,8 @@ public class DHService {
 					// assign this value to a node
 					node.AssignKeys(DHashEntry.getHashEntry(value));
 					dhtNodes.updateNode(node);
+					log.info("added {} to node {}", value, node.name);
+	
 					return;
 				}
 			}
@@ -134,6 +123,7 @@ public class DHService {
 	 */
 	public DNode findNodeByName(String name)
 	{
+		log.debug("findNodeByName(String) {}", name);
 		return dhtNodes.findNodeByName(name);
 	}
 	
@@ -146,6 +136,7 @@ public class DHService {
 	 */
 	public DNode findNodeByName(Integer hash)
 	{
+		log.debug("findNodeByName(Int)", hash);
 		return dhtNodes.findNodeByName(hash);
 	}
 	

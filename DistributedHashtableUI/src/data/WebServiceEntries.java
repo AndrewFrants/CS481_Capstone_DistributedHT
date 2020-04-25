@@ -29,8 +29,6 @@ public class WebServiceEntries implements IDhtEntries {
     String host = "localhost";
     String port = "8080";
     
-    static boolean isProxyEnabled = false;
-    
     public WebServiceEntries()
     {
     	String fqdn = String.format("%s:%s", host, port);
@@ -85,7 +83,7 @@ public class WebServiceEntries implements IDhtEntries {
 	}
 	
 	/*
-	 * Find the node by name
+	 * insert entry
 	 */
     @Override
 	public void insert(DNode node, String name) {
@@ -114,9 +112,47 @@ public class WebServiceEntries implements IDhtEntries {
 			this.getProxyFor(node).insert(name);
 		}
 	}
+    
+    public DHashEntry get(String name)
+    {
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.setContentType(MediaType.APPLICATION_JSON);
+        ObjectMapper mapper = new ObjectMapper();
+        
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    
+	    DHashEntry entry = null;
+       
+        try {
+        	entry = mapper.readValue(restTemplate.getForObject(targetHostEntriesController + name, String.class), DHashEntry.class);
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RestClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return entry;
+    }
+    
+    //@Override
+	public DHashEntry get(DNode node, String name) {
+		
+		if (node.isUrlPointingAt(this.targetHostEntriesController))
+		{
+	    	return this.get(name);
+		}
+		else {
+			return this.getProxyFor(node).get(name);
+		}
+	}
 
 	public RestTemplate getProxyRestTemplate() {
-		if (isProxyEnabled) {
+		if (WebServiceNodes.isProxyEnabled) {
 		    SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 	
 		    Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress("localhost", 8888));

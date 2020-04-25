@@ -27,11 +27,6 @@ public class EntryServiceController {
 		return DhtWebService.DhtService;
 	}
 
-	static {
-		   // initialize mock service
-		   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
-	   }
-
 	//prints all entries   
 	@RequestMapping(method = RequestMethod.GET)
 	   public ResponseEntity<List <List <DHashEntry>>> getallentries() {
@@ -57,10 +52,26 @@ public class EntryServiceController {
 //		
 	   //prints entries for a specific node
 	   @RequestMapping(value = "{id}", method = RequestMethod.GET)
-	   public ResponseEntity<List<DHashEntry>> get(@PathVariable("id") String id) {
+	   public ResponseEntity<DHashEntry> get(@PathVariable("id") String id) {
 		   DNode node = getWS().findNodeByName(id);
-		   List<DHashEntry> specificEntries = node.getAllEntries();
-		   return new ResponseEntity<List<DHashEntry>>(specificEntries, HttpStatus.OK);
+		   Integer hash = Integer.parseInt(id);
+		   DHashEntry result = null;
+		   
+		   if (node.getTable().getLocalHT().containsKey(hash))
+		   {
+			   result = node.getTable().getEntry(hash);
+		   }
+		   else
+		   {
+			   result = DhtWebService.dhtServiceInstance.getEntry(id);
+		   }
+		   
+		   if (result != null)
+		   {
+			   return new ResponseEntity<DHashEntry>(result, HttpStatus.OK);
+		   }
+		   
+		   return new ResponseEntity(HttpStatus.NOT_FOUND);
 	   }
 	
 	   //deletes entries

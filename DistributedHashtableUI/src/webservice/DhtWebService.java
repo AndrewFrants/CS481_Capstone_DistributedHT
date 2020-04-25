@@ -24,6 +24,11 @@ public class DhtWebService {
 	
 	public static DHServerInstance dhtServiceInstance;
 	
+	   static {
+		   // initialize mock service
+		   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
+	   }
+	   
 	public static void main(String[] args) {
 		
 		String currentInstanceUrl = "localhost:8080";
@@ -32,11 +37,18 @@ public class DhtWebService {
 		// Read parameters
 		for(String arg:args) {
 			
+			
 			String[] params = arg.split("=",2);
+			System.out.println("Argument: " + arg + " " + params[0] + " " + params[1]);
 			
 			if (params[0].equalsIgnoreCase("--server.port"))
 			{
 				currentInstanceUrl = String.format("localhost:%s", params[1]);
+
+				if (params[1].contentEquals("8080"))
+				{
+					isFirstInstance = true;
+				}
 			}
 			else if (params[0].equalsIgnoreCase("--first"))
 			{

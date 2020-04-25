@@ -19,7 +19,7 @@ public interface IDhtNodes {
 	 * Find node by hash id
 	 */
 	DNode findNodeByName(Integer hash);
-	
+	DNode findNodeByName(DNode node, Integer hash);
 	
 	/*
 	 * Add a node

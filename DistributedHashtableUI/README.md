@@ -1,6 +1,6 @@
 # Kubernetes application based on tutorial
 
-# Prepared by Andrew Frantsuzov
+# Prepared by Andrew Frantsuzov for Distributed Service Capstone
 
 # Setup instructions
 
@@ -23,7 +23,7 @@ See file "Kubernetes Instructions.docx"
 
 3. Configure the Java Home JDK folder, Run:
 
-    set JAVA_HOME=C:\Program Files\Java\jre1.8.0_211
+    set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_211
     Note: The path from step 1; your path may be different!
 
 2. Open command prompt, navigate to folder DistributedHashtableUI (e.g.)
@@ -35,8 +35,20 @@ See file "Kubernetes Instructions.docx"
 3a Run with a specific port:
     mvnw spring-boot:run -Drun.arguments="--server.port=9000"
 
-3b Run with specifying a specific poirt
+3b Run with specifying a specific port and custom command line arguments
 
-    mvnw spring-boot:run -Drun.arguments="--server.port=9000,--customArgument=custom"
+    mvnw spring-boot:run -Drun.arguments="--server.port=9000,--first=false"
 
 4. When you see "Started DhtWebService in 3.6 seconds" that means it started!
+    set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_211
+    pushd C:\Users\andreyf\OneDrive\BC\Fall 19\Capstone\DistributedHashtable\DistributedHashtableUI
+    mvnw spring-boot:run -Drun.arguments="--server.port=8080,--first=true"
+
+
+5. How to run. Start the first webservice on port 8080 always!
+
+mvnw spring-boot:run -Drun.arguments="--server.port=8080,--first=true"
+
+Subsequent instances, run on other ports such as 8081, 8082, etc
+
+mvnw spring-boot:run -Drun.arguments="--server.port=8081,--first=false"

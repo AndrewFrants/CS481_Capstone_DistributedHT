@@ -19,12 +19,12 @@ public class DNode implements Comparable<DNode>, Serializable {
 	String name;
 	Double angleVal;
 	public DNode successor;
-	public DNode predecessor;
+	DNode predecessor;
 	@JsonIgnore
 	public RoutingTable router;
 	public ArrayList<Integer> keyList;
 	public int size; // size of networks
-
+	
 	/*
 	 * Default constructor for deserialization
 	 */
@@ -45,7 +45,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		predecessor = null;
 		keyList = new ArrayList<Integer>();
 		router = new RoutingTable(this);
-		localTable = new HashMap<Integer, String>();
+		//localTable = new HashMap<Integer, String>();
 	}
 
 	@JsonIgnore
@@ -409,6 +409,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return range;
 	}
 	
+	/*
 	// Traverses the chord network to find the node with the key responsibility and inserts the file into that local node
 	public void insert(String file) {
 		int fileID = ChecksumDemoHashingFunction.hashValue(file);
@@ -424,6 +425,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}
 		
 	}
+	
 	
 	// Traverses the chord network to find the node with the key responsibility and 
 	public String get(String title) {
@@ -441,6 +443,8 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}
 		
 	}
+	*/
+	
 	/*
 	 * @Override public int compareTo(Object o) { if (o == null || o instanceof
 	 * DNode || ((DNode)o).getHash() == this.getHash()) return 0;
@@ -450,6 +454,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	 * return 1; }
 	 */
 	
+	/*
 	// Remove file from node if this node contains it, otherwise forward the request
 	public void remove(String file) {
 		int fileID = ChecksumDemoHashingFunction.hashValue(file);
@@ -464,4 +469,5 @@ public class DNode implements Comparable<DNode>, Serializable {
 			// forward request based on routing table
 		}
 	}
+	*/
 }
