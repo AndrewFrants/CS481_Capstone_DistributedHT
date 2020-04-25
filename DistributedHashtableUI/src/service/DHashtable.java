@@ -106,13 +106,15 @@ public class DHashtable implements Serializable {
 		}
 		
 		Set<Integer> set = localHT.keySet();
-		
+		Integer keysCopiedCounter = 0;
+
 		for (Integer key : set)
 		{
 			if (key >= keysAbove)
 			{
 				DHashEntry entryToCopy = localHT.get(key);
 				newTable.insert(entryToCopy);
+				keysCopiedCounter++;
 			}
 		}
 		
@@ -124,6 +126,10 @@ public class DHashtable implements Serializable {
 			localHT.remove(key);
 		}
 		
+		DhtLogger.log.info("moveKeysAboveTo keysAbove: {} copied: {} count of keys (and removed from source table)", 
+					keysAbove,
+					keysCopiedCounter);
+
 		return newTable;
 	}
 }

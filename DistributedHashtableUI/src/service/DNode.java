@@ -353,16 +353,16 @@ public class DNode implements Comparable<DNode>, Serializable {
 		int conID = connectingNode.nodeID;
 		
 		if(conID > nodeID && conID > reqID && nodeID < reqID) {
-		this.setSuccessor(reqNode);	
+			this.setSuccessor(reqNode);	
 		}	
 		
 		else if(conID < nodeID && (reqID > nodeID || reqID < conID)) {
 			this.setSuccessor(reqNode);
 		}
 		else {
-		this.setPredecessor(reqNode);	
-		DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
-	//	DNodeJoin.updateRoutingTable(this);
+			this.setPredecessor(reqNode);	
+			DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
+		//	DNodeJoin.updateRoutingTable(this);
 		
 		}
 					

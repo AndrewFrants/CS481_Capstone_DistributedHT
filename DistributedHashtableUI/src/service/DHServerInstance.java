@@ -54,15 +54,21 @@ public class DHServerInstance {
 			
 			if (!joinNetwork)
 			{
+				// this is the first instance or dont join network
 				this.addNode(this.currentNode);
 			}
 			else
 			{
+				// this is a second node, hence join the 
+				// DHT service
 				DhtWebService.DhtService.addNode(currentNode);
 			}
 		}
 		else	
 		{
+			// if Web is false, it means its the
+			// old in memory execution model, useful for
+			// local testing and/or unit tests
 			currentNode = new DNode(address);
 			dhtNodes = new InMemoryNodes();
 		}
@@ -72,28 +78,44 @@ public class DHServerInstance {
 	{
 		DhtLogger.log.info("Node name={} nodeID={} joining the network", reqNode.name, reqNode.nodeID);
 
+		// Case 1: NodeID matches, this is an edge case
+		// nodeIDs should be unique
 		if(currentNode.nodeID == reqNode.nodeID) {
-			DhtLogger.log.info("Adding the node {} to thisinstance={} partition {}", reqNode.name, currentNode.name, currentNode.nodeID);
+			DhtLogger.log.warn("Case 1. CurrNodeID {} ReqNodeId: {} wasnt unique/overlapping", currentNode.name, reqNode.nodeID);
 			dhtNodes.addNode(reqNode);
 		}
-		
+		// Case 2: currentNode has no successor
+		// This means this there is only one node in the network
+		// initialize the "loop"
 		else if(currentNode.successor == null) {
 		
-			// update reqNode by passing the current node
-			// wait
+			// update curr and req nodes
+			// to create a ring
 			reqNode.successor = currentNode;
 			reqNode.predecessor = currentNode;
 			dhtNodes.updateNode(reqNode);
 			currentNode.successor = reqNode;
 			currentNode.predecessor = reqNode;
+
+			DhtLogger.log.info("Case 2. Adding the node {} to currentNode={} currentNode.P.Name = {} currentNode.S.Name = {} as successor", 
+								reqNode.name,
+								currentNode.name,
+								currentNode.predecessor.nodeID,
+								currentNode.successor.nodeID);
+
 		}
 		
-		else if(currentNode.findIfRequestingNodeIsInRange(reqNode) != null) {			
+		// Case 3 a & b. If the requesting node is supposed to be inserted
+		// into the successor or predecessor of the current node
+		else if(currentNode.findIfRequestingNodeIsInRange(reqNode) != null) {	
+
 			DNode conNode = currentNode.findIfRequestingNodeIsInRange(reqNode);
 			reqNode.updateRequestingNodeUponJoin(currentNode, conNode);
 			dhtNodes.updateNode(reqNode);
 
+			// Case 3a. reqNode is the predecessor of currentNode
 			// requesting node becomes the successor of conNode
+			//  SAME -> C.Predesessor -> R -> C -> C.Successor -> SAME
 			if(reqNode.successor.nodeID == currentNode.nodeID) {
 				
 				// conNode -> reqNode -> currentNode
@@ -103,8 +125,16 @@ public class DHServerInstance {
 				// copy key ownership
 				conNode.getTable().moveKeysAboveTo(reqNode.getTable(), reqNode.nodeID);
 				//connection node is now the predecessor
-				dhtNodes.updateNode(conNode);				
-			}			
+				dhtNodes.updateNode(conNode);
+				
+				DhtLogger.log.info("Case 3a. Adding the node {} to currentNode={} currentNode.P.Name = {} currentNode.S.Name = {} as successor", 
+							reqNode.name,
+							currentNode.name,
+							currentNode.predecessor.nodeID,
+							currentNode.successor.nodeID);
+			}
+			// Case 3b. reqNode is the successor of currentNode
+			//  SAME -> C.Predesessor -> C -> R -> C.Successor -> SAME
 			else {
 				
 				// conNode -> currentNode -> reqNode
@@ -114,6 +144,12 @@ public class DHServerInstance {
 				// copy key ownership
 				currentNode.getTable().moveKeysAboveTo(reqNode.getTable(), reqNode.nodeID);
 				dhtNodes.updateNode(conNode);
+
+				DhtLogger.log.info("Case 3b. Adding the node {} to currentNode={} currentNode.P.Name = {} currentNode.S.Name = {} as successor", 
+					reqNode.name,
+					currentNode.name,
+					currentNode.predecessor.nodeID,
+					currentNode.successor.nodeID);
 			}
 			
 			// !update reqNode by passing the the currentNode and  the connecting node!

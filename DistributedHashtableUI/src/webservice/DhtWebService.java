@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import service.DHServerInstance;
 import service.DHService;
+import service.DhtLogger;
 
 /*
  * Cmdline reference:
@@ -65,10 +66,9 @@ public class DhtWebService {
 			System.out.println("Setting port as 8080 because this is first instance");
 			currentInstanceUrl = "localhost:8080";
 		}
-		
-		
-		System.out.println(String.format("Instance URL: %s", currentInstanceUrl));
-		System.out.println(String.format("First Instance: %s", isFirstInstance.toString()));
+
+		DhtLogger.log.info("--- ENTRY POINT ---: Instance URL: {} firstInstanceSetting={}", currentInstanceUrl, isFirstInstance);
+
 		dhtServiceInstance = new DHServerInstance(currentInstanceUrl, isFirstInstance, true);
 		
 		SpringApplication.run(DhtWebService.class, args);
