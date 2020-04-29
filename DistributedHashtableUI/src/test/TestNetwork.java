@@ -7,6 +7,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 
 import service.ChecksumDemoHashingFunction;
+import service.DHServerInstance;
 import service.DHService;
 import service.DNode;
 import service.DNodeJoin;
@@ -14,6 +15,20 @@ import service.DNodeJoin;
 public class TestNetwork {
 
 	public static void main(String[] args) {	
+		
+		/**DHServerInstance instance = new DHServerInstance();
+		//DHServerInstance instance2 = new DHServerInstance("Address", false);
+		//DHServerInstance instance3 = new DHServerInstance("Address2", false, true);
+		
+		DNode node = new DNode("AmazonRainforest");
+		instance.addNode(node);
+		instance.getNode(DNode.GetComputerBasedHash("AmazonRainforest"));
+		instance.addEntry("rainforest");
+		instance.getEntry("rainforest");
+		instance.insertFile("rainforestData.pdf");
+		
+		//assertEquals();**/
+		
 		/**
 		DHService service = new DHService();
 

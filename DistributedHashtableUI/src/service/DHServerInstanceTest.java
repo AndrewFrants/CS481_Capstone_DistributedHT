@@ -8,16 +8,20 @@ class DHServerInstanceTest {
 
 	@Test
 	void test() {
-		DHServerInstance instance = new DHServerInstance();
+		//DHServerInstance instance = new DHServerInstance();
 		//DHServerInstance instance2 = new DHServerInstance("Address", false);
-		//DHServerInstance instance3 = new DHServerInstance("Address2", false, true);
+		DHServerInstance instance3 = new DHServerInstance("Address2", false, false);
 		
-		DNode node = new DNode("Amazon rainforest");
-		//instance.addNode(node);
-		//instance.getNode(DNode.GetComputerBasedHash("Amazon rainforest"));
-		instance.addEntry("rainforest");
-		instance.getEntry("rainforest");
-		instance.insertFile("rainforestData.pdf");
+		DNode node = new DNode("AmazonRainforest");
+		instance3.addNode(node);
+		DNode addedNode = new DNode();
+		addedNode = instance3.getNode(DNode.GetComputerBasedHash("AmazonRainforest"));
+		System.out.println(addedNode.name);
+		
+		
+		//instance.addEntry("rainforest");
+		//instance.getEntry("rainforest");
+		//instance.insertFile("rainforestData.pdf");
 		
 		//assertEquals();
 	}
