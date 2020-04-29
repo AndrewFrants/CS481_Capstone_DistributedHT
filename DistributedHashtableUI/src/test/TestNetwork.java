@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import org.junit.jupiter.api.Test;
+
 import service.ChecksumDemoHashingFunction;
 import service.DHService;
 import service.DNode;
@@ -11,7 +13,7 @@ import service.DNodeJoin;
 
 public class TestNetwork {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {	
 		/**
 		DHService service = new DHService();
 
@@ -255,7 +257,7 @@ public class TestNetwork {
 		String fileA = "testing1234567";
 		System.out.println("file A fileID: " + ChecksumDemoHashingFunction.hashValue(fileA));
 		
-		nodeA.insert(fileA);
+		//nodeA.insert(fileA);
 		System.out.println("node A Size " + nodeA.localTable.size());
 		System.out.println("node B Size " + nodeB.localTable.size());
 		System.out.println("node C Size " + nodeC.localTable.size());
@@ -267,11 +269,11 @@ public class TestNetwork {
 		System.out.println("node I Size " + nodeI.localTable.size());
 		System.out.println("node J Size " + nodeJ.localTable.size());
 		
-		String retrieve = nodeA.get(fileA);
+		//String retrieve = nodeA.get(fileA);
 		
-		System.out.println(retrieve);
+		//System.out.println(retrieve);
 		
-		nodeA.remove(fileA);
+		//nodeA.remove(fileA);
 		System.out.println("node A Size " + nodeA.localTable.size());
 		System.out.println("node B Size " + nodeB.localTable.size());
 		System.out.println("node C Size " + nodeC.localTable.size());

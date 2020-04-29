@@ -19,7 +19,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	String name;
 	Double angleVal;
 	public DNode successor;
-	DNode predecessor;
+	public DNode predecessor;
 	@JsonIgnore
 	public RoutingTable router;
 	public ArrayList<Integer> keyList;
