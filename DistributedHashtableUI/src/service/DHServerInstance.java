@@ -168,7 +168,7 @@ public class DHServerInstance {
 			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
 		{
 			System.out.println(String.format("Inserted key %s into node %s (%s)", entry, this.currentNode.nodeID, this.currentNode.name));
-			return this.currentNode.getTable().getLocalHT().get(DHashEntry.getHashEntry(entry));
+			return this.currentNode.getTable().getLocalHT().get((DHashEntry.getHashEntry(entry)).key);
 		}
 		else
 		{
@@ -181,6 +181,10 @@ public class DHServerInstance {
 	public void addEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
+		//System.out.println(fileID);
+		//System.out.println(currentNode.successor);
+		//System.out.println(currentNode.nodeID);
+		//System.out.println(currentNode.predecessor.nodeID);
 		
 		if (this.currentNode.successor == null ||
 			(this.currentNode.nodeID > fileID &&
