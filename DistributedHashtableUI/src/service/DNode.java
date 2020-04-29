@@ -395,6 +395,26 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}
 	}
 	
+	public void leaveNetwork() {					
+	successor.updateSuccessorUponLeave(this.predecessor, this);
+	predecessor.updatePredecessorUponLeave(this.successor, this);		
+	//	this.setPredecessor(null);
+	//	this.setSuccessor(null);				
+	}
+	
+	// update this node's successor upon leaving the network
+	public void updateSuccessorUponLeave(DNode predNode, DNode leavingNode) {
+		DNodeLeave.updateRoutingTable(this.successor, leavingNode);
+		this.setPredecessor(predNode);
+		
+	}
+	
+	/// update this node's predecessor upon leaving the network
+	public void updatePredecessorUponLeave(DNode sucNode, DNode leavingNode) {
+		DNodeLeave.updateRoutingTable(this.predecessor, leavingNode);
+		this.setSuccessor(sucNode);				
+	}
+	
 	// get's the key range of the node that has 2 entries
 	// the first element being the start
 	// the second element being the end
@@ -409,7 +429,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return range;
 	}
 	
-	/*
+	
 	// Traverses the chord network to find the node with the key responsibility and inserts the file into that local node
 	public void insert(String file) {
 		int fileID = ChecksumDemoHashingFunction.hashValue(file);
@@ -443,7 +463,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}
 		
 	}
-	*/
+	
 	
 	/*
 	 * @Override public int compareTo(Object o) { if (o == null || o instanceof
@@ -454,7 +474,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	 * return 1; }
 	 */
 	
-	/*
+	
 	// Remove file from node if this node contains it, otherwise forward the request
 	public void remove(String file) {
 		int fileID = ChecksumDemoHashingFunction.hashValue(file);
@@ -469,5 +489,5 @@ public class DNode implements Comparable<DNode>, Serializable {
 			// forward request based on routing table
 		}
 	}
-	*/
+	
 }

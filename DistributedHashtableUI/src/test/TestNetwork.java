@@ -10,6 +10,7 @@ import service.ChecksumDemoHashingFunction;
 import service.DHService;
 import service.DNode;
 import service.DNodeJoin;
+import service.DNodeLeave;
 
 public class TestNetwork {
 
@@ -252,12 +253,37 @@ public class TestNetwork {
 		System.out.println("Node I's routing table " + nodeI.nodeID);
 		nodeI.router.printRoutingTable();
 		System.out.println("Node J's routing table "  + nodeJ.nodeID);
+		
+		nodeA.leaveNetwork();
+		for(int i = 0; i < nodeList.length; i++ ) {	
+			DNodeLeave.updateRoutingTable(nodeList[i], nodeA);
+			}
+
+		System.out.println("~~~~~~!!!!!Node A has left the network!!!!!~~~~~~");
+		System.out.println("Node A's routing table " + nodeA.nodeID);
+		nodeA.router.printRoutingTable();
+		System.out.println("Node B's routing table " + nodeB.nodeID);
+		nodeB.router.printRoutingTable();
+		System.out.println("Node C's routing table " + nodeC.nodeID);
+		nodeC.router.printRoutingTable();
+		System.out.println("Node D's routing table " + nodeD.nodeID);
+		nodeD.router.printRoutingTable();
+		System.out.println("Node E's routing table "  + nodeE.nodeID);
+		nodeE.router.printRoutingTable();
+		System.out.println("Node F's routing table " + nodeF.nodeID);
+		nodeF.router.printRoutingTable();
+		System.out.println("Node G's routing table " + nodeG.nodeID);
+		nodeG.router.printRoutingTable();
+		System.out.println("Node H's routing table " + nodeH.nodeID);
+		nodeH.router.printRoutingTable();
+		System.out.println("Node I's routing table " + nodeI.nodeID);
+		nodeI.router.printRoutingTable();
+		System.out.println("Node J's routing table "  + nodeJ.nodeID);
 		nodeJ.router.printRoutingTable();
-		
+		/**
 		String fileA = "testing1234567";
-		System.out.println("file A fileID: " + ChecksumDemoHashingFunction.hashValue(fileA));
-		
-		//nodeA.insert(fileA);
+		System.out.println("file A fileID: " + ChecksumDemoHashingFunction.hashValue(fileA));		
+		nodeA.insert(fileA);
 		System.out.println("node A Size " + nodeA.localTable.size());
 		System.out.println("node B Size " + nodeB.localTable.size());
 		System.out.println("node C Size " + nodeC.localTable.size());
@@ -268,11 +294,11 @@ public class TestNetwork {
 		System.out.println("node H Size " + nodeH.localTable.size());
 		System.out.println("node I Size " + nodeI.localTable.size());
 		System.out.println("node J Size " + nodeJ.localTable.size());
-		
+		*/
 		//String retrieve = nodeA.get(fileA);
 		
 		//System.out.println(retrieve);
-		
+		/*
 		//nodeA.remove(fileA);
 		System.out.println("node A Size " + nodeA.localTable.size());
 		System.out.println("node B Size " + nodeB.localTable.size());
@@ -284,6 +310,7 @@ public class TestNetwork {
 		System.out.println("node H Size " + nodeH.localTable.size());
 		System.out.println("node I Size " + nodeI.localTable.size());
 		System.out.println("node J Size " + nodeJ.localTable.size());
+		*/
 		
 	}
 
