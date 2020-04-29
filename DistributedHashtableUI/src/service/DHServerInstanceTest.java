@@ -23,10 +23,12 @@ class DHServerInstanceTest {
 		
 		instance.addEntry("rainforest");
 		assertEquals("rainforest", instance.getEntry("rainforest").value);
-
-		instance.insertFile("rainforestData.pdf");
 		
-		//assertEquals();
+		instance.removeEntry("rainforest");
+		assertEquals("rainforest", instance.getEntry("rainforest").value); //should break
+
+		//instance.insertFile("rainforestData.pdf");
+		
 	}
 
 }

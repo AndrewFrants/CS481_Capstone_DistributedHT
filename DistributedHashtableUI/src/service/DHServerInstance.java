@@ -195,6 +195,32 @@ public class DHServerInstance {
 		}
 	}
 	
+	public void removeEntry(String entry)
+	{
+		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
+		
+		if (this.currentNode.successor == null ||
+			(this.currentNode.nodeID > fileID &&
+			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
+		{
+			System.out.println(String.format("Removing key %s from node %s (%s)", entry, this.currentNode.nodeID, this.currentNode.name));
+			this.currentNode.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(entry));
+		}
+		else
+		{
+			String successorName = null;
+			Integer successorNodeId = null;
+			if (this.currentNode.successor != null) {
+				successorName = this.currentNode.successor.name;
+				successorNodeId = this.currentNode.successor.nodeID;	
+		
+			}
+
+			System.out.println(String.format("Forwarding %s to successor %s (%s)", entry, successorName, this.currentNode.nodeID));
+			dhtEntries.remove(this.currentNode.successor, entry);
+		}
+	}
+	
 	public DHashEntry getEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);

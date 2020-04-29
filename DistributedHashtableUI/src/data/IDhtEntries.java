@@ -22,4 +22,5 @@ public interface IDhtEntries {
 	 * Insert into node
 	 */
 	void insert(DNode node, String name);
+	void remove(DNode node, String name);
 }
