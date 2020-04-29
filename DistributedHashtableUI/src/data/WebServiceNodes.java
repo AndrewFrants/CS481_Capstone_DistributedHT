@@ -190,7 +190,7 @@ public class WebServiceNodes implements IDhtNodes {
 		else
 		{
 			WebServiceNodes wsn = this.getProxyFor(n);
-			wsn.updateNode(n);
+			//wsn.updateNode(n);
 		}
 	}
 	
