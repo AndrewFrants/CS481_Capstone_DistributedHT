@@ -10,18 +10,21 @@ class DHServerInstanceTest {
 	void test() {
 		//DHServerInstance instance = new DHServerInstance();
 		//DHServerInstance instance2 = new DHServerInstance("Address", false);
-		DHServerInstance instance3 = new DHServerInstance("Address2", false, false);
-		
-		DNode node = new DNode("AmazonRainforest");
-		instance3.addNode(node);
+		DHServerInstance instance = new DHServerInstance("Address1", false, false);
+		DHServerInstance instance2 = new DHServerInstance("AmazonRainforest", true, false);
+
 		DNode addedNode = new DNode();
-		addedNode = instance3.getNode(DNode.GetComputerBasedHash("AmazonRainforest"));
-		System.out.println(addedNode.name);
 		
+		addedNode = instance.getNode(DNode.GetComputerBasedHash("Address1"));
+		assertEquals("Address1", addedNode.getName());
+
+		addedNode = instance2.getNode(DNode.GetComputerBasedHash("AmazonRainforest"));
+		assertEquals("AmazonRainforest", addedNode.getName());
 		
-		//instance.addEntry("rainforest");
-		//instance.getEntry("rainforest");
-		//instance.insertFile("rainforestData.pdf");
+		instance.addEntry("rainforest");
+		assertEquals("rainforest", instance.getEntry("rainforest").value);
+
+		instance.insertFile("rainforestData.pdf");
 		
 		//assertEquals();
 	}

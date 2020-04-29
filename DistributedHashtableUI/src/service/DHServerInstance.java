@@ -145,12 +145,10 @@ public class DHServerInstance {
 	public DNode getNode(Integer nodeId)
 	{
 		System.out.println(String.format("getNode %d request for node: %d", this.currentNode.nodeID, nodeId));
-		System.out.println("Im here 8");
 
 		if (this.currentNode.nodeID.equals(nodeId)) // insert any preceding keys here
 		{
 			System.out.println(String.format("Returning current node: %d", this.currentNode.nodeID));
-			System.out.println("Im here 9");
 
 			return this.currentNode;
 		}
@@ -158,7 +156,6 @@ public class DHServerInstance {
 		{
 			String successorName = null;
 			Integer successorNodeId = null;
-			System.out.println("Im here 10");
 
 			if (this.currentNode.successor != null) {
 				successorName = this.currentNode.successor.name;
@@ -166,10 +163,8 @@ public class DHServerInstance {
 				
 				System.out.println(String.format("Forwarding getNode %d to successor %s (%d)", nodeId, successorName, successorNodeId));
 				System.out.println("Im here 11");
-				//return dhtNodes.findNodeByName(successorName);
 				return dhtNodes.findNodeByName(this.currentNode.successor, nodeId);
 			}
-			System.out.println("Im here 12");		
 			return null;
 		}
 	}
@@ -177,47 +172,26 @@ public class DHServerInstance {
 	public void addEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
-		System.out.println(fileID);
-		System.out.println(currentNode.successor);
-		System.out.println(currentNode.nodeID);
-		System.out.println(currentNode.predecessor.nodeID);
 		
-		System.out.println("Im here 13");
 		if (this.currentNode.successor == null ||
 			(this.currentNode.nodeID > fileID &&
 			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
 		{
 			System.out.println(String.format("Inserted key %s into node %s (%s)", entry, this.currentNode.nodeID, this.currentNode.name));
-			System.out.println("Im here 14");
 			this.currentNode.getTable().insert(DHashEntry.getHashEntry(entry));
 		}
 		else
 		{
 			String successorName = null;
 			Integer successorNodeId = null;
-			System.out.println("Im here 15");
 			if (this.currentNode.successor != null) {
 				successorName = this.currentNode.successor.name;
 				successorNodeId = this.currentNode.successor.nodeID;	
-				System.out.println("Im here 16");
-				
-				/**System.out.println(fileID);
-				System.out.println(currentNode.successor);
-				System.out.println(currentNode.nodeID);
-				System.out.println(currentNode.predecessor.nodeID);**/
-				
+		
 			}
-			
-			/**System.out.println(fileID);
-			System.out.println(currentNode.successor);
-			System.out.println(currentNode.nodeID);
-			System.out.println(currentNode.predecessor.nodeID);**/
-			
-			
-			System.out.println("Im here 17");
+
 			System.out.println(String.format("Forwarding %s to successor %s (%s)", entry, successorName, this.currentNode.nodeID));
 			dhtEntries.insert(this.currentNode.successor, entry);
-			System.out.println("Im here 18");
 		}
 	}
 	
