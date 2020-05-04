@@ -168,13 +168,14 @@ public class DHServerInstance {
 		
 	}
 	
+	// Retrieve a node by id from the network
 	public DNode getNode(Integer nodeId)
 	{
-		System.out.println(String.format("getNode %d request for node: %d", this.currentNode.nodeID, nodeId));
+		DhtLogger.log.info("getNode {} request for node: {}", this.currentNode.nodeID, nodeId);
 		
 		if (this.currentNode.nodeID.equals(nodeId)) // insert any preceding keys here
 		{
-			System.out.println(String.format("Returning current node: %d", this.currentNode.nodeID));
+			DhtLogger.log.info("Returning current node: {}", this.currentNode.nodeID);
 			
 			return this.currentNode;
 		}
@@ -187,8 +188,12 @@ public class DHServerInstance {
 				successorName = this.currentNode.successor.name;
 				successorNodeId = this.currentNode.successor.nodeID;
 				
-				System.out.println(String.format("Forwarding getNode %d to successor %s (%d)", nodeId, successorName, successorNodeId));
+				DhtLogger.log.info("Forwarding getNode {} to successor {} ({}})", nodeId, successorName, successorNodeId);
 				return dhtNodes.findNodeByName(this.currentNode.successor, nodeId);
+			}
+			else
+			{
+				DhtLogger.log.warn("Current node {}  successor was null", this.currentNode.nodeID);
 			}
 					
 			return null;
@@ -203,13 +208,12 @@ public class DHServerInstance {
 			(this.currentNode.nodeID > fileID &&
 			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
 		{
-			System.out.println(String.format("Inserted key %s into node %s (%s)", entry, this.currentNode.nodeID, this.currentNode.name));
+			DhtLogger.log.info("Inserted key {} into node {} ({})", entry, this.currentNode.nodeID, this.currentNode.name);
 			return this.currentNode.getTable().getLocalHT().get(DHashEntry.getHashEntry(entry));
 		}
 		else
 		{
-
-			System.out.println(String.format("Forwarding %s to successor %s (%s)", entry, this.currentNode.successor.name, this.currentNode.nodeID));
+			DhtLogger.log.info("Forwarding {} to successor {} ({}})", entry, this.currentNode.successor.name, this.currentNode.nodeID);
 			return dhtEntries.get(this.currentNode.successor, entry);
 		}
 	}
@@ -222,7 +226,7 @@ public class DHServerInstance {
 			(this.currentNode.nodeID > fileID &&
 			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
 		{
-			System.out.println(String.format("Inserted key %s into node %s (%s)", entry, this.currentNode.nodeID, this.currentNode.name));
+			DhtLogger.log.info("Inserted key {} into node {} ({})", entry, this.currentNode.nodeID, this.currentNode.name);
 			
 			this.currentNode.getTable().insert(DHashEntry.getHashEntry(entry));
 		}
@@ -236,7 +240,7 @@ public class DHServerInstance {
 				successorNodeId = this.currentNode.successor.nodeID;	
 			}
 			
-			System.out.println(String.format("Forwarding %s to successor %s (%s)", entry, successorName, this.currentNode.nodeID));
+			DhtLogger.log.info("Forwarding {} to successor {} ({})", entry, successorName, this.currentNode.nodeID);
 			dhtEntries.insert(this.currentNode.successor, entry);
 		}
 	}

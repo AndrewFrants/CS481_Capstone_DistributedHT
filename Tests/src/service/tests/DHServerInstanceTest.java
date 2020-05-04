@@ -19,30 +19,28 @@ public class DHServerInstanceTest {
 	
 	@BeforeAll
 	public void setUp() throws Exception {
-		instance = new DHServerInstance(false);
+		instance = new DHServerInstance("instance", false);
 	}
 
 	@Test
 	public void testAddFirstNode() {
-		instance = new DHServerInstance(false);
+		instance = new DHServerInstance("instance", false);
 		assertNull(instance.currentNode.successor);
 		assertNull(instance.currentNode.predecessor);
 	}
 	
 	@Test
 	public void testAddSecondNode() {
-		instance = new DHServerInstance(false);
-		
-		DNode incoming = new DNode("incoming");
-		
-		instance.addNode(incoming);
+		instance = new DHServerInstance("instance", false);
+		DHServerInstance incoming = new DHServerInstance("instance2", false);
+
 		assertEquals(incoming, instance.currentNode.successor);
 		assertEquals(incoming, instance.currentNode.predecessor);
 	}
 	
 	@Test
 	public void testThreeNodes() {
-		instance = new DHServerInstance(false);
+		instance = new DHServerInstance("instance", false);
 		DNode node1 = new DNode("incoming");
 		node1.nodeID = 5;
 		DNode node2 = new DNode("second");

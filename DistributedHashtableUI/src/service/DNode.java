@@ -19,7 +19,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	String name;
 	Double angleVal;
 	public DNode successor;
-	DNode predecessor;
+	public DNode predecessor;
 	@JsonIgnore
 	public RoutingTable router;
 	public ArrayList<Integer> keyList;
@@ -46,6 +46,8 @@ public class DNode implements Comparable<DNode>, Serializable {
 		keyList = new ArrayList<Integer>();
 		router = new RoutingTable(this);
 		//localTable = new HashMap<Integer, String>();
+		
+		DhtLogger.log.info("Initialized name: {} nodeId: {} angleVal: {}", nodeName, nodeID, this.angleVal);
 	}
 
 	@JsonIgnore

@@ -17,16 +17,16 @@
     </plugins>
   </build>
   <dependencies>
-  <dependency>
-    	<groupId>org.springframework</groupId>
-    	<artifactId>spring-context</artifactId>
-    	<version>${spring.version}</version>
-    	<exclusions>
-    	   <exclusion>
-    		  <groupId>commons-logging</groupId>
-    		  <artifactId>commons-logging</artifactId>
-    	   </exclusion>
-    	</exclusions>			
+    <dependency>
+	   	<groupId>org.springframework</groupId>
+	   	<artifactId>spring-context</artifactId>
+	   	<version>5.2.2.RELEASE</version>
+	   	<exclusions>
+	   	   <exclusion>
+	   		  <groupId>commons-logging</groupId>
+	   		  <artifactId>commons-logging</artifactId>
+	   	   </exclusion>
+	   	</exclusions>			
     </dependency>
     <!-- LogBack dependencies -->
 	<dependency> 

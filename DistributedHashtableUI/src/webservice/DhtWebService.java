@@ -27,7 +27,7 @@ public class DhtWebService {
 	
 	   static {
 		   // initialize mock service
-		   DhtWebService.DhtService = DHService.createFiveNodeCluster(false);
+		   DhtWebService.DhtService = new DHService(false); // DHService.createFiveNodeCluster(false);
 	   }
 	   
 	public static void main(String[] args) {

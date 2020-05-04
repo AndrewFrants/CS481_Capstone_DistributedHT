@@ -454,6 +454,8 @@ public class MainWindow extends JFrame {
 		btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
 		btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
 
+		//
+		// This the the top menu tab selection logic
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				int index = tabbedPane.getSelectedIndex();
@@ -470,8 +472,19 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		createDHService();
-
+		boolean inMemoryService = false;
+		
+		if (inMemoryService)
+		{
+			createDHService();
+		}
+		else
+		{
+			dhService = new DHService(true);
+			dhService.getAllNodes();
+			
+			populateNodes();
+		}
 	}
 
 	/*
