@@ -57,6 +57,8 @@ public class WebServiceEntries implements IDhtEntries {
     }
     
     
+
+
 	/*
 	 * Insert
 	 */
@@ -82,6 +84,14 @@ public class WebServiceEntries implements IDhtEntries {
 	    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
 	}
 	
+    
+    
+    @Override
+	public void remove(DNode node, String name) {
+    	
+    }
+    
+    
 	/*
 	 * insert entry
 	 */

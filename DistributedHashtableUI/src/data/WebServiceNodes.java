@@ -173,7 +173,7 @@ public class WebServiceNodes implements IDhtNodes {
 			restTemplate.patchForObject(url, updatedNode, String.class);
 		} else {
 			WebServiceNodes wsn = this.getProxyFor(n);
-			wsn.updateNode(n);
+			//wsn.updateNode(n);
 		}
 	}
 
