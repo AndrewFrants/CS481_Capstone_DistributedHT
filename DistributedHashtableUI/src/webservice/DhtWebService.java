@@ -21,26 +21,28 @@ mvnw spring-boot:run -Drun.arguments="--server.port=8081,--first=false"
 @SpringBootApplication
 public class DhtWebService {
 
-	public static DHService DhtService;
+	//
+	// Use only for testing and when web=false!!!
+	public static DHService InMemoryWebService;
 	
 	public static DHServerInstance dhtServiceInstance;
 	
 	   static {
 		   // initialize mock service
-		   DhtWebService.DhtService = new DHService(false); // DHService.createFiveNodeCluster(false);
+		   DhtWebService.InMemoryWebService = new DHService(false); // DHService.createFiveNodeCluster(false);
 	   }
 	   
 	public static void main(String[] args) {
 		
 		String currentInstanceUrl = "localhost:8080";
-		Boolean isFirstInstance = true;
+		Boolean joinNetwork = false;
 		
 		// Read parameters
 		for(String arg:args) {
 			
 			
 			String[] params = arg.split("=",2);
-			System.out.println("Argument: " + arg + " " + params[0] + " " + params[1]);
+			System.out.println("Argument: " + arg + " " + params[0]);
 			
 			if (params[0].equalsIgnoreCase("--server.port"))
 			{
@@ -48,12 +50,13 @@ public class DhtWebService {
 
 				if (params[1].contentEquals("8080"))
 				{
-					isFirstInstance = true;
+					System.out.println("Setting joinNetwork=false first instance");
+					joinNetwork = false;
 				}
 			}
-			else if (params[0].equalsIgnoreCase("--first"))
+			else if (params[0].equalsIgnoreCase("--join"))
 			{
-				isFirstInstance = Boolean.parseBoolean(params[1]);
+				joinNetwork = true;
 			}
 			else
 			{
@@ -61,15 +64,15 @@ public class DhtWebService {
 			}
         }
 		
-		if (isFirstInstance)
+		if (!joinNetwork)
 		{
 			System.out.println("Setting port as 8080 because this is first instance");
 			currentInstanceUrl = "localhost:8080";
 		}
 
-		DhtLogger.log.info("--- ENTRY POINT ---: Instance URL: {} firstInstanceSetting={}", currentInstanceUrl, isFirstInstance);
+		DhtLogger.log.info("--- ENTRY POINT ---: Instance URL: {} firstInstanceSetting={}", currentInstanceUrl, joinNetwork);
 
-		dhtServiceInstance = new DHServerInstance(currentInstanceUrl, isFirstInstance, true);
+		dhtServiceInstance = new DHServerInstance(currentInstanceUrl, joinNetwork, true);
 		
 		SpringApplication.run(DhtWebService.class, args);
 	}

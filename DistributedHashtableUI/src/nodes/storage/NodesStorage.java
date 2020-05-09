@@ -58,12 +58,15 @@ public class NodesStorage {
 	
 	public static String readFileAsString(String fileName) {
 	    String text = "";
+	    /*TODO
 	    try {
+	     
 	      text = new String(Files.readString(Paths.get(fileName)));
 	    } catch (IOException e) {
 	      e.printStackTrace();
 	    }
-
+		*/
+	    
 	    return text;
 	  }
 }

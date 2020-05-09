@@ -8,7 +8,7 @@ import webservice.DhtWebService;
 
 public class DHServerInstance {
 	Integer networkBitSize;
-	public DNode currentNode = new DNode("new");
+	public DNode currentNode;
 	public IDhtNodes dhtNodes;
 	public IDhtEntries dhtEntries;
 	
@@ -38,13 +38,13 @@ public class DHServerInstance {
 		}
 		else
 		{
-			DhtWebService.DhtService.addNode(currentNode);
+			DhtLogger.log.info("Current Instance and Node initialized at address={} nodeId={}", currentNode.getNodeAddress(), currentNode.nodeID);
 		}
 	}
 	
 	public DHServerInstance(String address, Boolean joinNetwork, Boolean web)
 	{
-		DhtLogger.log.info("initialize address={} joinNetwork={}", address, joinNetwork, web);
+		DhtLogger.log.info("initialize address={} joinNetwork={} web={}", address, joinNetwork, web);
 
 		if (web)
 		{
@@ -56,13 +56,31 @@ public class DHServerInstance {
 			if (!joinNetwork)
 			{
 				// this is the first instance or dont join network
-				this.addNode(this.currentNode);
+				DhtLogger.log.info("Current Instance and Node initialized at address={} nodeId={}", currentNode.getNodeAddress(), currentNode.nodeID);
 			}
 			else
 			{
-				// this is a second node, hence join the 
-				// DHT service
-				DhtWebService.DhtService.addNode(currentNode);
+				Boolean success = false;
+
+				do
+				{
+					try
+					{
+						// this is a second node, hence join the 
+						// DHT service
+						dhtNodes.addNode(currentNode);
+						success = true;
+					}
+					catch (Exception ex)
+					{
+						try
+						{
+							DhtLogger.log.info("Waiting 15 seconds to rejoin network, address={} nodeId={}", currentNode.getNodeAddress(), currentNode.nodeID);
+							Thread.sleep(15000);
+						} catch (Exception e) {}
+					}
+				} while (!success);
+
 			}
 		}
 		else	
@@ -72,6 +90,16 @@ public class DHServerInstance {
 			// local testing and/or unit tests
 			currentNode = new DNode(address);
 			dhtNodes = new InMemoryNodes();
+			
+			if (!joinNetwork)
+			{
+				// this is the first instance or dont join network
+				this.addNode(this.currentNode);
+			}
+			else
+			{
+				dhtNodes.AddEntry(currentNode);
+			}
 		}
 	}
 	

@@ -52,7 +52,7 @@ public class ChecksumDemoHashingFunction {
 		int intHash = Math.abs((int)((hash % 65000)));
 		
 
-		DhtLogger.log.info("Hashing value: {} seed: {} hashed to {}", value, hash, intHash);
+		DhtLogger.log.debug("Hashing value: {} seed: {} hashed to {}", value, hash, intHash);
 		
 		return intHash;
 	}

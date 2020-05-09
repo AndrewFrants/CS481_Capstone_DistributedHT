@@ -12,9 +12,12 @@ import java.util.List;
 import java.util.Set;
 
 import service.ChecksumDemoHashingFunction;
+import service.DHService;
 import service.DHashEntry;
 import service.DHashtable;
 import service.DNode;
+import service.DhtLogger;
+import webservice.DhtWebService;
 
 /**
  * @author Andrew Frantsuzov
@@ -23,7 +26,7 @@ import service.DNode;
 public class InMemoryNodes implements IDhtNodes {
 
 	HashMap<Integer, DNode> nodes;
-	
+
 	public InMemoryNodes() {
 		nodes = new HashMap<Integer, DNode>();
 	}
@@ -209,8 +212,9 @@ public class InMemoryNodes implements IDhtNodes {
 
 	@Override
 	public void AddEntry(DNode node) {
-		// TODO Auto-generated method stub
-		
+
+		DhtLogger.log.info("Adding node to inMemoryNetwork {}", node.nodeID);
+		DhtWebService.InMemoryWebService.addNode(node);
 	}
 
 

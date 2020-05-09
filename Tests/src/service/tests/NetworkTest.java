@@ -1,10 +1,16 @@
-package test;
+package service.tests;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import java.util.List;
+import org.junit.Assert;
+//DO NOT USE import org.junit.Test; stupid java
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import service.ChecksumDemoHashingFunction;
 import service.DHServerInstance;
@@ -13,9 +19,10 @@ import service.DNode;
 import service.DNodeJoin;
 import service.DNodeLeave;
 
-public class TestNetwork {
+public class NetworkTest {
 
-	public static void main(String[] args) {	
+	@Test
+	public void runNetworkTest() {	
 		
 		/**DHServerInstance instance = new DHServerInstance();
 		//DHServerInstance instance2 = new DHServerInstance("Address", false);

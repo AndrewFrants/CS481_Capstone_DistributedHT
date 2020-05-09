@@ -1,5 +1,6 @@
 package service.tests;
 
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -31,8 +32,8 @@ public class DHServerInstanceTest {
 	
 	@Test
 	public void testAddSecondNode() {
-		instance = new DHServerInstance("instance", false);
-		DHServerInstance incoming = new DHServerInstance("instance2", false);
+		instance = new DHServerInstance("instance", false, false);
+		DHServerInstance incoming = new DHServerInstance("instance2", true, false);
 
 		assertEquals(incoming, instance.currentNode.successor);
 		assertEquals(incoming, instance.currentNode.predecessor);

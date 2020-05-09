@@ -24,16 +24,16 @@ import org.springframework.web.client.RestTemplate;
 
 import service.*;
 
-public class NodesControllerTests {
+public class NodesControllerTest {
 
 	final static boolean isProxyEnabled = true;
 	
 	@BeforeEach
-	void setUp() throws Exception {
+	public void setUp() throws Exception {
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 	}
 
 	@Test

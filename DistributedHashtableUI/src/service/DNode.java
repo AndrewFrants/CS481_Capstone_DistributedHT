@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /*
@@ -18,10 +19,13 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public Integer nodeID;
 	String name;
 	Double angleVal;
+	@JsonBackReference("sucessor")
 	public DNode successor;
+	@JsonBackReference("predecesrro")
 	public DNode predecessor;
 	@JsonIgnore
 	public RoutingTable router;
+	@JsonIgnore
 	public ArrayList<Integer> keyList;
 	public int size; // size of networks
 	
@@ -35,7 +39,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	/*
 	 * C'tor
 	 */
-	public DNode(String nodeName) {
+	public DNode(String nodeName) { // nodeName = 123.123.134.124:8888 or local localhost:8080
 		this.name = nodeName;
 		this.nodeID = DNode.GetComputerBasedHash(nodeName);
 		table = new DHashtable();
@@ -52,7 +56,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 
 	@JsonIgnore
 	public String getNodeAddress() {
-		return "http://" + this.nodeID;
+		return "http://" + this.name;
 	}
 	
 	@JsonIgnore
@@ -192,6 +196,11 @@ public class DNode implements Comparable<DNode>, Serializable {
 	}
 
 	@Override
+	public String toString() {
+		return this.nodeID.toString();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -215,22 +224,22 @@ public class DNode implements Comparable<DNode>, Serializable {
 			return false;
 
 		else {
-		DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
+			DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
 		
-		// if the connecting node exists, the requesting node has found it's range placement
-		// initialize it's successor/predecessor, keylist
-		// change receiving and connecting node's id
-		if(connecting != null) {
-		updateRequestingNodeUponJoin(receivingNode, connecting);
-		receivingNode.updateReceivingNodeUponJoin(this, connecting);
-		connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
-		}
-		// forward request to the receiving node's successor
-		// this will later need to be changed to go into routing table and find "closest" node, to 
-		// to keep logn search time.
-		else {
-			sendJoinRequest(receivingNode.successor);
-		}
+			// if the connecting node exists, the requesting node has found it's range placement
+			// initialize it's successor/predecessor, keylist
+			// change receiving and connecting node's id
+			if(connecting != null) {
+				updateRequestingNodeUponJoin(receivingNode, connecting);
+				receivingNode.updateReceivingNodeUponJoin(this, connecting);
+				connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
+			}
+			// forward request to the receiving node's successor
+			// this will later need to be changed to go into routing table and find "closest" node, to 
+			// to keep logn search time.
+			else {
+				sendJoinRequest(receivingNode.successor);
+			}
 		}
 		
 		return true;

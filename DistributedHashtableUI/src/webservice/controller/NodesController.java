@@ -1,6 +1,7 @@
 package webservice.controller;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import data.IDhtEntries;
+import data.IDhtNodes;
+import data.WebServiceNodes;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -20,124 +25,215 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import service.AssertUtilities;
+import service.ChecksumDemoHashingFunction;
+import service.DHServerInstance;
 import service.DHService;
 import service.DHashEntry;
 import service.DNode;
+import service.DhtLogger;
+import service.FormatUtilities;
 import webservice.DhtWebService;
 
 @RestController
 @RequestMapping("/nodes")
 public class NodesController {
    
+	// Nodes interface
+	IDhtNodes dhtNodes;
 
-	public DHService getWS() {
-		return DhtWebService.DhtService;
+	IDhtEntries dhtEntries;
+
+	public DHServerInstance getWS() {
+		return DhtWebService.dhtServiceInstance;
+	}
+
+	
+	private ResponseEntity<Object> HttpResponse(final Object obj) {
+			return new ResponseEntity<>(obj, HttpStatus.OK);
 	}
    
-   private ResponseEntity<Object> HttpResponse(Object obj) {
-	      return new ResponseEntity<>(obj, HttpStatus.OK);
-   }
-   
-   @RequestMapping()
-   public ResponseEntity<Object> getEntry() {
-	 //Create a new ObjectMapper object
-       ObjectMapper mapper = new ObjectMapper();
+	@RequestMapping()
+	public ResponseEntity<Object> getEntry() {
+		//Create a new ObjectMapper object
+		final ObjectMapper mapper = new ObjectMapper();
 
-       List<DNode> nodes = getWS().getAllNodes();
-       
-       String res = null;
+		List<DNode> nodes = new LinkedList<DNode>();
+
+		DNode head = getWS().currentNode;
+		DNode currNode = getWS().currentNode;
+
+		do
+		{
+			nodes.add(currNode);
+
+			if (currNode.successor == head || currNode.successor == null)
+			{
+				if (currNode.successor != null)
+				{
+					DhtLogger.log.info("Get all nodes, reached end of ring at: {} successor: {}", currNode.nodeID, currNode.successor.nodeID);
+				}
+				else
+				{
+					DhtLogger.log.info("Get all nodes, reached end of ring at: {} successor: NULL", currNode.nodeID);
+				}
+				break;
+			}
+			
+			DhtLogger.log.info("Current node: {} getting successor: {}", currNode.nodeID, currNode.successor.nodeID);
+
+			// next node
+			currNode = internalGetNode(currNode.successor.nodeID, true);
+
+		} while (true);
+
+		String res = null;
 		try {
 			res = mapper.writeValueAsString(nodes);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
+		} catch (final JsonProcessingException e) {
+			DhtLogger.log.error("Failed serializing node list: {}", e.toString());
+		}
+		
+		DhtLogger.log.info("Get all nodes, returning count of {} nodes", nodes.size());
+
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	public ResponseEntity<DNode> get(@PathVariable("id") final String id) {
+
+	/*
+		DNode node = getWS().findNodeByName(id);
+		Integer hash = Integer.parseInt(id);
+		
+		System.out.println(String.format("Retrieved node: %d from memory, looking for %d", node.nodeID, hash));
+		
+		if (node.nodeID != hash)
+		{
+			DNode networkNode = DhtWebService.dhtServiceInstance.getNode(hash);
+			
+			if (networkNode != null)
+			{
+				node = networkNode;
+				System.out.println(String.format("Memory node did not match issued DHT request, received: %d, expected: %d", node.nodeID, hash));
+			}
+		}
+		*/
+
+		final DNode foundNode = internalGetNode(id, true);
+		if (foundNode == null) {
+			return new ResponseEntity<DNode>(HttpStatus.NOT_FOUND);
+		}
+
+		return new ResponseEntity<DNode>(foundNode, HttpStatus.OK);
+	}
+
+	private DNode internalGetNode(final Integer id, final Boolean traceError) {
+		return internalGetNode(id, false, traceError);
+	}
+
+	private DNode internalGetNode(final Integer id, final Boolean usingStringSearch, final Boolean traceError) {
+		AssertUtilities.ThrowIfNull(id, "id was null");
+
+		final DNode foundNode = getWS().getNode(id);
+			
+		if (foundNode == null && traceError)
+		{
+			DhtLogger.log.info("node requested id: {} not found on the network. Using string search = {} (hashed string id). Responding with 404", id, usingStringSearch);
+		}
+
+		return foundNode;
+	}
+
+
+	private DNode internalGetNode(final String id, final Boolean traceError) {
+		AssertUtilities.ThrowIfNull(id, "id was null");
+
+		Integer idAsInt = FormatUtilities.SafeConvertStrToInt(id);
+		Boolean usingStringSearch = false;
+
+		if (idAsInt == null) {
+			idAsInt = ChecksumDemoHashingFunction.hashValue(id);
+			usingStringSearch = true;
+		}
+
+		final DNode foundNode = internalGetNode(idAsInt, usingStringSearch, traceError);
+
+		return foundNode;
+	}
+
+	@RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
+	public ResponseEntity<List<DHashEntry>> getEntries(@PathVariable("id") final String id) {
+
+		final DNode node = internalGetNode(id, true);
+
+		if (node == null)
+		{
+			return new ResponseEntity<List<DHashEntry>>(HttpStatus.NOT_FOUND);
+		}
+
+		final List<DHashEntry> specificEntries = node.getAllEntries();
+		return new ResponseEntity<List<DHashEntry>>(specificEntries, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
+	public ResponseEntity<Object> get(@PathVariable("id") final String id, @RequestBody final String patchNodeStr) {
+		
+		final ObjectMapper mapper = new ObjectMapper();
+		
+		DNode patchNode = null;
+		
+		try {
+			patchNode = mapper.readValue(patchNodeStr, DNode.class);
+		} catch (final JsonMappingException e) {
+			e.printStackTrace();
+		} catch (final JsonProcessingException e) {
 			e.printStackTrace();
 		}
-	       
-      return new ResponseEntity<>(res, HttpStatus.OK);
-   }
-   
-   @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-   public ResponseEntity<DNode> get(@PathVariable("id") String id) {
+		
+		DhtLogger.log.info("Patching node: {} successor: {} predecessor: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor);
 
-	   DNode node = getWS().findNodeByName(id);
-	   Integer hash = Integer.parseInt(id);
-	   
-	   System.out.println(String.format("Retrieved node: %d from memory, looking for %d", node.nodeID, hash));
-	   
-	   if (node.nodeID != hash)
-	   {
-		   DNode networkNode = DhtWebService.dhtServiceInstance.getNode(hash);
-		   
-		   if (networkNode != null)
-		   {
-			   node = networkNode;
-			   System.out.println(String.format("Memory node did not match issued DHT request, received: %d, expected: %d", node.nodeID, hash));
-		   }
-	   }
-	   
-	   return new ResponseEntity<DNode>(node, HttpStatus.OK);
-   }
-   
-   @RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
-   public ResponseEntity<List<DHashEntry>> getEntries(@PathVariable("id") String id) {
-	   // TODO: change this to read from instance
-	   DNode node = getWS().findNodeByName(id);
-	   List<DHashEntry> specificEntries = node.getAllEntries();
-	   return new ResponseEntity<List<DHashEntry>>(specificEntries, HttpStatus.OK);
-   }
-   
-   @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-   public ResponseEntity<Object> get(@PathVariable("id") String id, @RequestBody String patchNodeStr) {
-	   
-       ObjectMapper mapper = new ObjectMapper();
-       
-       DNode patchNode = null;
-       
-        try {
-        	patchNode = mapper.readValue(patchNodeStr, DNode.class);
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+		if (patchNode == null)
+		{
+			DhtLogger.log.error("Patch node couldnt be deserialized: {}, returning 4xx.", patchNodeStr);
+			return HttpResponse(HttpStatus.BAD_REQUEST);
 		}
-        
-        if (patchNode != null) {
-		   
-        	DNode tableNode = getWS().findNodeByName(patchNode.getName());
-		    patchNode.getTable().copyValuesTo(tableNode.getTable());
-		   
-        }
-        
- 	   return HttpResponse(HttpStatus.ACCEPTED);
-   }
-   
-   @RequestMapping(value = "hash/{id}", method = RequestMethod.GET)
-   public ResponseEntity<Object> getByHash(@PathVariable("id") String id) {
-	   DNode node = getWS().findNodeByName(Integer.parseInt(id));
-	   
-	   return new ResponseEntity<>(node, HttpStatus.OK);
-   }
 
-   @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-   public ResponseEntity<Object> delete(@PathVariable("id") String id) {
+		final DNode networkNode = internalGetNode(patchNode.getName(), true);
 
-	   DNode node = getWS().findNodeByName(id);
-	   getWS().removeNode(node.getName());
-	   
-	   return HttpResponse(HttpStatus.NO_CONTENT);
-   }
-   
-   @RequestMapping(method = RequestMethod.POST)
-   public ResponseEntity<Object> createNode(@RequestBody DNode newNode) {
-	  getWS().addNode(newNode);
-      return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
-   }
-   
-   /*
-   @RequestMapping(method = RequestMethod.POST)
-   public ResponseEntity<Object> createEntry(@RequestBody String newNode) {
-	  getWS().addNode(newNode);
-      return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
-   }
-   */
+		if (networkNode == null)
+		{
+			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());
+			return HttpResponse(HttpStatus.NOT_FOUND);
+		}
+
+		patchNode.getTable().copyValuesTo(networkNode.getTable());
+
+		WebServiceNodes connection = WebServiceNodes.getProxyFor(patchNode);
+
+		connection.updateNode(networkNode);
+
+		return HttpResponse(HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "hash/{id}", method = RequestMethod.GET)
+	public ResponseEntity<Object> getByHash(@PathVariable("id") final String id) {
+		final DNode node = internalGetNode(id, true);
+		
+		return new ResponseEntity<>(node, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Object> delete(@PathVariable("id") final String id) {
+
+		// TODO: Delete a node should remove the node from the Successor/Predecessor
+
+		return HttpResponse(HttpStatus.NOT_ACCEPTABLE);
+	}
+
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Object> createNode(@RequestBody final DNode newNode) {
+		getWS().addNode(newNode);
+		return new ResponseEntity<>("Node is created successfully", HttpStatus.CREATED);
+	}
 }

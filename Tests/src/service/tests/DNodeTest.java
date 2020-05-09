@@ -2,64 +2,123 @@ package service.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+
+
+import java.util.List;
 import org.junit.Assert;
-import org.junit.Test;
+//DO NOT USE import org.junit.Test; stupid java
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import service.DNode;
 import service.*;
 
-class DNodeTest {
-	private static DNode node1;
-	private static DNode node2;
-	private static DNode nodeA;
-	private static DNode nodeB;
+public class DNodeTest {
+	private DNode node1;
+	private DNode node2;
+	private DNode nodeA;
+	private DNode nodeB;
 	
-	@BeforeAll
-	static void setup() {
+	
+	@BeforeEach
+	public void setUp() throws Exception {
 		node1 = new DNode("node_1");
 		node2 = new DNode("node_2");
 		
-		 nodeA = new DNode("node");
+		nodeA = new DNode("node");
 		nodeB = new DNode("node");
 	}
 	
-	@BeforeEach
-	public void beforeEach() {
-		node1 = new DNode("node_1");
-		node2 = new DNode("node_2");
-	}
-	
 	@Test
-	void testNodeAPredeccessorIsNull() {
+	public void testNodeAPredeccessorIsNull() {
 		assertEquals(nodeA.predecessor, null);
 	}
 	
 	@Test
-	void testNodeASuccessorIsNull() {
+	public void testNodeASuccessorIsNull() {
 		assertEquals(nodeA.successor, null);
 	}
 	
 	@Test
-	void testNodeBPredeccessorIsNull() {
+	public void testNodeBPredeccessorIsNull() {
 		assertEquals(nodeB.predecessor, null);
 
 	}
 	
 	@Test
-	void testNodesWithSameNameAreEqual() {
+	public void testNodeGetNodeAddress() {
+		assertEquals(nodeB.getNodeAddress(), "http://" + nodeB.getName());
+	}
 
-		System.out.println(nodeA.nodeID);
-		System.out.println(nodeB.nodeID);
-		assertEquals(nodeA, nodeB);
+	@Test
+	public void testNodeNodeIsPointingAt() {
+		assertEquals("http://" + nodeB.nodeID, true);
+	}
+
+	@Test
+	public void testNodeSetSuccessor() {
+		nodeB.setSuccessor(nodeA);
+		assertEquals(nodeB.getSuccessor(), nodeA);
+	}
+
+	@Test
+	public void testNodeSetPredecessor() {
+		nodeB.setPredecessor(nodeA);
+		assertEquals(nodeB.getPredecessor(), nodeA);
+	}
+
+	@Test
+	public void testNodeAssignKeys() {
+		String first = "first";
+		String second = "second";
+
+		DHashEntry firsthe = DHashEntry.getHashEntry(first);
+		DHashEntry secondhe = DHashEntry.getHashEntry(second);
+
+		nodeB.AssignKeys(firsthe, secondhe);
+		DHashtable table = nodeB.getTable();
+		nodeB.setTable(table);
+
+		int firsthash = ChecksumDemoHashingFunction.hashValue(first);
+		int secondhash = ChecksumDemoHashingFunction.hashValue(second);
+		
+		assertEquals(table.getEntry(firsthash), firsthe);
+		assertEquals(table.getEntry(secondhash), secondhe);
+
+		for (DHashEntry he : nodeB.getAllEntries())
+		{
+			assertTrue(0 == he.getKey().compareTo(firsthash) || 0 == he.getKey().compareTo(secondhash));
+		}
+
+	}
+
+	@Test
+	public void testNodeCompare() {
+		assertNotEquals(nodeB, nodeA);
+		assertEquals(nodeB, new DNode(nodeB.getName()));
+		assertNotEquals(nodeB, null);
+		assertNotEquals(nodeB, DHashEntry.getHashEntry("notequal"));
 	}
 	
 	@Test
-	void testSendJoinRequestSameSize() {
+	public void testNodeHash() {
+		assertEquals(nodeB.hashCode() != 0, "hashcode zero");
+	}
+	
+
+	@Test
+	public void testNodesWithSameNameAreEqual() {
+
+		assertEquals(new DNode(nodeB.getName()), nodeB);
+	}
+	
+	@Test
+	public void testSendJoinRequestSameSize() {
 		//if the node's are the same size it should return true,
 		// which by default they are
 		boolean accepted = node1.sendJoinRequest(node2);
@@ -67,7 +126,7 @@ class DNodeTest {
 	}
 	
 	@Test
-	void testSendJoinRequestDifferentSize() {
+	public void testSendJoinRequestDifferentSize() {
 		DNode nodeC = new DNode("nodeC");
 		nodeC.size = 5;
 		DNode nodeD = new DNode("nodeD");
@@ -79,13 +138,13 @@ class DNodeTest {
 	}
 	
 	@Test
-	void testReceiveJoinRequestSameSize() {
+	public void testReceiveJoinRequestSameSize() {
 		boolean accepted = node2.receiveJoinRequest(node1);
 		assertTrue(accepted);
 	}
 	
 	@Test
-	void testReceiveJoinRequestDifferentSize() {
+	public void testReceiveJoinRequestDifferentSize() {
 		DNode nodeC = new DNode("nodeC");
 		nodeC.size = 5;
 		DNode nodeD = new DNode("nodeD");
@@ -96,7 +155,7 @@ class DNodeTest {
 	}
 	
 	@Test
-	void testNode1IsNode2SuccessorAndPredecessor() {
+	public void testNode1IsNode2SuccessorAndPredecessor() {
 		node1.sendJoinRequest(node2);
 		assertEquals(node2.successor, node1);	
 		assertEquals(node2.predecessor, node1);
@@ -104,14 +163,14 @@ class DNodeTest {
 
 	
 	@Test
-	void testNode2IsNode1SuccessorAndPredecessor() {
+	public void testNode2IsNode1SuccessorAndPredecessor() {
 		node1.sendJoinRequest(node2);
 	assertEquals(node1.successor, node2);
 	assertEquals(node1.predecessor, node2);
 }
 	
 	@Test
-	void testJoiningKeyListSizeAfterJoin() {
+	public void testJoiningKeyListSizeAfterJoin() {
 		node1.sendJoinRequest(node2);
 		int keyListSize = node1.keyList.size();
 		
@@ -129,7 +188,7 @@ class DNodeTest {
 	}
 	
 	@Test
-	void testReceingKeyListSizeAfterJoin() {
+	public void testReceingKeyListSizeAfterJoin() {
 		node1.receiveJoinRequest(node2);
 		int keyListSize = node1.keyList.size();
 		

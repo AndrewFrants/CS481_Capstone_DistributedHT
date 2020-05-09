@@ -1,4 +1,4 @@
-package test;
+package service.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import nodes.storage.NodesStorage;
 import service.DNode;
 
-class NodesStorageTests {
+class NodesStorageTest {
 	private NodesStorage nodesStorage;
 	private Path nodesLocation;
 	private final String NODES_FILENAME = "nodes.json";

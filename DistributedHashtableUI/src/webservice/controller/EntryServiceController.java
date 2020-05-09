@@ -24,7 +24,7 @@ import webservice.DhtWebService;
 public class EntryServiceController {
 	
 	public DHService getWS() {
-		return DhtWebService.DhtService;
+		return null; //DhtWebService.DhtService;
 	}
 
 	//prints all entries   

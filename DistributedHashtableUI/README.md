@@ -16,7 +16,7 @@ See file "Kubernetes Instructions.docx"
 
 # Miscelaneous
 
-### HOW TO RUN from Command line
+### HOW TO RUN WEB SERVER from Command line
 
 1. Find Java-JDK directory
     This may help: java -XshowSettings:properties -version
@@ -42,13 +42,13 @@ See file "Kubernetes Instructions.docx"
 4. When you see "Started DhtWebService in 3.6 seconds" that means it started!
     set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_211
     pushd C:\Users\andreyf\OneDrive\BC\Fall 19\Capstone\DistributedHashtable\DistributedHashtableUI
-    mvnw spring-boot:run -Drun.arguments="--server.port=8080,--first=true"
+    mvnw spring-boot:run -Drun.arguments="--server.port=8080,--join=true"
 
 
 5. How to run. Start the first webservice on port 8080 always!
 
-mvnw spring-boot:run -Drun.arguments="--server.port=8080,--first=true"
+mvnw spring-boot:run -Drun.arguments="--server.port=8080,--join"
 
 Subsequent instances, run on other ports such as 8081, 8082, etc
 
-mvnw spring-boot:run -Drun.arguments="--server.port=8081,--first=false"
+mvnw spring-boot:run -Drun.arguments="--server.port=8081,--join"

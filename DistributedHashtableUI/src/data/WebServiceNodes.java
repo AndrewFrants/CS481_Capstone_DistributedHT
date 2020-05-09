@@ -55,11 +55,11 @@ public class WebServiceNodes implements IDhtNodes {
 		targetHostNodesController = String.format(uriFmt, fqdn);
 	}
 
-	public WebServiceNodes getProxyFor(DNode node) {
+	public static WebServiceNodes getProxyFor(DNode node) {
 		return new WebServiceNodes(node.getName());
 	}
 
-	public WebServiceNodes getProxyFor(String host, String port) {
+	public static WebServiceNodes getProxyFor(String host, String port) {
 		return new WebServiceNodes(host, port);
 	}
 
@@ -108,7 +108,7 @@ public class WebServiceNodes implements IDhtNodes {
 		RestTemplate restTemplate = getProxyRestTemplate();
 		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
-
+	
 	public void removeNode(DNode name) {
 
 		RestTemplate restTemplate = getProxyRestTemplate();
@@ -141,6 +141,12 @@ public class WebServiceNodes implements IDhtNodes {
 		return restTemplate.getForObject(uri, String.class);
 	}
 
+	public DNode get() {
+		RestTemplate restTemplate = getProxyRestTemplate();
+	
+		return restTemplate.getForObject(this.targetHostNodesController, DNode.class);
+	}
+	
 	private DNode getNodeByPath(String uri) {
 
 		RestTemplate restTemplate = getProxyRestTemplate();
