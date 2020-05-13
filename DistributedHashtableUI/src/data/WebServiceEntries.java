@@ -123,6 +123,11 @@ public class WebServiceEntries implements IDhtEntries {
 		}
 	}
     
+    @Override
+    public void update(DNode node, int entryId, String entryValue) {
+    	
+    }
+    
     public DHashEntry get(String name)
     {
     	HttpHeaders headers = new HttpHeaders();

@@ -303,6 +303,34 @@ public class DHServerInstance {
 		}
 	}
 	
+	
+	public void updateEntry(int entryId, String entryValue)
+	{
+		if (this.currentNode.successor == null ||
+			(this.currentNode.nodeID > entryId &&
+			this.currentNode.predecessor.nodeID < entryId))
+		{
+			// If a parent node is found, remove the existing entry from it and add a new entry since the key
+			// can be different for the new value; and the new entry can belong to a different node.
+			DHashEntry existingEntry = this.currentNode.getTable().getLocalHT().get(entryId);
+			this.currentNode.getTable().removeKeys(entryId);
+			this.addEntry(entryValue);
+			DhtLogger.log.info("Updating entry, changing value from {} to {}", entryId, existingEntry.getValue(), entryValue);
+		}
+		else
+		{
+			if (this.currentNode.successor != null) {
+				DhtLogger.log.info(
+						"Forwarding update of entry key {} with value {} to successor {} ({})",
+						entryId,
+						entryValue,
+						this.currentNode.successor.name,
+						this.currentNode.successor.nodeID);
+				dhtEntries.update(this.currentNode.successor, entryId, entryValue);
+			}			
+		}
+	}
+	
 	public void insertFile(String file) {
 		int fileID = ChecksumDemoHashingFunction.hashValue(file);
 		if(currentNode.keyList.contains(fileID)) {

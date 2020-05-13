@@ -91,4 +91,15 @@ public class EntryServiceController {
 		   return new ResponseEntity<>("Entry is created successfully", HttpStatus.CREATED);
 	   }
 	   
+	   // updates an entry
+	   @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+	   public ResponseEntity<Object> updateEntry(
+			   @PathVariable("id") int id,
+			   @RequestBody DHashEntry updatedEntry) {
+
+		   DhtWebService.dhtServiceInstance.updateEntry(id, updatedEntry.value);
+		   
+		   return new ResponseEntity<>("Entry is updated successfully", HttpStatus.OK);
+	   }
+	   
 }

@@ -25,10 +25,26 @@ class DHServerInstanceTest {
 		assertEquals("rainforest", instance.getEntry("rainforest").value);
 		
 		instance.removeEntry("rainforest");
-		assertEquals("rainforest", instance.getEntry("rainforest").value); //should break
+		assertNull(instance.getEntry("rainforest"));
 
 		//instance.insertFile("rainforestData.pdf");
 		
 	}
+	
+	// Test case to verify updateEntry
+	@Test
+	void testUpdateEntry() {
+		DHServerInstance instance = new DHServerInstance("node1", false, false);
 
+		instance.addEntry("entry1");
+		DHashEntry addedEntry = instance.getEntry("entry1");
+		assertEquals("entry1", addedEntry.value);
+		
+		instance.updateEntry(addedEntry.key, "entry2");
+		
+		DHashEntry updatedEntry = instance.getEntry("entry2");
+		assertEquals("entry2", updatedEntry.value);
+		assertNull(instance.getEntry("entry1"));	
+		assertNotEquals(addedEntry.key, updatedEntry.key);
+	}
 }
