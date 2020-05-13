@@ -1,6 +1,8 @@
 package service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import data.WebServiceNodes;
+import service.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +29,12 @@ class DHServerInstanceTest {
 		instance.removeEntry("rainforest");
 		assertNull(instance.getEntry("rainforest"));
 		
+		WebServiceNodes nodes;
+		nodes = new WebServiceNodes();
+		nodes.removeNode("AmazonRainforest");
+		assertNull(nodes.findNodeByName("AmazonRainforest"), "AmazonRainforest");
+		
+
 		//instance.insertFile("rainforestData.pdf");
 		
 	}

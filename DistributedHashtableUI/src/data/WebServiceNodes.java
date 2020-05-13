@@ -116,6 +116,16 @@ public class WebServiceNodes implements IDhtNodes {
 		restTemplate.delete(targetHostNodesController + name);
 
 	}
+	
+	@Override
+	public void removeNode(String name) {
+		int hash = ChecksumDemoHashingFunction.hashValue(name);
+		DNode nodeName = findNodeByName(hash);
+		
+		RestTemplate restTemplate = getProxyRestTemplate();
+		restTemplate.delete(targetHostNodesController + nodeName);
+	}
+
 
 	@Override
 	public List<DNode> getAllNodes() {
@@ -215,7 +225,6 @@ public class WebServiceNodes implements IDhtNodes {
 		 */
 	}
 
-	//// NEED TO CHANGE ALL METHODS BELOW
 
 	// adding entry
 	public void AddEntry(String text) {
@@ -258,11 +267,11 @@ public class WebServiceNodes implements IDhtNodes {
 		return (specificEntries);
 	}
 
-	@Override
-	public void removeNode(String name) {
-		// TODO Auto-generated method stub
-
-	}
+//	@Override
+//	public void removeNode(String name) {
+//		// TODO Auto-generated method stub
+//
+//	}
 
 	@Override
 	public void AddEntry(DNode node) {
