@@ -26,10 +26,25 @@ class DHServerInstanceTest {
 		
 		instance.removeEntry("rainforest");
 		assertNull(instance.getEntry("rainforest"));
-
+		
 		//instance.insertFile("rainforestData.pdf");
 		
 	}
+	
+	// Testing remove entry
+	@Test
+	void testRemoveEntry() {
+		DHServerInstance instance = new DHServerInstance("AmazonRainforest", false, false);
+
+		instance.addEntry("rainforest");
+		DHashEntry addedEntry = instance.getEntry("rainforest");
+		assertEquals("rainforest", addedEntry.value);
+		instance.removeEntry("rainforest");
+		
+		assertNull(instance.getEntry("rainforest"));	
+		//assertNotEquals(addedEntry.value, "rainforest");
+	}
+	
 	
 	// Test case to verify updateEntry
 	@Test

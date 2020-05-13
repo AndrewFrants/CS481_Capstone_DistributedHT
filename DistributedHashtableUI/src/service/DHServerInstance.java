@@ -112,7 +112,6 @@ public class DHServerInstance {
 		if(currentNode.nodeID == reqNode.nodeID) {
 			DhtLogger.log.warn("Case 1. CurrNodeID {} ReqNodeId: {} wasnt unique/overlapping", currentNode.name, reqNode.nodeID);
 			dhtNodes.addNode(reqNode);
-			System.out.println("Im here 1");
 		}
 		// Case 2: currentNode has no successor
 		// This means this there is only one node in the network
@@ -142,7 +141,6 @@ public class DHServerInstance {
 			DNode conNode = currentNode.findIfRequestingNodeIsInRange(reqNode);
 			reqNode.updateRequestingNodeUponJoin(currentNode, conNode);
 			dhtNodes.updateNode(reqNode);
-			System.out.println("Im here 3");
 
 			// Case 3a. reqNode is the predecessor of currentNode
 			// requesting node becomes the successor of conNode
@@ -186,7 +184,6 @@ public class DHServerInstance {
 			// !update reqNode by passing the the currentNode and  the connecting node!
 			// wait
 			currentNode.updateReceivingNodeUponJoin(reqNode, conNode);
-			System.out.println("Im here 6");
 
 			// !update connecting node by passing the requesting node, and the current node!
 			// wait
@@ -195,7 +192,6 @@ public class DHServerInstance {
 		// send request to successor
 		else {
 			dhtNodes.addNode(currentNode.successor);
-			System.out.println("Im here 7");
 
 		}
 		
@@ -259,6 +255,26 @@ public class DHServerInstance {
 		}
 	}
 	
+	
+	public DHashEntry getEntry(String entry)
+	{
+		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
+		
+		if (this.currentNode.successor == null ||
+			(this.currentNode.nodeID > fileID &&
+			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
+		{
+			DhtLogger.log.info("Inserted key {} into node {} ({})", entry, this.currentNode.nodeID, this.currentNode.name);
+			return this.currentNode.getTable().getLocalHT().get((DHashEntry.getHashEntry(entry)).key);
+		}
+		else
+		{
+
+			DhtLogger.log.info("Forwarding {} to successor {} ({})", entry, this.currentNode.successor.name, this.currentNode.nodeID);
+			return dhtEntries.get(this.currentNode.successor, entry);
+		}
+	}
+	
 	public void removeEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
@@ -283,26 +299,6 @@ public class DHServerInstance {
 			dhtEntries.remove(this.currentNode.successor, entry);
 		}
 	}
-	
-	public DHashEntry getEntry(String entry)
-	{
-		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
-		
-		if (this.currentNode.successor == null ||
-			(this.currentNode.nodeID > fileID &&
-			this.currentNode.predecessor.nodeID < fileID)) // insert any preceding keys here
-		{
-			DhtLogger.log.info("Inserted key {} into node {} ({})", entry, this.currentNode.nodeID, this.currentNode.name);
-			return this.currentNode.getTable().getLocalHT().get((DHashEntry.getHashEntry(entry)).key);
-		}
-		else
-		{
-
-			DhtLogger.log.info("Forwarding {} to successor {} ({})", entry, this.currentNode.successor.name, this.currentNode.nodeID);
-			return dhtEntries.get(this.currentNode.successor, entry);
-		}
-	}
-	
 	
 	public void updateEntry(int entryId, String entryValue)
 	{

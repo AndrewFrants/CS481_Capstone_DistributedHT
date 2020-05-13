@@ -91,6 +91,16 @@ public class EntryServiceController {
 		   return new ResponseEntity<>("Entry is created successfully", HttpStatus.CREATED);
 	   }
 	   
+	   //removes an entry
+	   @RequestMapping(method = RequestMethod.DELETE)
+	   public ResponseEntity<Object> removeEntry(
+			   @RequestBody DHashEntry updatedEntry) {
+
+		   DhtWebService.dhtServiceInstance.removeEntry(updatedEntry.value);
+		   
+		   return new ResponseEntity<>("Entry is deleted successfully", HttpStatus.OK);
+	   }
+	   
 	   // updates an entry
 	   @RequestMapping(value = "{id}", method = RequestMethod.PUT)
 	   public ResponseEntity<Object> updateEntry(
