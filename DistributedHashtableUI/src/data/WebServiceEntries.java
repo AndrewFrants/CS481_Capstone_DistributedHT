@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import service.DHashEntry;
 import service.DNode;
+import service.DhtLogger;
 
 public class WebServiceEntries implements IDhtEntries {
 
@@ -79,6 +80,8 @@ public class WebServiceEntries implements IDhtEntries {
 			e.printStackTrace();
 		}
 
+	    DhtLogger.log.info("POST new entry {} url: {}", name, targetHostEntriesController);
+
     	HttpEntity<String> entity = new HttpEntity<String>(serializedEntry ,headers);
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
@@ -114,6 +117,8 @@ public class WebServiceEntries implements IDhtEntries {
 				e.printStackTrace();
 			}
 
+		    DhtLogger.log.info("POST new entry {}", name, targetHostEntriesController);
+		    
 	    	HttpEntity<String> entity = new HttpEntity<String>(serializedEntry ,headers);
 		    RestTemplate restTemplate = getProxyRestTemplate();
 		    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
@@ -125,9 +130,38 @@ public class WebServiceEntries implements IDhtEntries {
     
     @Override
     public void update(DNode node, int entryId, String entryValue) {
-    	
+    	// TODO Rachana
     }
-    
+	
+	public DHashEntry get(Integer key)
+    {
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.setContentType(MediaType.APPLICATION_JSON);
+        ObjectMapper mapper = new ObjectMapper();
+        
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    
+	    DHashEntry entry = null;
+       
+	    String url = targetHostEntriesController + key;
+	    DhtLogger.log.info("Getting key by hash {} at url: {}", key, url);
+	    
+        try {
+			entry = mapper.readValue(restTemplate.getForObject(url, String.class), DHashEntry.class);
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RestClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return entry;
+	}
+
     public DHashEntry get(String name)
     {
     	HttpHeaders headers = new HttpHeaders();

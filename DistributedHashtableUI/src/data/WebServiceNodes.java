@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import service.ChecksumDemoHashingFunction;
 import service.DHashEntry;
 import service.DNode;
+import service.DhtLogger;
 
 /**
  * @author Andrew This is the webservice version of the Nodes Collection
@@ -72,6 +73,8 @@ public class WebServiceNodes implements IDhtNodes {
 	@Override
 	public DNode findNodeByName(Integer hash) {
 
+		DhtLogger.log.info("Getting node {}", hash);
+		
 		return getNodeByPath(targetHostNodesController + hash);
 	}
 
@@ -170,31 +173,43 @@ public class WebServiceNodes implements IDhtNodes {
 	 */
 
 	public void updateNode(DNode n) {
-
 		if (n.isUrlPointingAt(targetHostNodesController)) {
-			String url = targetHostNodesController + n.getName();
+			String url = targetHostNodesController + n.nodeID;
 
-			RestTemplate restTemplate = getProxyRestTemplate();
-			ObjectMapper mapper = new ObjectMapper();
+			//try
+			//{
+				DhtLogger.log.info("Patching node at url {}", url);
+				
+				RestTemplate restTemplate = getProxyRestTemplate();
+				ObjectMapper mapper = new ObjectMapper();
 
-			String updatedNode = null;
+				String updatedNode = null;
 
-			try {
-				updatedNode = mapper.writeValueAsString(n);
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				try {
+					updatedNode = mapper.writeValueAsString(n);
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-			restTemplate.patchForObject(url, updatedNode, String.class);
+				restTemplate.put(url, updatedNode, String.class);
+			//}
+			//catch (Exception ex)
+			//{
+			//	DhtLogger.log.warn("Couldnt patch node possibly server inst up yet {}", url);
+			//}
 		} else {
-			WebServiceNodes wsn = this.getProxyFor(n);
-			//wsn.updateNode(n);
+
+			WebServiceNodes wsNodes = this.getProxyFor(n);
+			wsNodes.updateNode(n);
 		}
 	}
 
 	private List<DNode> getNodes(String uri) {
 
+
+		DhtLogger.log.info("GET to {}", uri);
+		
 		RestTemplate restTemplate = getProxyRestTemplate();
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -230,6 +245,7 @@ public class WebServiceNodes implements IDhtNodes {
 	public void AddEntry(String text) {
 		DNode node = findNodeByName(text);
 		node.AssignKeys(DHashEntry.getHashEntry(text));
+		DhtLogger.log.info("Adding key {} to node: {}({})", text, node.name, node.nodeID);
 		this.updateNode(node);
 	}
 
@@ -239,12 +255,14 @@ public class WebServiceNodes implements IDhtNodes {
 		HttpHeaders headers = new HttpHeaders();
 		HttpEntity<String> request = new HttpEntity<>(text, headers);
 		RestTemplate restTemplate = getProxyRestTemplate();
+		DhtLogger.log.info("Posting entry {} to node {}({})", text, node.name, node.nodeID);
 		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
 
 	// removing entry
 	public void RemoveEntry(String text) {
 		DNode node = findNodeByName(text);
+		DhtLogger.log.info("Removing entry {} from node {}({})", text, node.name, node.nodeID);
 		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
 		this.updateNode(node);
 	}

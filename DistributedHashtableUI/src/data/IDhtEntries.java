@@ -16,7 +16,9 @@ public interface IDhtEntries {
 	void insert(String name);
 	
     public DHashEntry get(String name);
-    
+	
+	public DHashEntry get(Integer key);
+
     public DHashEntry get(DNode node, String name);
 	/*
 	 * Insert into node

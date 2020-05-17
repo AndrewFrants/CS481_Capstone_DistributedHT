@@ -11,7 +11,10 @@ public class DHServerInstance {
 	public DNode currentNode;
 	public IDhtNodes dhtNodes;
 	public IDhtEntries dhtEntries;
-	
+	Boolean web;
+	String address;
+	Boolean joinNetwork;
+
 	/*
 	Example of loading resources
 	https://howtodoinjava.com/spring-boot2/read-file-from-resources/
@@ -44,8 +47,15 @@ public class DHServerInstance {
 	
 	public DHServerInstance(String address, Boolean joinNetwork, Boolean web)
 	{
-		DhtLogger.log.info("initialize address={} joinNetwork={} web={}", address, joinNetwork, web);
+		this.address = address;
+		this.joinNetwork = joinNetwork;
+		this.web = web;
 
+		DhtLogger.log.info("initialize address={} joinNetwork={} web={}", address, joinNetwork, web);
+	}
+	
+	public void joinNetwork()
+	{
 		if (web)
 		{
 			// when you change this to webservice
@@ -75,7 +85,7 @@ public class DHServerInstance {
 					{
 						try
 						{
-							DhtLogger.log.info("Waiting 15 seconds to rejoin network, address={} nodeId={}", currentNode.getNodeAddress(), currentNode.nodeID);
+							DhtLogger.log.info("Waiting 15 seconds to rejoin network, address={} nodeId={}, ex={}", currentNode.getNodeAddress(), currentNode.nodeID, ex);
 							Thread.sleep(15000);
 						} catch (Exception e) {}
 					}
@@ -102,14 +112,14 @@ public class DHServerInstance {
 			}
 		}
 	}
-	
+
 	public void addNode(DNode reqNode)
 	{
 		DhtLogger.log.info("Node name={} nodeID={} joining the network", reqNode.name, reqNode.nodeID);
 
 		// Case 1: NodeID matches, this is an edge case
 		// nodeIDs should be unique
-		if(currentNode.nodeID == reqNode.nodeID) {
+		if(currentNode.nodeID.equals(reqNode.nodeID)) {
 			DhtLogger.log.warn("Case 1. CurrNodeID {} ReqNodeId: {} wasnt unique/overlapping", currentNode.name, reqNode.nodeID);
 			dhtNodes.addNode(reqNode);
 		}
@@ -145,7 +155,7 @@ public class DHServerInstance {
 			// Case 3a. reqNode is the predecessor of currentNode
 			// requesting node becomes the successor of conNode
 			//  SAME -> C.Predesessor -> R -> C -> C.Successor -> SAME
-			if(reqNode.successor.nodeID == currentNode.nodeID) {
+			if(reqNode.successor.nodeID.equals(currentNode.nodeID)) {
 				
 				// conNode -> reqNode -> currentNode
 				currentNode.predecessor = reqNode;
@@ -326,19 +336,5 @@ public class DHServerInstance {
 			}			
 		}
 	}
-	
-	public void insertFile(String file) {
-		int fileID = ChecksumDemoHashingFunction.hashValue(file);
-		if(currentNode.keyList.contains(fileID)) {
-			currentNode.localTable.put(fileID, file);
-		}
-		
-		else {
-			dhtNodes.AddEntry(file); 
-		}
-		
-	}
-	
-	
 	
 }

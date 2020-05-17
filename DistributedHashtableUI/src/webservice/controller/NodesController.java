@@ -1,9 +1,7 @@
 package webservice.controller;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,23 +10,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import data.IDhtEntries;
 import data.IDhtNodes;
 import data.WebServiceNodes;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import service.AssertUtilities;
 import service.ChecksumDemoHashingFunction;
 import service.DHServerInstance;
-import service.DHService;
 import service.DHashEntry;
 import service.DNode;
 import service.DhtLogger;
@@ -47,14 +39,9 @@ public class NodesController {
 	public DHServerInstance getWS() {
 		return DhtWebService.dhtServiceInstance;
 	}
-
-	
-	private ResponseEntity<Object> HttpResponse(final Object obj) {
-			return new ResponseEntity<>(obj, HttpStatus.OK);
-	}
    
 	@RequestMapping()
-	public ResponseEntity<Object> getEntry() {
+	public ResponseEntity<Object> getAllNodes() {
 		//Create a new ObjectMapper object
 		final ObjectMapper mapper = new ObjectMapper();
 
@@ -67,7 +54,7 @@ public class NodesController {
 		{
 			nodes.add(currNode);
 
-			if (currNode.successor == head || currNode.successor == null)
+			if (currNode.successor == null || currNode.successor.equals(head))
 			{
 				if (currNode.successor != null)
 				{
@@ -102,24 +89,6 @@ public class NodesController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<DNode> get(@PathVariable("id") final String id) {
 
-	/*
-		DNode node = getWS().findNodeByName(id);
-		Integer hash = Integer.parseInt(id);
-		
-		System.out.println(String.format("Retrieved node: %d from memory, looking for %d", node.nodeID, hash));
-		
-		if (node.nodeID != hash)
-		{
-			DNode networkNode = DhtWebService.dhtServiceInstance.getNode(hash);
-			
-			if (networkNode != null)
-			{
-				node = networkNode;
-				System.out.println(String.format("Memory node did not match issued DHT request, received: %d, expected: %d", node.nodeID, hash));
-			}
-		}
-		*/
-
 		final DNode foundNode = internalGetNode(id, true);
 		if (foundNode == null) {
 			return new ResponseEntity<DNode>(HttpStatus.NOT_FOUND);
@@ -135,7 +104,19 @@ public class NodesController {
 	private DNode internalGetNode(final Integer id, final Boolean usingStringSearch, final Boolean traceError) {
 		AssertUtilities.ThrowIfNull(id, "id was null");
 
-		final DNode foundNode = getWS().getNode(id);
+		return internalGetNode(getWS(), id, usingStringSearch, traceError);
+	}
+
+	public static DNode internalGetNode(DHServerInstance dhInstance, final Integer id, final Boolean usingStringSearch, final Boolean traceError) {
+		AssertUtilities.ThrowIfNull(id, "id was null");
+		AssertUtilities.ThrowIfNull(dhInstance, "dhInstance was null");
+		
+		if (dhInstance.currentNode.nodeID.equals(id))
+		{
+			return dhInstance.currentNode;
+		}
+
+		final DNode foundNode = dhInstance.getNode(id);
 			
 		if (foundNode == null && traceError)
 		{
@@ -157,6 +138,11 @@ public class NodesController {
 			usingStringSearch = true;
 		}
 
+		if (getWS().currentNode.nodeID.equals(idAsInt))
+		{
+			return getWS().currentNode;
+		}
+
 		final DNode foundNode = internalGetNode(idAsInt, usingStringSearch, traceError);
 
 		return foundNode;
@@ -176,8 +162,52 @@ public class NodesController {
 		return new ResponseEntity<List<DHashEntry>>(specificEntries, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Object> put(@PathVariable("id") final String id, @RequestBody final String patchNodeStr) {
+		
+		final ObjectMapper mapper = new ObjectMapper();
+		
+		DNode patchNode = null;
+		
+		try {
+			patchNode = mapper.readValue(patchNodeStr, DNode.class);
+		} catch (final JsonMappingException e) {
+			e.printStackTrace();
+		} catch (final JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		if (patchNode == null)
+		{
+			DhtLogger.log.error("Patch node couldnt be deserialized: {}, returning 4xx.", patchNodeStr);
+			return ControllerHelpers.HttpResponse(HttpStatus.BAD_REQUEST);
+		}
+
+		DhtLogger.log.info("Patching node: {} successor: {} predecessor: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor);
+
+		final DNode networkNode = internalGetNode(patchNode.nodeID, true);
+
+		if (networkNode == null)
+		{
+			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());
+			return ControllerHelpers.HttpResponse(HttpStatus.NOT_FOUND);
+		}
+
+		if (!patchNode.nodeID.equals(getWS().currentNode.nodeID)) // no network call if itself!
+		{
+			WebServiceNodes connection = WebServiceNodes.getProxyFor(patchNode);
+			connection.updateNode(patchNode);
+		}
+		else
+		{
+			getWS().currentNode.getTable().copyValuesTo(patchNode.getTable());
+		}
+
+		return ControllerHelpers.HttpResponse(HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-	public ResponseEntity<Object> get(@PathVariable("id") final String id, @RequestBody final String patchNodeStr) {
+	public ResponseEntity<Object> patch(@PathVariable("id") final String id, @RequestBody final String patchNodeStr) {
 		
 		final ObjectMapper mapper = new ObjectMapper();
 		
@@ -196,24 +226,27 @@ public class NodesController {
 		if (patchNode == null)
 		{
 			DhtLogger.log.error("Patch node couldnt be deserialized: {}, returning 4xx.", patchNodeStr);
-			return HttpResponse(HttpStatus.BAD_REQUEST);
+			return ControllerHelpers.HttpResponse(HttpStatus.BAD_REQUEST);
 		}
 
-		final DNode networkNode = internalGetNode(patchNode.getName(), true);
+		final DNode networkNode = internalGetNode(patchNode.nodeID, true);
 
 		if (networkNode == null)
 		{
 			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());
-			return HttpResponse(HttpStatus.NOT_FOUND);
+			return ControllerHelpers.HttpResponse(HttpStatus.NOT_FOUND);
 		}
 
 		patchNode.getTable().copyValuesTo(networkNode.getTable());
 
-		WebServiceNodes connection = WebServiceNodes.getProxyFor(patchNode);
+		if (!patchNode.nodeID.equals(getWS().currentNode.nodeID)) // no network call if itself!
+		{
+			WebServiceNodes connection = WebServiceNodes.getProxyFor(patchNode);
 
-		connection.updateNode(networkNode);
+			connection.updateNode(networkNode);
+		}
 
-		return HttpResponse(HttpStatus.OK);
+		return ControllerHelpers.HttpResponse(HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "hash/{id}", method = RequestMethod.GET)
@@ -228,7 +261,7 @@ public class NodesController {
 
 		// TODO: Delete a node should remove the node from the Successor/Predecessor
 
-		return HttpResponse(HttpStatus.NOT_ACCEPTABLE);
+		return ControllerHelpers.HttpResponse(HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)

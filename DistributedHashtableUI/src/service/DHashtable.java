@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class DHashtable implements Serializable {
 
-	HashMap<Integer, DHashEntry> localHT;
+	private HashMap<Integer, DHashEntry> localHT;
 	
 	/*
 	 * Gets the backing hashtable
@@ -68,6 +68,22 @@ public class DHashtable implements Serializable {
 			localHT.put(e.getKey(), e);
 		}
 	}
+
+	public void updateEntries(DHashEntry... hashEntries)
+	{
+		for (DHashEntry e : hashEntries)
+		{
+			if (localHT.containsKey(e.key))
+			{
+				localHT.replace(e.key, localHT.get(e.key), e);
+			}
+			else
+			{
+				insert(e);
+			}
+		}
+	}
+	
 	
 	/*
 	 * Remove the keys

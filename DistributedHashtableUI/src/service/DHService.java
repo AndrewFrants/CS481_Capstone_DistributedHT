@@ -84,7 +84,7 @@ public class DHService {
 	 */
 	public void insertValue(String value)
 	{
-		log.debug("insertValue(DNode) {}", value);
+		DhtLogger.log.info("insertValue(DNode) {}", value);
 		
 		/*
 		 * TODO. This part can be/should be optimized to a BST
@@ -93,9 +93,6 @@ public class DHService {
 		{
 			Integer key = ChecksumDemoHashingFunction.hashValue(value);
 			List<DNode> allNodes = dhtNodes.getAllNodes();
-			
-			if (key == 1)
-				key = 1;
 			
 			for (DNode node : allNodes)
 			{
@@ -114,8 +111,14 @@ public class DHService {
 		}
 		else 
 		{
+			DhtLogger.log.info("Invoking WebAPI to insert {}", value);
 			this.dhtEntries.insert(value);
 		}
+	}
+	
+	public DHashEntry getEntry(Integer key)
+	{
+		return this.dhtEntries.get(key);
 	}
 	
 	/*
@@ -229,14 +232,11 @@ public class DHService {
 		for (int i = 0; i < keyNames.length; i++)
 		{
 			Integer hash = ChecksumDemoHashingFunction.hashValue(keyNames[i]);
-			if (hash == 1)
-				hash = 1;
+
 			DNode node = dhService.findNodeByName(hash);
 			if (node != null)
 			{
 				System.out.println("Node: " + node.nodeID + " entry: " + hash);
-				if (hash == 1)
-					hash = 1;
 				
 				node.getTable().insert(keyNames[i]);
 			}
@@ -250,6 +250,7 @@ public class DHService {
 	 */
 	public List<DNode> getAllNodes()
 	{
+		DhtLogger.log.info("getting all nodes from WS.");
 		return dhtNodes.getAllNodes();
 	}
 

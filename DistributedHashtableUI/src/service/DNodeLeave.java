@@ -30,7 +30,7 @@ public class DNodeLeave {
 
 		for (int i = 0; i < thisNode.router.forwardToNode.length; i++) {
 
-			if (thisNode.router.forwardToNode[i].nodeID == leavingNode.nodeID) {
+			if (thisNode.router.forwardToNode[i].nodeID.equals(leavingNode.nodeID)) {
 				System.out.println("Test");
 				thisNode.router.forwardToNode[i] = leavingNode.successor;
 				thisNode.router.addresses[i] = leavingNode.successor.name;

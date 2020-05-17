@@ -49,6 +49,7 @@ import service.ChecksumDemoHashingFunction;
 import service.DHService;
 import service.DHashEntry;
 import service.DNode;
+import service.DhtLogger;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.JTabbedPane;
@@ -363,6 +364,7 @@ public class MainWindow extends JFrame {
 						JOptionPane.PLAIN_MESSAGE);
 
 				if (result == JOptionPane.OK_OPTION) {
+					DhtLogger.log.info("Adding entry {}", replaceTxt.getText());
 					dhService.AddEntry(replaceTxt.getText());
 				}
 
@@ -511,6 +513,8 @@ public class MainWindow extends JFrame {
 		for (DNode node : list) {
 			int count = node.getAllEntries().size();
 
+			DhtLogger.log.info("Added node: {} keys count: {} ", node.nodeID, count);
+			
 			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID() + ", angle: "
 					+ node.getAngle() + ", Size=" + count + ")");
 		}
@@ -540,7 +544,8 @@ public class MainWindow extends JFrame {
 		for (DHashEntry en : list) {
 			keysList.add(keysList.getSize(), en.getValue().split("\n")[0] + " (" + en.key.toString() + ")");
 		}
-		System.out.println(keysList);
+
+		DhtLogger.log.info("Retrieve keys count {}", keysList.getSize());
 
 		keyList.repaint();
 	}
@@ -556,9 +561,8 @@ public class MainWindow extends JFrame {
 		if (selectedIndex.equalsIgnoreCase("All"))
 			return;
 
-		DNode node = dhService.findNodeByName(selectedKey);
-
-		DHashEntry entry = node.getTable().getEntry(selectedKey);
+		DhtLogger.log.info("Retrieve key {} selected index: {}", selectedKey, selectedIndex);
+		DHashEntry entry = dhService.getEntry(selectedKey);
 
 		currentValue.setText(entry.getValue());
 	}

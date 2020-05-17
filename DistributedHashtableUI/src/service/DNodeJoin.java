@@ -78,7 +78,7 @@ public abstract class DNodeJoin {
 
 				}
 
-				if (closestNode.nodeID == thisNode.nodeID) {
+				if (closestNode.nodeID.equals(thisNode.nodeID)) {
 					closestNode = thisNode.successor;
 				}
 

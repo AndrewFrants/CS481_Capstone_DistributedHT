@@ -24,13 +24,15 @@ public class DhtWebService {
 	//
 	// Use only for testing and when web=false!!!
 	public static DHService InMemoryWebService;
-	
+	public static String serverUrl;
+	public static Boolean joinNetwork;
+
 	public static DHServerInstance dhtServiceInstance;
 	
-	   static {
-		   // initialize mock service
-		   DhtWebService.InMemoryWebService = new DHService(false); // DHService.createFiveNodeCluster(false);
-	   }
+	static {
+		// initialize mock service
+		DhtWebService.InMemoryWebService = new DHService(false); // DHService.createFiveNodeCluster(false);
+	}
 	   
 	public static void main(String[] args) {
 		
@@ -72,8 +74,29 @@ public class DhtWebService {
 
 		DhtLogger.log.info("--- ENTRY POINT ---: Instance URL: {} firstInstanceSetting={}", currentInstanceUrl, joinNetwork);
 
-		dhtServiceInstance = new DHServerInstance(currentInstanceUrl, joinNetwork, true);
-		
+		DhtWebService.serverUrl = currentInstanceUrl;
+		DhtWebService.joinNetwork = joinNetwork;
+
+		if (DhtWebService.joinNetwork)
+		{
+			new java.util.Timer().schedule( 
+				new java.util.TimerTask() {
+					@Override
+					public void run() {
+						DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true);
+						DhtWebService.dhtServiceInstance.joinNetwork();
+					}
+				}, 
+				10000 
+			);
+			}
+		else
+		{
+			DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true);
+			DhtWebService.dhtServiceInstance.joinNetwork();
+		}
+
 		SpringApplication.run(DhtWebService.class, args);
+
 	}
 }
