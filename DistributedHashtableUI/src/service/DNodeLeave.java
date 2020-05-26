@@ -26,7 +26,6 @@ public class DNodeLeave {
 
 	}
 
-	
 	public static void updateRoutingTable(DNode thisNode, DNode leavingNode) {
 
 		for (int i = 0; i < thisNode.router.forwardToNode.length; i++) {
@@ -37,5 +36,6 @@ public class DNodeLeave {
 				thisNode.router.addresses[i] = leavingNode.successor.name;
 			}
 		}
+
 	}
 }

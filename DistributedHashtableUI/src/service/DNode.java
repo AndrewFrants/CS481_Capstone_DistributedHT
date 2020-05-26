@@ -22,8 +22,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public DNode predecessor;
 	@JsonIgnore
 	public RoutingTable router;
-	public ArrayList<Integer> keyList; // replace
-	public Range keyRange; // range of node
+	public ArrayList<Integer> keyList;
 	public int size; // size of networks
 	
 	/*
@@ -46,9 +45,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		predecessor = null;
 		keyList = new ArrayList<Integer>();
 		router = new RoutingTable(this);
-		keyRange = new Range();
-		keyRange.setLowID(this.nodeID);
-		keyRange.setHighID(this.nodeID - 1);
 		//localTable = new HashMap<Integer, String>();
 	}
 
@@ -217,18 +213,15 @@ public class DNode implements Comparable<DNode>, Serializable {
 			return false;
 
 		else {
-		// DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
-		DNode connecting = receivingNode.findIfIAmSuccessor(this);
+		DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
+		
 		// if the connecting node exists, the requesting node has found it's range placement
 		// initialize it's successor/predecessor, keylist
 		// change receiving and connecting node's id
 		if(connecting != null) {
-		updateRequestingNodeUponJoin(receivingNode, connecting);	
-		connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
+		updateRequestingNodeUponJoin(receivingNode, connecting);
 		receivingNode.updateReceivingNodeUponJoin(this, connecting);
-
-
-		
+		connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
 		}
 		// forward request to the receiving node's successor
 		// this will later need to be changed to go into routing table and find "closest" node, to 
@@ -246,31 +239,11 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public boolean receiveJoinRequest(DNode incomingNode) {
 		
 		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
-			// DNodeJoin.updateNodes(this, incomingNode);
+			 DNodeJoin.updateNodes(this, incomingNode);
 			return true;
 		}
 		return false;
 
-	}
-	
-	// Receiving node checks if it is the successor of the requesting node
-	// REPLACES BELOW METHOD
-	public DNode findIfIAmSuccessor(DNode reqNode) {
-		
-		int reqID = reqNode.nodeID;
-		
-		if(this.successor == null || this.predecessor == null) {
-			return this;
-		}	
-		
-		if(keyRange.contains(reqID)) {
-			return this.successor;
-		}		
-		
-		else {
-			return null;
-		}	
-		
 	}
 	
 	// This node find's if a requesting node is within this node(receivers)
@@ -278,13 +251,14 @@ public class DNode implements Comparable<DNode>, Serializable {
 	// and its successor or predecessor.
 	
 	// this method needs to be cleaned up, expressions can probably be reduced
-	// REPLACED WITH ABOVE METHOD
 	public DNode findIfRequestingNodeIsInRange(DNode reqNode) {
 		int reqID = reqNode.nodeID;
 		
 		if(this.successor == null || this.predecessor == null) {
 			return this;
-		}				
+		}
+		
+		
 		int sucID = this.successor.nodeID;
 		int predID = this.predecessor.nodeID;
 		
@@ -325,11 +299,10 @@ public class DNode implements Comparable<DNode>, Serializable {
 	
 	public void updateRequestingNodeUponJoin(DNode recNode, DNode connectingNode) {
 		int recID = recNode.nodeID;
-		
+
 		if(recNode.predecessor == null || recNode.successor == null) {
 			this.setPredecessor(recNode);
 			this.setSuccessor(recNode);
-			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);
 		//	DNodeJoin.updateRoutingTable(this);
 			return;
@@ -339,7 +312,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		if(conID > recID && nodeID > recID && nodeID < conID) {
 			this.setSuccessor(connectingNode);
 			this.setPredecessor(recNode);
-			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from recNode (successor)
 		//	DNodeJoin.updateRoutingTable(this);
 		}
@@ -348,7 +320,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else if(conID < recID && (nodeID > conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
-			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, connectingNode);
 		//	DNodeJoin.updateRoutingTable(this);
 			//take keys from recNode (successor)
@@ -359,7 +330,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else if(recID < conID && (nodeID < conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
-			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, connectingNode);//take keys from recNode (successor)
 		//	DNodeJoin.updateRoutingTable(this);
 			
@@ -368,7 +338,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else {
 			this.setPredecessor(recNode);
 			this.setSuccessor(connectingNode);
-			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from connectingNode (successor)
 		//	DNodeJoin.updateRoutingTable(this);
 			
@@ -391,13 +360,12 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setSuccessor(reqNode);
 		}
 		else {
-		this.setPredecessor(reqNode);
-		
+		this.setPredecessor(reqNode);	
 		DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
 	//	DNodeJoin.updateRoutingTable(this);
 		
 		}
-		DNodeJoin.updateKeyRange(this);			
+					
 	}
 	
 	// Updates the connecting node (which is either the successor or the
@@ -411,7 +379,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		if(nodeID > recID && nodeID > reqID && recID < reqID) {
 		this.setPredecessor(reqNode);	
-		DNodeJoin.updateKeyRange(this);
 		DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
 		DNodeJoin.updateRoutingTable(this);
 		
@@ -419,15 +386,12 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		else if(nodeID < recID && (reqID > recID|| reqID < nodeID)) {
 			this.setPredecessor(reqNode);
-			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
 			DNodeJoin.updateRoutingTable(this);
 			
 		}
 		else {
-		
 		this.setSuccessor(reqNode);	
-		DNodeJoin.updateKeyRange(this);
 		}
 	}
 	
