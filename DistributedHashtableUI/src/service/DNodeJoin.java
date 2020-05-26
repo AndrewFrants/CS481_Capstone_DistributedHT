@@ -7,9 +7,10 @@ public abstract class DNodeJoin {
 
 	}
 
+
 	public static void updateKeyList(DNode thisNode, DNode otherNode) {
 		// handles base case of when the first two nodes on a network join together..
-
+	/*
 		thisNode.keyList.clear();
 
 		if (thisNode.nodeID < otherNode.nodeID) {
@@ -26,8 +27,10 @@ public abstract class DNodeJoin {
 				thisNode.keyList.add(i);
 			}
 		}
+		*/
 	}
 
+	
 	public static void updateRoutingTable(DNode thisNode) {
 
 		if (thisNode.successor == null) {
@@ -78,7 +81,7 @@ public abstract class DNodeJoin {
 
 				}
 
-				if (closestNode.nodeID == thisNode.nodeID) {
+				if (closestNode.nodeID.equals(thisNode.nodeID)) {
 					closestNode = thisNode.successor;
 				}
 

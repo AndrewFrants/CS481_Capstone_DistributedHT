@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class DHashtable implements Serializable {
 
-	HashMap<Integer, DHashEntry> localHT;
+	private HashMap<Integer, DHashEntry> localHT;
 	
 	/*
 	 * Gets the backing hashtable
@@ -68,6 +68,22 @@ public class DHashtable implements Serializable {
 			localHT.put(e.getKey(), e);
 		}
 	}
+
+	public void updateEntries(DHashEntry... hashEntries)
+	{
+		for (DHashEntry e : hashEntries)
+		{
+			if (localHT.containsKey(e.key))
+			{
+				localHT.replace(e.key, localHT.get(e.key), e);
+			}
+			else
+			{
+				insert(e);
+			}
+		}
+	}
+	
 	
 	/*
 	 * Remove the keys
@@ -106,13 +122,15 @@ public class DHashtable implements Serializable {
 		}
 		
 		Set<Integer> set = localHT.keySet();
-		
+		Integer keysCopiedCounter = 0;
+
 		for (Integer key : set)
 		{
 			if (key >= keysAbove)
 			{
 				DHashEntry entryToCopy = localHT.get(key);
 				newTable.insert(entryToCopy);
+				keysCopiedCounter++;
 			}
 		}
 		
@@ -124,6 +142,10 @@ public class DHashtable implements Serializable {
 			localHT.remove(key);
 		}
 		
+		DhtLogger.log.info("moveKeysAboveTo keysAbove: {} copied: {} count of keys (and removed from source table)", 
+					keysAbove,
+					keysCopiedCounter);
+
 		return newTable;
 	}
 }

@@ -12,34 +12,34 @@ import org.junit.jupiter.api.BeforeEach;
 
 import service.*;
 
-class DHServiceTests {
+public class DHServiceTest {
 
-private DHService dhService;
+	private DHService dhService;
 	
 	@BeforeEach
-	void setUp() throws Exception {
+	public void setUp() throws Exception {
 		this.dhService = new DHService();
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 	}
 
 	@Test
-	void testDefaultDHService() {
+	public void testDefaultDHService() {
 		List<DNode> allNodes = this.dhService.getAllNodes();
 		assertEquals(0, allNodes.size());
 	}
 	
 	@Test
-	void testAddOneNode() {
+	public void testAddOneNode() {
 		this.dhService.addNode("nodeName1");
 		List<DNode> allNodes = this.dhService.getAllNodes();
 		assertEquals(1, allNodes.size());
 	}
 	
 	@Test
-	void testaddexistingNode() {
+	public void testaddexistingNode() {
 		this.dhService.addNode("nodeName1");		
 		this.dhService.addNode("nodeName1");
 		List<DNode> allNodes = this.dhService.getAllNodes();
@@ -47,7 +47,7 @@ private DHService dhService;
 	}
 	
 	@Test
-	void testAddMultipleNode() {
+	public void testAddMultipleNode() {
 		String[] nodeNames = new String[] {
 				"nodeName1", 
 				"nodeName2",
@@ -63,14 +63,14 @@ private DHService dhService;
 	}
 		
 	@Test
-	void testFiveClusteredDHService() {
+	public void testFiveClusteredDHService() {
 		DHService fiveNodeCluster = DHService.createFiveNodeCluster(false);
 		List<DNode> fiveNodeClusterNodes = fiveNodeCluster.getAllNodes();
 		assertEquals(4, fiveNodeClusterNodes.size());
 	}
 	
 	@Test
-	void testfindNodeByName() {
+	public void testfindNodeByName() {
 		DNode node = this.dhService.findNodeByName("node1");
 		assertNull(node);
 		this.dhService.addNode("node1");
@@ -79,7 +79,7 @@ private DHService dhService;
 	}
 	
 	@Test
-	void testRemoveNode() {
+	public void testRemoveNode() {
 		this.dhService.addNode("node1");
 		DNode node = this.dhService.findNodeByName("node1");
 		assertNotNull(node);

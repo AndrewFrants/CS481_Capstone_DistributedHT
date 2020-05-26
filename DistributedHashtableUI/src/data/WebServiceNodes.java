@@ -26,49 +26,48 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import service.ChecksumDemoHashingFunction;
 import service.DHashEntry;
 import service.DNode;
+import service.DhtLogger;
 
 /**
- * @author Andrew
- * This is the webservice version of the Nodes Collection
+ * @author Andrew This is the webservice version of the Nodes Collection
  */
 public class WebServiceNodes implements IDhtNodes {
 
-    final String uriFmt = "http://%s/nodes/";
-    
-    String targetHostNodesController;
-    
-    String host = "localhost";
-    String port = "8080";
-    
-    public static boolean isProxyEnabled = false;
-    
-    public WebServiceNodes()
-    {
-    	String fqdn = String.format("%s:%s", host, port);
-    	targetHostNodesController = String.format(uriFmt, fqdn);
-    }
-    
-    public WebServiceNodes(String host, String port)
-    {
-    	String fqdn = String.format("%s:%s", host, port);
-    	targetHostNodesController = String.format(uriFmt, fqdn);
-    }
-    
-    public WebServiceNodes(String fqdn)
-    {
-    	targetHostNodesController = String.format(uriFmt, fqdn);
-    }
-    
-    public WebServiceNodes getProxyFor(DNode node)
-    {
-    	return new WebServiceNodes(node.getName());
-    }
-    
-    public WebServiceNodes getProxyFor(String host, String port)
-    {
-    	return new WebServiceNodes(host, port);
-    }
-    
+	final String uriFmt = "http://%s/nodes/";
+
+	String targetHostNodesController;
+
+	String host = "localhost";
+	String port = "8080";
+
+	public static boolean isProxyEnabled = false;
+
+	public WebServiceNodes() {
+		String fqdn = String.format("%s:%s", host, port);
+		targetHostNodesController = String.format(uriFmt, fqdn);
+	}
+
+	public WebServiceNodes(String host, String port) {
+		String fqdn = String.format("%s:%s", host, port);
+		targetHostNodesController = String.format(uriFmt, fqdn);
+	}
+
+	public WebServiceNodes(String fqdn) {
+		targetHostNodesController = String.format(uriFmt, fqdn);
+	}
+
+	public static WebServiceNodes getProxyFor(DNode node) {
+		return new WebServiceNodes(node.getName());
+	}
+
+	public IDhtNodes createProxyFor(DNode node) {
+		return new WebServiceNodes(node.getName());
+	}
+	
+	public static WebServiceNodes getProxyFor(String host, String port) {
+		return new WebServiceNodes(host, port);
+	}
+
 	@Override
 	public DNode findNodeByName(String name) {
 		int hash = ChecksumDemoHashingFunction.hashValue(name);
@@ -78,55 +77,53 @@ public class WebServiceNodes implements IDhtNodes {
 	@Override
 	public DNode findNodeByName(Integer hash) {
 
+		DhtLogger.log.info("Getting node {}", hash);
+		
 		return getNodeByPath(targetHostNodesController + hash);
 	}
-	
-	@Override
-	public DNode findNodeByName(DNode n, Integer hash) {
 
-		if (n.isUrlPointingAt(targetHostNodesController))
-		{
-			return findNodeByName(hash);
-		}
-		else
-		{
-			return this.getProxyFor(n).findNodeByName(hash);
+	@Override
+	public DNode findNodeByName(DNode n) {
+
+		if (n.isUrlPointingAt(targetHostNodesController)) {
+			return findNodeByName(n.nodeID);
+		} else {
+			return this.createProxyFor(n).findNodeByName(n.nodeID);
 		}
 	}
-
 
 	@Override
 	public void addNode(String name) {
 
-	    HttpHeaders headers = new HttpHeaders();
+		HttpHeaders headers = new HttpHeaders();
 
-	    DNode node = new DNode(name);
-	    
-	    HttpEntity<DNode> request = new HttpEntity<>(node, headers);
-		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    restTemplate.postForObject(targetHostNodesController, request, String.class);
+		DNode node = new DNode(name);
+
+		HttpEntity<DNode> request = new HttpEntity<>(node, headers);
+
+		RestTemplate restTemplate = getProxyRestTemplate();
+		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
-	
+
 	@Override
 	public void addNode(DNode node) {
 
-	    HttpHeaders headers = new HttpHeaders();
+		HttpHeaders headers = new HttpHeaders();
 
-	    HttpEntity<DNode> request = new HttpEntity<>(node, headers);
-		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    restTemplate.postForObject(targetHostNodesController, request, String.class);
+		HttpEntity<DNode> request = new HttpEntity<>(node, headers);
+
+		RestTemplate restTemplate = getProxyRestTemplate();
+		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
-
 	
-	public void removeNode(DNode name) {
-
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    
-	    restTemplate.delete(targetHostNodesController + name);
-
+	@Override
+	public void removeNode(DNode node) {
+		DNode predecessor = findNodeByName(node.predecessor.nodeID);
+		
+		RestTemplate restTemplate = getProxyRestTemplate();
+		restTemplate.delete(targetHostNodesController + predecessor.name);
 	}
+
 
 	@Override
 	public List<DNode> getAllNodes() {
@@ -135,73 +132,83 @@ public class WebServiceNodes implements IDhtNodes {
 
 	public RestTemplate getProxyRestTemplate() {
 		if (isProxyEnabled) {
-		    SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-	
-		    Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress("localhost", 8888));
-		    requestFactory.setProxy(proxy);
-	
-		    return new RestTemplate(requestFactory);
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+
+			Proxy proxy = new Proxy(Type.HTTP, new InetSocketAddress("localhost", 8888));
+			requestFactory.setProxy(proxy);
+
+			return new RestTemplate(requestFactory);
 		}
-		
+
 		return new RestTemplate();
 	}
-	
+
 	private String getUri(String uri) {
-		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    return restTemplate.getForObject(uri, String.class);
+
+		RestTemplate restTemplate = getProxyRestTemplate();
+		return restTemplate.getForObject(uri, String.class);
+	}
+
+	public DNode get() {
+		RestTemplate restTemplate = getProxyRestTemplate();
+	
+		return restTemplate.getForObject(this.targetHostNodesController, DNode.class);
 	}
 	
 	private DNode getNodeByPath(String uri) {
-		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    return restTemplate.getForObject(uri, DNode.class);
-	}
-	
-	/*
+
 		RestTemplate restTemplate = getProxyRestTemplate();
-	    ResponseEntity<List<T>> response = restTemplate.exchange(
-	      path,
-	      method,
-	      null,
-	      new ParameterizedTypeReference<List<T>>(){});
+		return restTemplate.getForObject(uri, DNode.class);
+	}
+
+	/*
+	 * RestTemplate restTemplate = getProxyRestTemplate(); ResponseEntity<List<T>>
+	 * response = restTemplate.exchange( path, method, null, new
+	 * ParameterizedTypeReference<List<T>>(){});
 	 */
-	
+
 	public void updateNode(DNode n) {
-		
-		if (n.isUrlPointingAt(targetHostNodesController))
-		{
-			String url = targetHostNodesController + n.getName();
-			
-			RestTemplate restTemplate = getProxyRestTemplate();
-		    ObjectMapper mapper = new ObjectMapper();
-		       
-		    String updatedNode = null;
-		       
-		    try {
-		    	updatedNode = mapper.writeValueAsString(n);
-			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if (n.isUrlPointingAt(targetHostNodesController)) {
+			String url = targetHostNodesController + n.nodeID;
+			String updatedNode = null;
+
+			try
+			{
+				DhtLogger.log.info("Patching node at url {}", url);
+				
+				RestTemplate restTemplate = getProxyRestTemplate();
+				ObjectMapper mapper = new ObjectMapper();
+
+				try {
+					updatedNode = mapper.writeValueAsString(n);
+				} catch (JsonProcessingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				restTemplate.put(url, updatedNode, String.class);
 			}
-		     
-			restTemplate.patchForObject(url, updatedNode, String.class);
-		}
-		else
-		{
-			WebServiceNodes wsn = this.getProxyFor(n);
-			//wsn.updateNode(n);
+			catch (Exception ex)
+			{
+				DhtLogger.log.warn("Couldnt patch node possibly server inst up yet {} body {} ex {}", url, updatedNode, ex.toString());
+			}
+		} else {
+
+			WebServiceNodes wsNodes = this.getProxyFor(n);
+			wsNodes.updateNode(n);
 		}
 	}
-	
+
 	private List<DNode> getNodes(String uri) {
+
+		DhtLogger.log.info("GET to {}", uri);
 		
-	   RestTemplate restTemplate = getProxyRestTemplate();
-       ObjectMapper mapper = new ObjectMapper();
-       
-       DNode[] nodes = null;
-       
-        try {
+		RestTemplate restTemplate = getProxyRestTemplate();
+		ObjectMapper mapper = new ObjectMapper();
+
+		DNode[] nodes = null;
+
+		try {
 			nodes = mapper.readValue(restTemplate.getForObject(uri, String.class), DNode[].class);
 		} catch (JsonMappingException e) {
 			// TODO Auto-generated catch block
@@ -214,76 +221,72 @@ public class WebServiceNodes implements IDhtNodes {
 			e.printStackTrace();
 		}
 
-	   List<DNode> list = new ArrayList<DNode>();
-	   for (DNode node : nodes) {
-    		list.add(node);
-	   }
-	   return list;
-	       /*
-	    ResponseEntity<List<T>> response = restTemplate.exchange(
-	      uri,
-	      HttpMethod.GET,
-	      null,
-	      new ParameterizedTypeReference<List<T>>(){});
-	    List<T> list = response.getBody();
-	    return list;
-	    */
+		List<DNode> list = new ArrayList<DNode>();
+		for (DNode node : nodes) {
+			list.add(node);
+		}
+		return list;
+		/*
+		 * ResponseEntity<List<T>> response = restTemplate.exchange( uri,
+		 * HttpMethod.GET, null, new ParameterizedTypeReference<List<T>>(){}); List<T>
+		 * list = response.getBody(); return list;
+		 */
 	}
-	
-	////NEED TO CHANGE ALL METHODS BELOW
-	
+
+
 	// adding entry
 	public void AddEntry(String text) {
 		DNode node = findNodeByName(text);
 		node.AssignKeys(DHashEntry.getHashEntry(text));
+		DhtLogger.log.info("Adding key {} to node: {}({})", text, node.name, node.nodeID);
 		this.updateNode(node);
 	}
-	
+
 	public void AddEntry(DNode node, String text) {
 		node.AssignKeys(DHashEntry.getHashEntry(text));
 		this.updateNode(node);
-		 HttpHeaders headers = new HttpHeaders();
-		  HttpEntity<String> request = new HttpEntity<>(text, headers);
-		    RestTemplate restTemplate = getProxyRestTemplate();
-		    restTemplate.postForObject(targetHostNodesController, request, String.class);
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<String> request = new HttpEntity<>(text, headers);
+		RestTemplate restTemplate = getProxyRestTemplate();
+		DhtLogger.log.info("Posting entry {} to node {}({})", text, node.name, node.nodeID);
+		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
-	
 
-	
-	//removing entry
+	// removing entry
 	public void RemoveEntry(String text) {
 		DNode node = findNodeByName(text);
+		DhtLogger.log.info("Removing entry {} from node {}({})", text, node.name, node.nodeID);
 		node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
 		this.updateNode(node);
 	}
-	
-	//gets all entries 
-	public List<List<DHashEntry>> getAllEntries() {
-		   List<DNode> nodes = new LinkedList<DNode>();
-		   List<List<DHashEntry>> list = new ArrayList<List<DHashEntry>>();
 
-		   for (int i = 0; i < nodes.size(); i++) {
-			   list.add(nodes.get(i).getAllEntries());
-		   }
-		   return (list);
+	// gets all entries
+	public List<List<DHashEntry>> getAllEntries() {
+		List<DNode> nodes = new LinkedList<DNode>();
+		List<List<DHashEntry>> list = new ArrayList<List<DHashEntry>>();
+
+		for (int i = 0; i < nodes.size(); i++) {
+			list.add(nodes.get(i).getAllEntries());
+		}
+		return (list);
 	}
-	
-	//gets  entries for a specific node
+
+	// gets entries for a specific node
 	public List<DHashEntry> getAllEntriesforNode(String id) {
 		DNode node = findNodeByName(id);
 		List<DHashEntry> specificEntries = node.getAllEntries();
-		return(specificEntries);
+		return (specificEntries);
 	}
 
-	@Override
-	public void removeNode(String name) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void removeNode(String name) {
+//		// TODO Auto-generated method stub
+//
+//	}
 
 	@Override
 	public void AddEntry(DNode node) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

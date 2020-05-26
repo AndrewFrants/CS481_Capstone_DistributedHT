@@ -1,10 +1,16 @@
-package test;
+package service.tests;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+import java.util.List;
+import org.junit.Assert;
+//DO NOT USE import org.junit.Test; stupid java
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import service.ChecksumDemoHashingFunction;
 import service.DHServerInstance;
@@ -13,9 +19,10 @@ import service.DNode;
 import service.DNodeJoin;
 import service.DNodeLeave;
 
-public class TestNetwork {
+public class NetworkTest {
 
-	public static void main(String[] args) {	
+	@Test
+	public void runNetworkTest() {	
 		
 		/**DHServerInstance instance = new DHServerInstance();
 		//DHServerInstance instance2 = new DHServerInstance("Address", false);
@@ -219,6 +226,7 @@ public class TestNetwork {
 		System.out.println("Node J's routing table "  + nodeJ.nodeID);
 		nodeJ.router.printRoutingTable();
 		
+		/*
 		System.out.println("Node A ID: " + nodeA.nodeID + " suc: " + nodeA.successor.nodeID + " pred: " + nodeA.predecessor.nodeID);
 		System.out.println("Key Range: " + nodeA.getKeyRange()[0] + " - " + nodeA.getKeyRange()[1]);
 		System.out.println("Node B ID: " + nodeB.nodeID + " suc: " + nodeB.successor.nodeID + " pred: " + nodeB.predecessor.nodeID);
@@ -240,7 +248,7 @@ public class TestNetwork {
 		System.out.println("Key Range: " + nodeI.getKeyRange()[0] + " - " + nodeI.getKeyRange()[1]);
 		System.out.println("Node J ID: " + nodeJ.nodeID + " suc: " + nodeJ.successor.nodeID + " pred: " + nodeJ.predecessor.nodeID);
 		System.out.println("Key Range: " + nodeJ.getKeyRange()[0] + " - " + nodeJ.getKeyRange()[1]);
-		
+				*/
 		DNode[] nodeList = {nodeA, nodeB, nodeC, nodeD, nodeE, nodeF, nodeG, nodeH, nodeI, nodeJ};
 		
 		for(int i = 0; i < 500; i++ ) {
@@ -248,6 +256,7 @@ public class TestNetwork {
 		int val = r.nextInt(10);
 		DNodeJoin.updateRoutingTable(nodeList[val]);
 		}
+
 		
 		System.out.println("Node A's routing table " + nodeA.nodeID);
 		nodeA.router.printRoutingTable();

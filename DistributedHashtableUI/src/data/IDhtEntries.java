@@ -16,10 +16,18 @@ public interface IDhtEntries {
 	void insert(String name);
 	
     public DHashEntry get(String name);
-    
+	
+	public DHashEntry get(Integer key);
+
     public DHashEntry get(DNode node, String name);
 	/*
 	 * Insert into node
 	 */
 	void insert(DNode node, String name);
+	
+	// removes an entry
+	void remove(DNode node, String name);
+	
+	//updates an entry
+	void update(DNode node, int entryId, String entryValue);
 }

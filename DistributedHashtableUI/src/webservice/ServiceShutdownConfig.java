@@ -5,6 +5,7 @@ import javax.annotation.PreDestroy;
 import org.springframework.context.annotation.Configuration;
 
 import nodes.storage.NodesStorage;
+import service.DhtLogger;
 
 @Configuration
 public class ServiceShutdownConfig {
@@ -17,8 +18,8 @@ public class ServiceShutdownConfig {
 	
 	@PreDestroy
 	public void onShutDown() {
-		System.out.println("Shutting down ...");
-		this.nodesStorage.writeToStorage(DhtWebService.DhtService.getAllNodes());
-		System.out.println("Nodes saved ...");
+		DhtLogger.log.info("Shutting down ...");
+		//this.nodesStorage.writeToStorage(DhtWebService.DhtService.getAllNodes());
+		DhtLogger.log.info("Nodes saved ...");
 	 }
 }

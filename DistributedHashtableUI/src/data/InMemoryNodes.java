@@ -12,9 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 import service.ChecksumDemoHashingFunction;
+import service.DHServerInstance;
+import service.DHService;
 import service.DHashEntry;
 import service.DHashtable;
 import service.DNode;
+import service.DhtLogger;
+import webservice.DhtWebService;
 
 /**
  * @author Andrew Frantsuzov
@@ -22,10 +26,17 @@ import service.DNode;
  */
 public class InMemoryNodes implements IDhtNodes {
 
-	HashMap<Integer, DNode> nodes;
+	static HashMap<Integer, DHServerInstance> nodes;
+	DHServerInstance dhServiceInstance;
 	
-	public InMemoryNodes() {
-		nodes = new HashMap<Integer, DNode>();
+	public InMemoryNodes(DHServerInstance dhServiceInstance) {
+
+		if (nodes == null)
+		{
+			nodes = new HashMap<Integer, DHServerInstance>();
+		}
+		
+		this.dhServiceInstance = dhServiceInstance;
 	}
 	
 	@Override
@@ -33,7 +44,7 @@ public class InMemoryNodes implements IDhtNodes {
 		int hash = ChecksumDemoHashingFunction.hashValue(name);
 		
 		if (this.nodes.containsKey(hash))
-			return this.nodes.get(hash);
+			return this.nodes.get(hash).currentNode;
 		
 		return findNodeByName(hash);
 	}
@@ -60,11 +71,11 @@ public class InMemoryNodes implements IDhtNodes {
 			
 			if (index != 0 && hash >= prev && hash <= curr)
 			{
-				return this.nodes.get(prev);
+				return this.nodes.get(prev).currentNode;
 			}
 			else if (!iter.hasNext())
 			{
-				return this.nodes.get(curr);
+				return this.nodes.get(curr).currentNode;
 			}
 			
 			prev = curr;
@@ -75,7 +86,7 @@ public class InMemoryNodes implements IDhtNodes {
 	}
 	
 	@Override
-	public DNode findNodeByName(DNode n, Integer hash) {
+	public DNode findNodeByName(DNode n) {
 		Set<Integer> keysenu = nodes.keySet();
 		List<Integer> numbersList = new ArrayList<Integer>(keysenu);
 		
@@ -93,13 +104,13 @@ public class InMemoryNodes implements IDhtNodes {
 			if (first==0)
 				first = curr;
 			
-			if (index != 0 && hash >= prev && hash <= curr)
+			if (index != 0 && n.nodeID >= prev && n.nodeID <= curr)
 			{
-				return this.nodes.get(prev);
+				return this.nodes.get(prev).currentNode;
 			}
 			else if (!iter.hasNext())
 			{
-				return this.nodes.get(curr);
+				return this.nodes.get(curr).currentNode;
 			}
 			
 			prev = curr;
@@ -109,25 +120,36 @@ public class InMemoryNodes implements IDhtNodes {
 		return null;
 	}
 	
+	public IDhtNodes createProxyFor(DNode node) {
+		return new InMemoryNodes(nodes.getOrDefault(node.nodeID, new DHServerInstance(node.name, true)));
+	}
 	
 	@Override
 	public void addNode(DNode newNode) {
 		
-		DNode existingNode = findNodeByName(newNode.getName());
-		
-		if (existingNode != null)
+		if (dhServiceInstance != null)
 		{
-			/*
-			 * TODO. Following is a hack, it will not necessarily always return prev node.
-			 */
-			//DNode prevNode = findNodeByName(existingNode.nodeID - 1);
-			
-			existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
-			//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
+			// emulates a network call to add node
+			dhServiceInstance.addNode(newNode);
+			nodes.put(newNode.nodeID, new DHServerInstance(newNode, false, true));
 		}
-		
-		this.nodes.put(newNode.getNodeID(), newNode);
-		
+		else
+		{
+			DNode existingNode = findNodeByName(newNode.getName());
+			
+			if (existingNode != null)
+			{
+				/*
+				 * TODO. Following is a hack, it will not necessarily always return prev node.
+				 */
+				//DNode prevNode = findNodeByName(existingNode.nodeID - 1);
+				
+				existingNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getNodeID());
+				//prevNode.getTable().moveKeysAboveTo(newNode.getTable(), newNode.getHash());
+			}
+			
+			this.nodes.put(newNode.getNodeID(), new DHServerInstance(newNode, false, true));
+		}
 	}
 	
 	@Override
@@ -139,15 +161,16 @@ public class InMemoryNodes implements IDhtNodes {
 	}
 
 	@Override
-	public void removeNode(String name) {
-		DNode node = findNodeByName(name);
-		
+	public void removeNode(DNode node) {
 		DHashtable table = node.getTable();
 		
 		nodes.remove(node.getNodeID());
 		
-		// find the next node
-		node = findNodeByName(name);
+		DNode pred = node.predecessor;
+		node.predecessor.successor = node.successor;
+		node.successor.predecessor = pred;
+		
+		node = this.findNodeByName(node.nodeID);
 		
 		// copy values to new node
 		node.getTable().copyValuesTo(table);
@@ -160,7 +183,7 @@ public class InMemoryNodes implements IDhtNodes {
 		
 		for (Integer key : nodes.keySet())
 		{
-			allEntries.add(nodes.get(key));
+			allEntries.add(nodes.get(key).currentNode);
 		}
 		
 		return allEntries;
@@ -196,7 +219,7 @@ public class InMemoryNodes implements IDhtNodes {
 	@Override
 	//adds entry
 	public void AddEntry(String text) {
-		DNode node = findNodeByName(text);
+		DNode node = findNodeByName(ChecksumDemoHashingFunction.hashValue(text));
 		node.AssignKeys(DHashEntry.getHashEntry(text));
 	}
 	
@@ -209,8 +232,9 @@ public class InMemoryNodes implements IDhtNodes {
 
 	@Override
 	public void AddEntry(DNode node) {
-		// TODO Auto-generated method stub
-		
+
+		DhtLogger.log.info("Adding node to inMemoryNetwork {}", node.nodeID);
+		DhtWebService.InMemoryWebService.addNode(node);
 	}
 
 

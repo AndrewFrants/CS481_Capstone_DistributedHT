@@ -11,40 +11,40 @@ import org.junit.jupiter.api.BeforeAll;
 
 import service.DNode;
 
-class DNodeJoinTest {
+public class DNodeJoinTest {
 	private static DNode node1;
 	private static DNode node2;
 	
 
 	@BeforeAll
-	static void setup() {
+	public static void setup() {
 		node1 = new DNode("node_1");
 		node2 = new DNode("node_2");
 	}
 	
 	@Test
-	void testNode1PredeccessorIsNull() {
+	public void testNode1PredeccessorIsNull() {
 		assertEquals(node1.predecessor, null);
 	}
 	
 	@Test
-	void testNode1SuccessorIsNull() {
+	public void testNode1SuccessorIsNull() {
 		assertEquals(node1.successor, null);
 	}
 	
 	@Test
-	void testNode2PredeccessorIsNull() {
+	public void testNode2PredeccessorIsNull() {
 		assertEquals(node2.predecessor, null);
 
 	}
 	
 	@Test
-	void testNode2SuccessorIsNull() {	
+	public void testNode2SuccessorIsNull() {	
 		assertEquals(node2.successor, null);
 	}
 	
 	@Test
-	void testNodesWithSameNameAreEqual() {
+	public void testNodesWithSameNameAreEqual() {
 		DNode nodeA = new DNode("node");
 		DNode nodeB = new DNode("node");
 		System.out.println(nodeA.nodeID);

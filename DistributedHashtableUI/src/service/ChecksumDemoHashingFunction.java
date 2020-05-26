@@ -35,15 +35,54 @@ public class ChecksumDemoHashingFunction {
 	 */
 	public static int hashValue(String value)
 	{
-		int hash = 1;
+		long hash = 1;
 
 		for (char c : value.toCharArray())
 		{
-			hash += (c*c); // increase the spread a bit
+			if (hash % 2 == 0)
+			{
+				hash += Math.pow(c, 2) + Math.pow(-c, 3); // increase the spread a bit
+			}
+			else 	
+			{
+				hash -= Math.pow(c, 2) + Math.pow(-c, 3); // increase the spread a bit
+			}
 		}
-
-		hash = hash%65536;
 		
-		return hash;
+		int intHash = Math.abs((int)((hash % 65000)));
+		
+
+		DhtLogger.log.debug("Hashing value: {} seed: {} hashed to {}", value, hash, intHash);
+		
+		return intHash;
+	}
+	
+	// Andrew
+	// changed the hash function a bit because the
+	// nodes were two clustered together
+	public static int originalHashFunction(String value)
+	{
+		DhtLogger.log.info("Hashing value: {}", value);
+		
+		long hash = 1;
+
+		for (char c : value.toCharArray())
+		{
+			if (hash % 2 == 0)
+			{
+				hash += Math.pow(2, c); // increase the spread a bit
+			}
+			else	
+			{
+				hash -= Math.pow(2, c); // increase the spread a bit
+			}
+		}
+		
+		int intHash = (int)(hash % 65000);
+		
+
+		DhtLogger.log.info("Hashing value: {} seed: {} hashed to {}", value, hash, intHash);
+		
+		return intHash;
 	}
 }

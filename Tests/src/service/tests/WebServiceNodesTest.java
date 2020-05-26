@@ -29,18 +29,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import data.WebServiceNodes;
 import service.*;
 
-public class WebServiceNodesTests {
+public class WebServiceNodesTest {
 
 	WebServiceNodes nodes;
 	
 	@BeforeEach
-	void setUp() throws Exception {
+	public void setUp() throws Exception {
 	
 		nodes = new WebServiceNodes();
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	public void tearDown() throws Exception {
 	}
 
 	/* for Andrew: Sample code
