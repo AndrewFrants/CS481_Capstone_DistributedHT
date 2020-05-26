@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import data.IDhtNodes;
 import data.WebServiceNodes;
+import service.ChecksumDemoHashingFunction;
 import service.DHServerInstance;
 import service.DHashEntry;
 //import service.DHashtable;
@@ -188,6 +189,11 @@ public class EntryServiceController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Object> createEntry(@RequestBody final DHashEntry newEntry) {
 
+		if (newEntry.key == null)
+		{
+			newEntry.key = ChecksumDemoHashingFunction.hashValue(newEntry.value);
+		}
+
 		final DNode ownerNode = findNodeInRangeOf(newEntry.key, true);
 
 		if (ownerNode == null) {
@@ -208,6 +214,7 @@ public class EntryServiceController {
 	// removes an entry
 	@RequestMapping(method = RequestMethod.DELETE)
 	public ResponseEntity<Object> deleteByEntry(@RequestBody final DHashEntry updatedEntry) {
+
 		return deleteById(updatedEntry.key.toString());
 	}
 
@@ -218,19 +225,21 @@ public class EntryServiceController {
 		final Integer hash = FormatUtilities.SafeConvertStrToInt(id);
 
 		if (hash == null) {
-			return ControllerHelpers.HttpResponse("Provided id " + id + " coulnt be converted to an integer type.",
+			return ControllerHelpers.HttpResponse("Provided id " + id + " couldnt be converted to an integer type.",
 					HttpStatus.BAD_REQUEST);
 		}
 		
 		final DNode ownerNode = findNodeInRangeOf(hash, true);
 
+		DhtLogger.log.info("Deleting id {} from node {}", hash, ownerNode.nodeID);
+
 		if (ownerNode == null) {
-			DhtLogger.log.error("Owner node wasnt found for hash {}", id);
+			DhtLogger.log.error("Owner node wasnt found for hash {}", hash);
 
 			return ControllerHelpers.HttpResponse("Couldn't find owner node.", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		if (ownerNode.remove(id))
+		if (ownerNode.remove(hash))
 		{
 			WebServiceNodes connection = WebServiceNodes.getProxyFor(ownerNode);
 

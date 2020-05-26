@@ -19,7 +19,7 @@ public interface IDhtNodes {
 	 * Find node by hash id
 	 */
 	DNode findNodeByName(Integer hash);
-	DNode findNodeByName(DNode node, Integer hash);
+	DNode findNodeByName(DNode node);
 	
 	/*
 	 * Add a node
@@ -30,7 +30,7 @@ public interface IDhtNodes {
 	
 	
 	// removes a node
-	void removeNode(String name);
+	void removeNode(DNode node);
 
 	/*
 	 * Get all nodes
@@ -58,5 +58,5 @@ public interface IDhtNodes {
 	//removing entry
 	void RemoveEntry(String text);
 
-	
+	IDhtNodes createProxyFor(DNode node);
 }

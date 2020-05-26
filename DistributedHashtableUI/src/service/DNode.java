@@ -32,14 +32,15 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public String name;
 	public Double angleVal;
 
+	public Integer version;
+
 	@JsonIgnoreProperties({"successor", "predecessor"})
 	public DNode successor;
 	@JsonIgnoreProperties({"successor", "predecessor"})
 	public DNode predecessor;
 	@JsonIgnore
 	public RoutingTable router;
-	@JsonIgnore
-	public ArrayList<Integer> keyList;
+
 	public int size; // size of networks
 	
 	/*
@@ -47,7 +48,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 	 */
 	public DNode() {
 		table = new DHashtable();
-		keyList = new ArrayList<Integer>();
 		//router = new RoutingTable(this);
 
 		DhtLogger.log.info("Initialized node (By Serializer)");
@@ -64,7 +64,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		this.size = 16;
 		successor = null;
 		predecessor = null;
-		keyList = new ArrayList<Integer>();
 		router = new RoutingTable(this);
 		
 		DhtLogger.log.info("Initialized name: {} nodeId: {} angleVal: {}", nodeName, nodeID, this.angleVal);
@@ -77,7 +76,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	
 	@JsonIgnore
 	public Boolean isUrlPointingAt(final String url) {
-		DhtLogger.log.info("Comaring {} to url: {}", this.getNodeAddress(), url);
+		DhtLogger.log.info("Comparing {} to url: {}", this.getNodeAddress(), url);
 		return url.toLowerCase().contains(this.getNodeAddress().toLowerCase());
 	}
 	
@@ -304,6 +303,14 @@ public class DNode implements Comparable<DNode>, Serializable {
 			return this;
 		}
 		
+		if (this.successor.nodeID > reqNode.nodeID)
+		{
+			return this;
+		}
+
+		return null;
+
+		/*
 		
 		final int sucID = this.successor.nodeID;
 		final int predID = this.predecessor.nodeID;
@@ -336,7 +343,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else {
 			return null;
 		}
-		
+		*/
 	}
 	
 	// This is called by the node requesting to join,
@@ -388,6 +395,59 @@ public class DNode implements Comparable<DNode>, Serializable {
 		//	DNodeJoin.updateRoutingTable(this);
 			
 		}
+	}
+
+	public boolean checkIfNodeIsInRange(final DNode loRange, final DNode hiRange) {
+
+		boolean isInRange = false;
+		
+		if (loRange.nodeID < hiRange.nodeID) // there is no flip over 0
+		{
+			if (this.nodeID > loRange.nodeID && this.nodeID < hiRange.nodeID)
+			{
+				isInRange = true;
+			}
+		}
+		else if (hiRange.nodeID < loRange.nodeID) //there range is including 0/circling
+		{
+			if (this.nodeID > loRange.nodeID && this.nodeID > hiRange.nodeID) // node is in the circle before the flip over
+			{
+				isInRange = true;
+			}
+			else if (this.nodeID < hiRange.nodeID && this.nodeID < loRange.nodeID)
+			{
+				isInRange = true;
+			}
+		}
+
+		if (isInRange)
+		{
+			loRange.successor = this;
+			this.predecessor = loRange;
+			hiRange.predecessor = this;
+			this.successor = hiRange;
+		}
+		
+		return isInRange;
+	}
+
+	public boolean isNodeInRange(final DNode currNode) {
+
+		AssertUtilities.ThrowIfNull(currNode, "preNode");
+		AssertUtilities.ThrowIfNull(currNode.predecessor, "preNode.predecessor");
+		AssertUtilities.ThrowIfNull(currNode.successor, "preNode.predecessor");
+
+		if (checkIfNodeIsInRange(currNode.predecessor, currNode))
+		{
+			return true;
+		}
+
+		if (checkIfNodeIsInRange(currNode, currNode.successor))
+		{
+			return true;
+		}
+
+		return false;
 	}
 	
 	// Updates the receiving node that found if the requesting node is 
@@ -461,6 +521,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		this.setSuccessor(sucNode);				
 	}
 	
+	/*
 	// get's the key range of the node that has 2 entries
 	// the first element being the start
 	// the second element being the end
@@ -469,18 +530,20 @@ public class DNode implements Comparable<DNode>, Serializable {
 
 		final int[] range = new int[2];
 		
-		range[0] = keyList.get(0);
+		range[0] = this.getTable().getLocalHT().keySet().get(0);
 		range[1] = keyList.get(keyList.size() - 1);
 		
 		return range;
 	}
+	*/
+
 	
 	
 	// Traverses the chord network to find the node with the key responsibility and inserts the file into that local node
 	public void insert(final String file) {
 		final int fileID = ChecksumDemoHashingFunction.hashValue(file);
 		
-		if(keyList.contains(fileID)) {
+		if(this.getTable().getLocalHT().containsKey(fileID)) {
 			table.insert(DHashEntry.getHashEntry(file));
 		}
 		
@@ -497,7 +560,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public String get(final String title) {
 		final int fileID = ChecksumDemoHashingFunction.hashValue(title);
 		
-		if(keyList.contains(fileID)) {
+		if(this.getTable().getLocalHT().containsKey(fileID)) {
 			final DHashEntry file = table.getEntry(fileID);
 			return file.value;
 		}
@@ -522,7 +585,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	
 	public Boolean remove(final Integer hash) {
 	
-		if(keyList.contains(hash)) {
+		if(this.getTable().getLocalHT().containsKey(hash)) {
 			table.removeKeys(hash);
 			return true;
 		}
@@ -534,7 +597,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public Boolean remove(final String file) {
 		final int fileID = ChecksumDemoHashingFunction.hashValue(file);
 		
-		if(keyList.contains(fileID)) {
+		if(this.getTable().getLocalHT().containsKey(fileID)) {
 			table.removeKeys(fileID);
 			return true;
 		}

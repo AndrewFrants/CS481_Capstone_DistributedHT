@@ -47,7 +47,7 @@ public class DHService {
 	{
 		// when you change this to webservice
 		// nodes, Create starts failing
-		dhtNodes = new InMemoryNodes();
+		dhtNodes = new InMemoryNodes(null);
 	}
 	
 	public DHService(Boolean web)
@@ -63,7 +63,7 @@ public class DHService {
 		}
 		else	
 		{
-			dhtNodes = new InMemoryNodes();
+			dhtNodes = new InMemoryNodes(null);
 		}
 	}
 	
@@ -145,10 +145,14 @@ public class DHService {
 	
 	/*
 	 * Simulate removing the node
-	 */
+	 */ 
 	public void removeNode(String name)
 	{
-		dhtNodes.removeNode(name);
+		Integer nodeId = ChecksumDemoHashingFunction.hashValue(name);
+		DNode node = new DNode();
+		node.nodeID = nodeId;
+		
+		dhtNodes.removeNode(node);
 	}
 	
 

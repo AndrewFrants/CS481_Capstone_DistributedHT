@@ -68,6 +68,7 @@ import java.awt.event.InputMethodEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.ListSelectionModel;
+import javax.swing.JScrollPane;
 
 /*
  * This is the main window for the UI
@@ -165,12 +166,14 @@ public class MainWindow extends JFrame {
 		 * Adding node implementation
 		 */	
 		JButton btnNew = new JButton("New Node");
+		btnNew.setEnabled(false);
 		panel.add(btnNew);
 
 		/*
 		 * Remove node implementation
 		 */
 		JButton btnNewButton = new JButton("Remove Node");
+		btnNewButton.setEnabled(false);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (nodeList.getSelectedIndex() < 0)
@@ -200,6 +203,7 @@ public class MainWindow extends JFrame {
 		 * Modify node button
 		 */
 		JButton btnNewModifyNode = new JButton("Change Node");
+		btnNewModifyNode.setEnabled(false);
 		panel.add(btnNewModifyNode);
 		
 		btnNewModifyNode.addActionListener(new ActionListener() {
@@ -280,8 +284,13 @@ public class MainWindow extends JFrame {
 		/*
 		 * Save button
 		 */
-		JButton btnSave = new JButton("Save");
-		panel.add(btnSave);
+		JButton btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RefreshControls();
+			}
+		});
+		panel.add(btnRefresh);
 
 		/*
 		 * Delete button
@@ -332,8 +341,11 @@ public class MainWindow extends JFrame {
 				PopulateKeys();
 			}
 		});
+		
+		JScrollPane scrollPane = new JScrollPane(keyList);
+		keyListPanel.add(scrollPane, BorderLayout.CENTER);
 		keyListPanel.add(keyList);
-
+		
 		keyList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
 				PopulateText();

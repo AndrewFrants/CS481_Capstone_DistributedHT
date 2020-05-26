@@ -60,6 +60,10 @@ public class WebServiceNodes implements IDhtNodes {
 		return new WebServiceNodes(node.getName());
 	}
 
+	public IDhtNodes createProxyFor(DNode node) {
+		return new WebServiceNodes(node.getName());
+	}
+	
 	public static WebServiceNodes getProxyFor(String host, String port) {
 		return new WebServiceNodes(host, port);
 	}
@@ -79,12 +83,12 @@ public class WebServiceNodes implements IDhtNodes {
 	}
 
 	@Override
-	public DNode findNodeByName(DNode n, Integer hash) {
+	public DNode findNodeByName(DNode n) {
 
 		if (n.isUrlPointingAt(targetHostNodesController)) {
-			return findNodeByName(hash);
+			return findNodeByName(n.nodeID);
 		} else {
-			return this.getProxyFor(n).findNodeByName(hash);
+			return this.createProxyFor(n).findNodeByName(n.nodeID);
 		}
 	}
 
@@ -112,21 +116,12 @@ public class WebServiceNodes implements IDhtNodes {
 		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
 	
-	public void removeNode(DNode name) {
-
-		RestTemplate restTemplate = getProxyRestTemplate();
-
-		restTemplate.delete(targetHostNodesController + name);
-
-	}
-	
 	@Override
-	public void removeNode(String name) {
-		int hash = ChecksumDemoHashingFunction.hashValue(name);
-		DNode nodeName = findNodeByName(hash);
+	public void removeNode(DNode node) {
+		DNode predecessor = findNodeByName(node.predecessor.nodeID);
 		
 		RestTemplate restTemplate = getProxyRestTemplate();
-		restTemplate.delete(targetHostNodesController + nodeName);
+		restTemplate.delete(targetHostNodesController + predecessor.name);
 	}
 
 
@@ -175,15 +170,14 @@ public class WebServiceNodes implements IDhtNodes {
 	public void updateNode(DNode n) {
 		if (n.isUrlPointingAt(targetHostNodesController)) {
 			String url = targetHostNodesController + n.nodeID;
+			String updatedNode = null;
 
-			//try
-			//{
+			try
+			{
 				DhtLogger.log.info("Patching node at url {}", url);
 				
 				RestTemplate restTemplate = getProxyRestTemplate();
 				ObjectMapper mapper = new ObjectMapper();
-
-				String updatedNode = null;
 
 				try {
 					updatedNode = mapper.writeValueAsString(n);
@@ -193,11 +187,11 @@ public class WebServiceNodes implements IDhtNodes {
 				}
 
 				restTemplate.put(url, updatedNode, String.class);
-			//}
-			//catch (Exception ex)
-			//{
-			//	DhtLogger.log.warn("Couldnt patch node possibly server inst up yet {}", url);
-			//}
+			}
+			catch (Exception ex)
+			{
+				DhtLogger.log.warn("Couldnt patch node possibly server inst up yet {} body {} ex {}", url, updatedNode, ex.toString());
+			}
 		} else {
 
 			WebServiceNodes wsNodes = this.getProxyFor(n);
@@ -206,7 +200,6 @@ public class WebServiceNodes implements IDhtNodes {
 	}
 
 	private List<DNode> getNodes(String uri) {
-
 
 		DhtLogger.log.info("GET to {}", uri);
 		

@@ -18,12 +18,13 @@ public class DNodeLeave {
 	public static void updateKeyList(DNode thisNode, DNode otherNode) {
 		// handles base case of when the first two nodes on a network join together..
 
+		/*
 		for (int i : thisNode.keyList) {
 			otherNode.keyList.add(i);
 		}
 
 		thisNode.keyList.clear();
-
+		*/
 	}
 
 	public static void updateRoutingTable(DNode thisNode, DNode leavingNode) {

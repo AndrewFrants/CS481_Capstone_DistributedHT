@@ -231,6 +231,12 @@ public class NodesController {
 
 		final DNode networkNode = internalGetNode(patchNode.nodeID, true);
 
+		if (networkNode.version > patchNode.version)
+		{
+			DhtLogger.log.error("Patch node couldnt be completed because the patch node version {} was below expected {}, returning 417.", patchNode.version, networkNode.version);
+			return ControllerHelpers.HttpResponse(HttpStatus.EXPECTATION_FAILED);
+		}
+
 		if (networkNode == null)
 		{
 			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());
@@ -259,9 +265,19 @@ public class NodesController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Object> delete(@PathVariable("id") final String id) {
 
-		// TODO: Delete a node should remove the node from the Successor/Predecessor
-
-		return ControllerHelpers.HttpResponse(HttpStatus.NOT_ACCEPTABLE);
+		DNode nodeBeingRemoved = new DNode();
+		nodeBeingRemoved.nodeID = FormatUtilities.SafeConvertStrToInt(id);
+		
+		if (nodeBeingRemoved.nodeID == null)
+		{
+			return ControllerHelpers.HttpResponse(HttpStatus.BAD_REQUEST);
+		}
+		
+		DhtLogger.log.info("Removing node {}.", nodeBeingRemoved.nodeID);
+		getWS().removeNode(nodeBeingRemoved);
+		
+		DhtLogger.log.info("Removed node {} successfully.", nodeBeingRemoved.nodeID);
+		return ControllerHelpers.HttpResponse(HttpStatus.OK);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
