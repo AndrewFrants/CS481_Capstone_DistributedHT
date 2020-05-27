@@ -57,10 +57,7 @@ public class WebServiceEntries implements IDhtEntries {
     	return new WebServiceEntries(host, port);
     }
     
-    
-
-
-	/*
+    /*
 	 * Insert
 	 */
     @Override
@@ -86,15 +83,15 @@ public class WebServiceEntries implements IDhtEntries {
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
 	}
-	
-    
-    
+	    
     @Override
-	public void remove(DNode node, String name) {
+	public void remove(int entryId) {
+	    DhtLogger.log.info("DELETE entry {} url: {}", entryId, targetHostEntriesController + entryId);
 
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    restTemplate.delete(targetHostEntriesController + entryId);
     }
-    
-    
+        
 	/*
 	 * insert entry
 	 */
@@ -235,6 +232,5 @@ public class WebServiceEntries implements IDhtEntries {
 		
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    return restTemplate.getForObject(uri, String.class);
-	}
-	
+	}	
 }

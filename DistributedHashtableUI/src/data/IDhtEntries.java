@@ -14,20 +14,25 @@ public interface IDhtEntries {
 	 * Find the node by name
 	 */
 	void insert(String name);
-	
-    public DHashEntry get(String name);
-	
+
+	public DHashEntry get(String name);
+
 	public DHashEntry get(Integer key);
 
-    public DHashEntry get(DNode node, String name);
+	public DHashEntry get(DNode node, String name);
+
 	/*
 	 * Insert into node
 	 */
 	void insert(DNode node, String name);
-	
-	// removes an entry
-	void remove(DNode node, String name);
-	
-	//updates an entry
+
+	/*
+	 * Remove an entry
+	 */
+	void remove(int entryId);
+
+	/*
+	 * Update an entry
+	 */
 	void update(int entryId, String entryValue);
 }

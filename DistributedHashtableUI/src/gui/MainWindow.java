@@ -74,7 +74,6 @@ import javax.swing.JScrollPane;
  * This is the main window for the UI
  * It is built using WindowBuilder
  */
-
 public class MainWindow extends JFrame {
 
 	/**
@@ -251,7 +250,7 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (keyList.getSelectedIndex() < 0)
 					return;
-				
+
 				String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
 				selectedIndex = selectedIndex.split("\\(")[0].trim();
 				if (selectedIndex.equalsIgnoreCase("All"))
@@ -269,20 +268,49 @@ public class MainWindow extends JFrame {
 								ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
 					}
 				});
-				
+
 				panel.add(label);
 				int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.PLAIN_MESSAGE);
 				if (result == JOptionPane.OK_OPTION) {
 					dhService.UpdateEntry(ChecksumDemoHashingFunction.hashValue(selectedIndex), replaceTxt.getText());
 				}
-				
+
 				RefreshControls();
 			}
 		});
 
 		/*
-		 * Save button
+		 * Remove Entry button
+		 */
+		JButton btnRemoveEntry = new JButton("Remove Entry");
+		panel.add(btnRemoveEntry);
+		
+		btnRemoveEntry.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (keyList.getSelectedIndex() < 0)
+					return;
+
+				String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
+				selectedIndex = selectedIndex.split("\\(")[0].trim();
+				if (selectedIndex.equalsIgnoreCase("All"))
+					return;
+
+				JPanel panel = new JPanel(new GridLayout(0, 2));
+				panel.add(new JLabel("Remove Entry: " + selectedIndex));
+
+				int result = JOptionPane.showConfirmDialog(null, panel, "Remove Entry", JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.PLAIN_MESSAGE);
+				if (result == JOptionPane.OK_OPTION) {
+					dhService.RemoveEntry(ChecksumDemoHashingFunction.hashValue(selectedIndex));
+				}
+
+				RefreshControls();
+			}
+		});
+		
+		/*
+		 * Refresh button
 		 */
 		JButton btnRefresh = new JButton("Refresh");
 		btnRefresh.addActionListener(new ActionListener() {
@@ -291,12 +319,6 @@ public class MainWindow extends JFrame {
 			}
 		});
 		panel.add(btnRefresh);
-
-		/*
-		 * Delete button
-		 */
-		JButton btnDelete = new JButton("Delete");
-		panel.add(btnDelete);
 
 		/*
 		 * Main view panel
@@ -344,7 +366,7 @@ public class MainWindow extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(keyList);
 		keyListPanel.add(scrollPane, BorderLayout.CENTER);
 		keyListPanel.add(keyList);
-		
+
 		keyList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
 				PopulateText();
@@ -532,6 +554,9 @@ public class MainWindow extends JFrame {
 	 * Populate the keys
 	 */
 	public void PopulateKeys() {
+		keysList.clear();
+		keyList.clearSelection();
+		
 		if (nodeList.getSelectedIndex() < 0)
 			return;
 
@@ -539,9 +564,7 @@ public class MainWindow extends JFrame {
 		selectedIndex = selectedIndex.split("\\(")[0].trim();
 		System.out.println(nodeList.getSelectedIndex());
 		if (selectedIndex.equalsIgnoreCase("All"))
-			return;
-
-		keysList.clear();
+			return;		
 
 		DNode node = dhService.findNodeByName(selectedIndex);
 
@@ -555,7 +578,7 @@ public class MainWindow extends JFrame {
 
 		DhtLogger.log.info("Retrieve keys count {}", keysList.getSize());
 
-		keyList.repaint();
+		keyList.repaint();		
 	}
 
 	public void PopulateText() {
@@ -576,9 +599,9 @@ public class MainWindow extends JFrame {
 	}
 
 	public void RefreshControls() {
-		this.PopulateKeys();
-		this.PopulateText();
 		this.populateNodes();
+		this.PopulateKeys();
+		this.PopulateText();		
 	}
 
 	public void AddNode(String text) {
@@ -592,5 +615,4 @@ public class MainWindow extends JFrame {
 
 		RefreshControls();
 	}
-
 }

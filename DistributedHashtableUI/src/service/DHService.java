@@ -180,16 +180,9 @@ public class DHService {
 		}		
 		
 		// removing entry
-		public void RemoveEntry(String text)
+		public void RemoveEntry(int entryId)
 		{
-			//dhService.removeEntry(name);
-			
-			//DNode node = findNodeByName(text);
-			//node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
-			
-			//AssignKeys(DHashEntry.getHashEntry(text));
-			dhtNodes.RemoveEntry(text);
-			//RefreshControls();
+			dhtEntries.remove(entryId);
 		}
 
 	public static DHService createFiveNodeCluster(Boolean web)

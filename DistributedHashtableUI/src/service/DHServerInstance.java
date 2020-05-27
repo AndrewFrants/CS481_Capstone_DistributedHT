@@ -406,7 +406,7 @@ public class DHServerInstance {
 			}
 
 			DhtLogger.log.info("Forwarding {} to successor {} ({})", entry, successorName, this.currentNode.nodeID);
-			dhtEntries.remove(this.currentNode.successor, entry);
+			// dhtEntries.remove(this.currentNode.successor, entry);
 		}
 	}	
 }
