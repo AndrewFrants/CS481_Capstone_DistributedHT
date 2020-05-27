@@ -40,7 +40,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public DNode predecessor;
 	@JsonIgnore
 	public RoutingTable router;
-
+	public Range keyRange; 
 	public int size; // size of networks
 	
 	/*
@@ -49,7 +49,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public DNode() {
 		table = new DHashtable();
 		//router = new RoutingTable(this);
-
+				
 		DhtLogger.log.info("Initialized node (By Serializer)");
 	}
 	
@@ -65,7 +65,9 @@ public class DNode implements Comparable<DNode>, Serializable {
 		successor = null;
 		predecessor = null;
 		router = new RoutingTable(this);
-		
+		keyRange = new Range();
+		keyRange.setLowID(this.nodeID);
+		keyRange.setHighID(this.nodeID - 1);
 		DhtLogger.log.info("Initialized name: {} nodeId: {} angleVal: {}", nodeName, nodeID, this.angleVal);
 	}
 
@@ -258,15 +260,17 @@ public class DNode implements Comparable<DNode>, Serializable {
 			return false;
 
 		else {
-			final DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
+			// final DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
+			DNode connecting = receivingNode.findIfIAmSuccessor(this);
 		
 			// if the connecting node exists, the requesting node has found it's range placement
 			// initialize it's successor/predecessor, keylist
 			// change receiving and connecting node's id
 			if(connecting != null) {
 				updateRequestingNodeUponJoin(receivingNode, connecting);
-				receivingNode.updateReceivingNodeUponJoin(this, connecting);
 				connecting.updateConnectingNodeUponJoinRequest(this, receivingNode);
+				receivingNode.updateReceivingNodeUponJoin(this, connecting);
+			
 			}
 			// forward request to the receiving node's successor
 			// this will later need to be changed to go into routing table and find "closest" node, to 
@@ -284,11 +288,29 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public boolean receiveJoinRequest(final DNode incomingNode) {
 		
 		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
-			 DNodeJoin.updateNodes(this, incomingNode);
+			// DNodeJoin.updateNodes(this, incomingNode);
 			return true;
 		}
 		return false;
 
+	}
+	
+public DNode findIfIAmSuccessor(DNode reqNode) {
+		
+		int reqID = reqNode.nodeID;
+		
+		if(this.successor == null || this.predecessor == null) {
+			return this;
+		}	
+		
+		if(keyRange.contains(reqID)) {
+			return this.successor;
+		}		
+		
+		else {
+			return null;
+		}	
+		
 	}
 	
 	// This node find's if a requesting node is within this node(receivers)
@@ -356,6 +378,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		if(recNode.predecessor == null || recNode.successor == null) {
 			this.setPredecessor(recNode);
 			this.setSuccessor(recNode);
+			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);
 		//	DNodeJoin.updateRoutingTable(this);
 			return;
@@ -365,6 +388,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		if(conID > recID && nodeID > recID && nodeID < conID) {
 			this.setSuccessor(connectingNode);
 			this.setPredecessor(recNode);
+			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from recNode (successor)
 		//	DNodeJoin.updateRoutingTable(this);
 		}
@@ -373,6 +397,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else if(conID < recID && (nodeID > conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
+			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, connectingNode);
 		//	DNodeJoin.updateRoutingTable(this);
 			//take keys from recNode (successor)
@@ -383,6 +408,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else if(recID < conID && (nodeID < conID && nodeID < recID)) {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
+			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, connectingNode);//take keys from recNode (successor)
 		//	DNodeJoin.updateRoutingTable(this);
 			
@@ -391,6 +417,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else {
 			this.setPredecessor(recNode);
 			this.setSuccessor(connectingNode);
+			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from connectingNode (successor)
 		//	DNodeJoin.updateRoutingTable(this);
 			
@@ -471,6 +498,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		//	DNodeJoin.updateRoutingTable(this);
 		
 		}
+		DNodeJoin.updateKeyRange(this);	
 					
 	}
 	
@@ -485,6 +513,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		if(nodeID > recID && nodeID > reqID && recID < reqID) {
 		this.setPredecessor(reqNode);	
+		DNodeJoin.updateKeyRange(this);
 		DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
 		DNodeJoin.updateRoutingTable(this);
 		
@@ -492,12 +521,14 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		else if(nodeID < recID && (reqID > recID|| reqID < nodeID)) {
 			this.setPredecessor(reqNode);
+			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
 			DNodeJoin.updateRoutingTable(this);
 			
 		}
 		else {
 		this.setSuccessor(reqNode);	
+		DNodeJoin.updateKeyRange(this);
 		}
 	}
 	
@@ -604,5 +635,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 		return false;
 	}
+	
+	
 	
 }

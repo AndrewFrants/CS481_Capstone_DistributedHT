@@ -120,7 +120,7 @@ public class DHServerInstance {
 		{
 			// when you change this to webservice
 			// nodes, Create starts failing
-			currentNode = new DNode(address);
+		//	currentNode = new DNode(address);
 			dhtNodes = new WebServiceNodes(firstInstanceAddress);
 			
 			if (!joinNetwork)

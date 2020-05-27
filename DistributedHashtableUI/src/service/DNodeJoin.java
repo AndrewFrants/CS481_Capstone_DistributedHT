@@ -3,9 +3,32 @@ package service;
 // This class handles changes in the key responsibility range for node's and updating their routing tables upon join requests
 public abstract class DNodeJoin {
 
-	public static void updateNodes(DNode thisNode, DNode otherNode) {
-
+	
+	
+	//updates the range of keys for the node
+	public static void updateKeyRange(DNode thisNode) {
+		
+		if(thisNode.successor != null) {
+			thisNode.keyRange.setLowID(thisNode.nodeID);
+		if(thisNode.successor.nodeID != 0) {
+			
+		
+		thisNode.keyRange.setHighID(thisNode.successor.nodeID - 1);
+		}
+		
+		// if the suc node's id is 0, set the range of this node to highest node value (size - 1)
+		else {
+			System.out.println(thisNode.size);
+			thisNode.keyRange.setHighID((int)(Math.pow(2, thisNode.size) - 1));
+		}
+		}
+		else {
+			thisNode.keyRange.setLowID(thisNode.nodeID);
+			thisNode.keyRange.setHighID(thisNode.nodeID - 1);
+		}
 	}
+	
+
 
 
 	public static void updateKeyList(DNode thisNode, DNode otherNode) {
