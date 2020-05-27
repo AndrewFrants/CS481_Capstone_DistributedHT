@@ -29,5 +29,5 @@ public interface IDhtEntries {
 	void remove(DNode node, String name);
 	
 	//updates an entry
-	void update(DNode node, int entryId, String entryValue);
+	void update(int entryId, String entryValue);
 }

@@ -129,10 +129,6 @@ public class DHService {
 		log.debug("findNodeByName(String) {}", name);
 		return dhtNodes.findNodeByName(name);
 	}
-	
-	/*
-	 * 
-	 */
 
 	/*
 	 * Find the node by a hash code
@@ -176,6 +172,12 @@ public class DHService {
 			
 			insertValue(text);
 		}
+		
+		// updating an entry
+		public void UpdateEntry(int id, String text)
+		{
+			dhtEntries.update(id, text);
+		}		
 		
 		// removing entry
 		public void RemoveEntry(String text)
