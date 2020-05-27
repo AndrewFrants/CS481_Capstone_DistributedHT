@@ -98,8 +98,8 @@ public class DHServerInstance {
 		this.address = address;
 		this.joinNetwork = joinNetwork;
 		this.web = web;
-		this.currentNode = new DNode(address);
 		this.firstInstanceAddress = firstInstanceAddress;
+		this.currentNode = new DNode(address);
 		
 		if (!joinNetwork)
 		{
@@ -120,7 +120,7 @@ public class DHServerInstance {
 		{
 			// when you change this to webservice
 			// nodes, Create starts failing
-			currentNode = new DNode(address);
+		//	currentNode = new DNode(address);
 			dhtNodes = new WebServiceNodes(firstInstanceAddress);
 			
 			if (!joinNetwork)

@@ -341,11 +341,10 @@ public class MainWindow extends JFrame {
 				PopulateKeys();
 			}
 		});
-
 		JScrollPane scrollPane = new JScrollPane(keyList);
 		keyListPanel.add(scrollPane, BorderLayout.CENTER);
 		keyListPanel.add(keyList);
-
+		
 		keyList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
 				PopulateText();
