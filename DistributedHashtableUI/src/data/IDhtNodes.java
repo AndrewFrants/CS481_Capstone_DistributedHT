@@ -42,7 +42,11 @@ public interface IDhtNodes {
 	 */
 	void updateNode(DNode n);	
 	
-	
+	/*
+	 * Update the node
+	 */
+	DNode getNode();	
+
 	// for entries
 	
 	//gets all entries 

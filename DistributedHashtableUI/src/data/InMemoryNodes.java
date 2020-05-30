@@ -190,6 +190,11 @@ public class InMemoryNodes implements IDhtNodes {
 	}
 
 	@Override
+	public DNode getNode() {
+		return this.dhServiceInstance.currentNode;
+	}
+
+	@Override
 	public void updateNode(DNode n) {
 	   DNode patchNode = findNodeByName(n.getName());
 	   if(patchNode != null)

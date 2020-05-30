@@ -3,6 +3,7 @@ package webservice.controller;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class NodesController {
 	IDhtEntries dhtEntries;
 
 	public DHServerInstance getWS() {
+		MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
 		return DhtWebService.dhtServiceInstance;
 	}
    
@@ -50,10 +52,10 @@ public class NodesController {
 		DNode head = getWS().currentNode;
 		DNode currNode = getWS().currentNode;
 
+		nodes.add(currNode);
+		
 		do
 		{
-			nodes.add(currNode);
-
 			if (currNode.successor == null || currNode.successor.equals(head))
 			{
 				if (currNode.successor != null)
@@ -66,11 +68,45 @@ public class NodesController {
 				}
 				break;
 			}
-			
+		
 			DhtLogger.log.info("Current node: {} getting successor: {}", currNode.nodeID, currNode.successor.nodeID);
 
 			// next node
-			currNode = internalGetNode(currNode.successor.nodeID, true);
+			currNode = internalGetNode(currNode.successor, true);
+			
+			if (!nodes.contains(currNode))
+			{
+				nodes.add(currNode);
+			}
+
+		} while (true);
+		
+		currNode = getWS().currentNode;
+
+		do
+		{
+			if (currNode.predecessor == null || currNode.predecessor.equals(head))
+			{
+				if (currNode.predecessor != null)
+				{
+					DhtLogger.log.info("Get all nodes, reached end of ring at: {} predecessor: {}", currNode.nodeID, currNode.predecessor.nodeID);
+				}
+				else
+				{
+					DhtLogger.log.info("Get all nodes, reached end of ring at: {} predecessor: NULL", currNode.nodeID);
+				}
+				break;
+			}
+			
+			DhtLogger.log.info("Current node: {} getting predecessor: {}", currNode.nodeID, currNode.predecessor.nodeID);
+
+			// next node
+			currNode = internalGetNode(currNode.predecessor, true);
+			
+			if (!nodes.contains(currNode))
+			{
+				nodes.add(currNode);
+			}
 
 		} while (true);
 
@@ -97,6 +133,11 @@ public class NodesController {
 		return new ResponseEntity<DNode>(foundNode, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/self", method = RequestMethod.GET)
+	public ResponseEntity<DNode> getSelf() {
+		return new ResponseEntity<DNode>(getWS().currentNode, HttpStatus.OK);
+	}
+
 	private DNode internalGetNode(final Integer id, final Boolean traceError) {
 		return internalGetNode(id, false, traceError);
 	}
@@ -105,6 +146,20 @@ public class NodesController {
 		AssertUtilities.ThrowIfNull(id, "id was null");
 
 		return internalGetNode(getWS(), id, usingStringSearch, traceError);
+	}
+
+	public DNode internalGetNode(DNode node, final Boolean traceError) {
+
+		AssertUtilities.ThrowIfNull(node, "node was null");
+
+		DHServerInstance dhInstance = getWS();
+
+		if (dhInstance.currentNode.nodeID.equals(node.nodeID))
+		{
+			return dhInstance.currentNode;
+		}
+
+		return dhInstance.getNode(node);
 	}
 
 	public static DNode internalGetNode(DHServerInstance dhInstance, final Integer id, final Boolean usingStringSearch, final Boolean traceError) {
@@ -125,7 +180,6 @@ public class NodesController {
 
 		return foundNode;
 	}
-
 
 	private DNode internalGetNode(final String id, final Boolean traceError) {
 		AssertUtilities.ThrowIfNull(id, "id was null");
@@ -183,15 +237,27 @@ public class NodesController {
 			return ControllerHelpers.HttpResponse(HttpStatus.BAD_REQUEST);
 		}
 
-		DhtLogger.log.info("Patching node: {} successor: {} predecessor: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor);
-
-		final DNode networkNode = internalGetNode(patchNode.nodeID, true);
-
+		DNode networkNode = getWS().currentNode;
+		
+		if (!patchNode.nodeID.equals(getWS().currentNode.nodeID))
+		{
+			networkNode = internalGetNode(patchNode.nodeID, true);
+		}
+		
 		if (networkNode == null)
 		{
 			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());
 			return ControllerHelpers.HttpResponse(HttpStatus.NOT_FOUND);
 		}
+		/*
+		if (networkNode.version > patchNode.version)
+		{
+			DhtLogger.log.error("Patch node couldnt be completed because the patch node version {} was below expected {}, returning 417.", patchNode.version, networkNode.version);
+			return ControllerHelpers.HttpResponse(HttpStatus.EXPECTATION_FAILED);
+		}
+		*/
+		
+		DhtLogger.log.info("Patching node: {} successor: {} predecessor: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor);
 
 		if (!patchNode.nodeID.equals(getWS().currentNode.nodeID)) // no network call if itself!
 		{
@@ -200,7 +266,10 @@ public class NodesController {
 		}
 		else
 		{
+			getWS().currentNode.successor = patchNode.successor;
+			getWS().currentNode.predecessor = patchNode.predecessor;
 			getWS().currentNode.getTable().copyValuesTo(patchNode.getTable());
+			getWS().currentNode.version += 1;
 		}
 
 		return ControllerHelpers.HttpResponse(HttpStatus.OK);
@@ -231,12 +300,13 @@ public class NodesController {
 
 		final DNode networkNode = internalGetNode(patchNode.nodeID, true);
 
+		/*
 		if (networkNode.version > patchNode.version)
 		{
 			DhtLogger.log.error("Patch node couldnt be completed because the patch node version {} was below expected {}, returning 417.", patchNode.version, networkNode.version);
 			return ControllerHelpers.HttpResponse(HttpStatus.EXPECTATION_FAILED);
 		}
-
+		 */
 		if (networkNode == null)
 		{
 			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());

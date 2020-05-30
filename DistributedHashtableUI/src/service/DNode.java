@@ -32,7 +32,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public String name;
 	public Double angleVal;
 
-	public Integer version;
+	public int version;
 
 	@JsonIgnoreProperties({"successor", "predecessor"})
 	public DNode successor;
@@ -400,15 +400,16 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public boolean checkIfNodeIsInRange(final DNode loRange, final DNode hiRange) {
 
 		boolean isInRange = false;
+		boolean isNodeIdReversed = loRange.nodeID < hiRange.nodeID; // this can happen if the range spans 0
 		
-		if (loRange.nodeID < hiRange.nodeID) // there is no flip over 0
+		if (isNodeIdReversed) // there is no flip over 0
 		{
 			if (this.nodeID > loRange.nodeID && this.nodeID < hiRange.nodeID)
 			{
 				isInRange = true;
 			}
 		}
-		else if (hiRange.nodeID < loRange.nodeID) //there range is including 0/circling
+		else //there range is including 0/circling
 		{
 			if (this.nodeID > loRange.nodeID && this.nodeID > hiRange.nodeID) // node is in the circle before the flip over
 			{
@@ -428,9 +429,19 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.successor = hiRange;
 		}
 		
+		DhtLogger.log.info("Checked if node is in range. IsInRange={} loRange.nodeID={} this.nodeID={} hiRange.nodeID={} isNodeIdReversed={}", 
+								isInRange,
+								loRange.nodeID,
+								this.nodeID,
+								hiRange.nodeID,
+								isNodeIdReversed);
+
 		return isInRange;
 	}
 
+	//
+	// This node is the one being added
+	// currNode is which node this code is executing on
 	public boolean isNodeInRange(final DNode currNode) {
 
 		AssertUtilities.ThrowIfNull(currNode, "preNode");
@@ -441,8 +452,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		{
 			return true;
 		}
-
-		if (checkIfNodeIsInRange(currNode, currNode.successor))
+		else if (checkIfNodeIsInRange(currNode, currNode.successor))
 		{
 			return true;
 		}

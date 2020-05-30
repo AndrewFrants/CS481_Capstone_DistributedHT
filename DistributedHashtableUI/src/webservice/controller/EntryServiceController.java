@@ -66,7 +66,7 @@ public class EntryServiceController {
 			DhtLogger.log.info("Current node: {} getting successor: {}", currNode.nodeID, currNode.successor.nodeID);
 
 			// next node
-			currNode = NodesController.internalGetNode(getWS(), currNode.successor.nodeID, true, true);
+			currNode = NodesController.internalGetNode(currNode.successor, true);
 
 		} while (true);
 
@@ -93,8 +93,7 @@ public class EntryServiceController {
 
 			if (refreshNode) {
 				// refresh the predecessor
-				currNode.predecessor = NodesController.internalGetNode(getWS(), currNode.predecessor.nodeID, true,
-						true);
+				currNode.predecessor = NodesController.internalGetNode(currNode.predecessor, true);
 			}
 
 			return currNode.predecessor;
@@ -125,7 +124,7 @@ public class EntryServiceController {
 					currNode.successor.nodeID);
 
 			// next node
-			currNode = NodesController.internalGetNode(getWS(), currNode.successor.nodeID, true, true);
+			currNode = NodesController.internalGetNode(currNode.successor, true);
 
 		} while (true);
 	}

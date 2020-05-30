@@ -3,6 +3,9 @@ package webservice;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -40,7 +43,7 @@ public class DhtWebService {
 	   
 	public static void main(String[] args) {
 		
-		Boolean joinNetwork = false;
+		Boolean joinNetwork = true;
 		String firstInstanceAddress = null;
 		
 		InetAddress currentAddress = null;
@@ -51,7 +54,10 @@ public class DhtWebService {
 			e.printStackTrace();
 		}
 		
-		String currentInstanceUrl = currentAddress + ":8080";
+		String ipAddress = currentAddress.getHostAddress();
+		
+		String currentInstanceUrl = ipAddress + ":8080";
+		firstInstanceAddress = currentInstanceUrl;
 		
 		// Read parameters
 		for(String arg:args) {
@@ -61,8 +67,6 @@ public class DhtWebService {
 			
 			if (params[0].equalsIgnoreCase("--server.port"))
 			{
-				String ipAddress = currentAddress.getHostAddress();
-				
 				currentInstanceUrl = String.format(ipAddress + ":%s", params[1]);
 
 				if (currentInstanceUrl.contains("8080"))
@@ -101,18 +105,21 @@ public class DhtWebService {
 					@Override
 					public void run() {
 						DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true, DhtWebService.firstInstanceAddress);
+						MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
 						DhtWebService.dhtServiceInstance.joinNetwork();
+
 					}
 				}, 
-				10000 
+				1000 
 			);
 			}
 		else
 		{
 			DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true, null);
+			MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
 			DhtWebService.dhtServiceInstance.joinNetwork();
 		}
-
+		
 		SpringApplication.run(DhtWebService.class, args);
 
 	}

@@ -17,19 +17,6 @@ public class DHServerInstance {
 	Boolean joinNetwork;
 	String firstInstanceAddress;
 	
-	/*
-	Example of loading resources
-	https://howtodoinjava.com/spring-boot2/read-file-from-resources/
-	*/
-
-	/*
-	public DHServerInstance()
-	{
-		dhtNodes = new WebServiceNodes();
-		//currentNode = new DNode();
-	}
-	*/
-	
 	public DHServerInstance(DNode node, Boolean web, Boolean joinNetwork)
 	{
 		// when you change this to webservice
@@ -120,7 +107,6 @@ public class DHServerInstance {
 		{
 			// when you change this to webservice
 			// nodes, Create starts failing
-			currentNode = new DNode(address);
 			dhtNodes = new WebServiceNodes(firstInstanceAddress);
 			
 			if (!joinNetwork)
@@ -172,6 +158,7 @@ public class DHServerInstance {
 		if(currentNode.nodeID.equals(reqNode.nodeID)) {
 			DhtLogger.log.error("Case 1. CurrNodeID {} ReqNodeId: {} wasnt unique/overlapping", currentNode.name, reqNode.nodeID);
 			//dhtNodes.addNode(reqNode);
+			return;
 		}
 		// Case 2: currentNode has no successor
 		// This means this there is only one node in the network
@@ -191,9 +178,13 @@ public class DHServerInstance {
 								currentNode.name,
 								currentNode.predecessor.nodeID,
 								currentNode.successor.nodeID);
-
+			return;
 		}
-		else if (reqNode.isNodeInRange(currentNode))
+		
+		currentNode.predecessor = this.getNode(currentNode.predecessor);
+		currentNode.successor = this.getNode(currentNode.successor);
+		
+		if (reqNode.isNodeInRange(this.currentNode))
 		{
 			dhtNodes.updateNode(currentNode.predecessor);
 			
@@ -201,84 +192,24 @@ public class DHServerInstance {
 			
 			dhtNodes.updateNode(reqNode);
 		}
-		/*
-		// Case 3 a & b. If the requesting node is supposed to be inserted
-		// into the successor or predecessor of the current node
-		else if(currentNode.findIfRequestingNodeIsInRange(reqNode) != null) {	
-
-			DNode conNode = currentNode.findIfRequestingNodeIsInRange(reqNode);
-			reqNode.updateRequestingNodeUponJoin(currentNode, conNode);
-			dhtNodes.updateNode(reqNode);
-
-			// Case 3a. reqNode is the predecessor of currentNode
-			// requesting node becomes the successor of conNode
-			//  SAME -> C.Predesessor -> R -> C -> C.Successor -> SAME
-			if(reqNode.successor.nodeID.equals(currentNode.nodeID)) {
-				
-				// conNode -> reqNode -> currentNode
-				currentNode.predecessor = reqNode;
-				conNode.successor = reqNode;
-
-				reqNode.predecessor = conNode;
-				reqNode.successor = currentNode;
-
-				// copy key ownership
-				conNode.getTable().moveKeysAboveTo(reqNode.getTable(), reqNode.nodeID);
-				//connection node is now the predecessor
-				dhtNodes.updateNode(conNode);
-
-				DhtLogger.log.info("Case 3a. Adding the node {}({}) to currentNode={}() currentNode.P.Name = {} currentNode.S.Name = {} as successor", 
-							reqNode.name,
-							reqNode.nodeID,
-							currentNode.name,
-							currentNode.nodeID,
-							currentNode.predecessor.nodeID,
-							currentNode.successor.nodeID);
-			}
-			// Case 3b. reqNode is the successor of currentNode
-			//  SAME -> C.Predesessor -> C -> R -> C.Successor -> SAME
-			else {
-				
-				// conNode -> currentNode -> reqNode
-				DNode currSuccessor = currentNode.successor;
-				currentNode.successor = reqNode;
-				conNode.predecessor = reqNode;
-
-				reqNode.predecessor = currentNode;
-				reqNode.successor = currSuccessor;
-
-				// copy key ownership
-				currentNode.getTable().moveKeysAboveTo(reqNode.getTable(), reqNode.nodeID);
-				dhtNodes.updateNode(conNode);
-				dhtNodes.updateNode(reqNode);
-				DhtLogger.log.info("Case 3b. Adding the node {}({}) to currentNode={}({}) currentNode.P.Name = {} currentNode.S.Name = {} as successor", 
-					reqNode.name,
-					reqNode.nodeID,
-					currentNode.name,
-					currentNode.nodeID,
-					currentNode.predecessor.nodeID,
-					currentNode.successor.nodeID);
-			}
-			
-			// !update reqNode by passing the the currentNode and  the connecting node!
-			// wait
-			currentNode.updateReceivingNodeUponJoin(reqNode, conNode);
-
-			// !update connecting node by passing the requesting node, and the current node!
-			// wait
-		}
-		*/
 		// send request to successor
 		else {
 
 			IDhtNodes successorProxy = dhtNodes.createProxyFor(this.currentNode.successor);
 			successorProxy.addNode(reqNode);
-
 		}
 		
 		
 	}
 	
+	// Retrieve a node by id from the network
+	public DNode getNode(DNode node)
+	{
+		IDhtNodes nodeProxy = this.dhtNodes.createProxyFor(node);
+
+		return nodeProxy.getNode();
+	}
+
 	// Retrieve a node by id from the network
 	public DNode getNode(Integer nodeId)
 	{

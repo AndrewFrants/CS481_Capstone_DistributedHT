@@ -1,7 +1,7 @@
 <configuration>
 <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-        <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\) - %message%n</pattern>
+        <pattern>%d{HH:mm:ss.SSS} [NodeID=%X{prefix}][%thread] %-5level (%file:%line\) - %message%n</pattern>
     </encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<!-- Andrew you can control the trace level here. TRACE = Everything, DEBUG = Debug, INFO = Info-->

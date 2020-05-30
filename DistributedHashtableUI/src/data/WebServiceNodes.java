@@ -33,7 +33,7 @@ import service.DhtLogger;
  */
 public class WebServiceNodes implements IDhtNodes {
 
-	final String uriFmt = "http://%s/nodes/";
+	final String uriFmt = "http://%s/nodes/"; // keep the trailing slash because its coded for this assumption
 
 	String targetHostNodesController;
 
@@ -128,6 +128,14 @@ public class WebServiceNodes implements IDhtNodes {
 	@Override
 	public List<DNode> getAllNodes() {
 		return getNodes(targetHostNodesController);
+	}
+
+	@Override
+	public DNode getNode() {
+		RestTemplate restTemplate = getProxyRestTemplate();
+		String url = this.targetHostNodesController + "self"; // get itself, as by default DHT returns all nodes
+		DhtLogger.log.info("Getting node {}", url);
+		return restTemplate.getForObject(url, DNode.class);
 	}
 
 	public RestTemplate getProxyRestTemplate() {
