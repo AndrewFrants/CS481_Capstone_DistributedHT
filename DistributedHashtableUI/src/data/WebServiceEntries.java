@@ -57,10 +57,7 @@ public class WebServiceEntries implements IDhtEntries {
     	return new WebServiceEntries(host, port);
     }
     
-    
-
-
-	/*
+    /*
 	 * Insert
 	 */
     @Override
@@ -86,15 +83,15 @@ public class WebServiceEntries implements IDhtEntries {
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
 	}
-	
-    
-    
+	    
     @Override
-	public void remove(DNode node, String name) {
+	public void remove(int entryId) {
+	    DhtLogger.log.info("DELETE entry {} url: {}", entryId, targetHostEntriesController + entryId);
 
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    restTemplate.delete(targetHostEntriesController + entryId);
     }
-    
-    
+        
 	/*
 	 * insert entry
 	 */
@@ -129,8 +126,26 @@ public class WebServiceEntries implements IDhtEntries {
 	}
     
     @Override
-    public void update(DNode node, int entryId, String entryValue) {
-    	// TODO Rachana
+    public void update(int entryId, String entryValue) {
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.setContentType(MediaType.APPLICATION_JSON);
+
+	    ObjectMapper mapper = new ObjectMapper();
+	       
+	    String serializedEntry = null;
+	       
+	    try {
+	    	serializedEntry = mapper.writeValueAsString(DHashEntry.getHashEntry(entryValue));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    DhtLogger.log.info("PUT entry {} url: {}", entryValue, targetHostEntriesController);
+
+    	HttpEntity<String> entity = new HttpEntity<String>(serializedEntry ,headers);
+	    RestTemplate restTemplate = getProxyRestTemplate();
+	    restTemplate.put(targetHostEntriesController + entryId, entity, String.class);
     }
 	
 	public DHashEntry get(Integer key)
@@ -217,6 +232,5 @@ public class WebServiceEntries implements IDhtEntries {
 		
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    return restTemplate.getForObject(uri, String.class);
-	}
-	
+	}	
 }

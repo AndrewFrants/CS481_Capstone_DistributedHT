@@ -74,7 +74,6 @@ import javax.swing.JScrollPane;
  * This is the main window for the UI
  * It is built using WindowBuilder
  */
-
 public class MainWindow extends JFrame {
 
 	/**
@@ -83,7 +82,7 @@ public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JTextField textField;
 	private JTextField textField_1;
-	
+
 	// This is the main window content pane
 	private JPanel contentPane;
 
@@ -161,10 +160,10 @@ public class MainWindow extends JFrame {
 
 		JPanel panel = new JPanel();
 		navMain.add(panel, BorderLayout.NORTH);
-		
+
 		/*
 		 * Adding node implementation
-		 */	
+		 */
 		JButton btnNew = new JButton("New Node");
 		btnNew.setEnabled(false);
 		panel.add(btnNew);
@@ -205,84 +204,113 @@ public class MainWindow extends JFrame {
 		JButton btnNewModifyNode = new JButton("Change Node");
 		btnNewModifyNode.setEnabled(false);
 		panel.add(btnNewModifyNode);
-		
-		btnNewModifyNode.addActionListener(new ActionListener() {
-			   //removing the node
-			   public void actionPerformed(ActionEvent arg0) {
-			      if (nodeList.getSelectedIndex() < 0)
-			         return;
-			      String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
-			      selectedIndex = selectedIndex.split("\\(")[0].trim();
-			      if (selectedIndex.equalsIgnoreCase("All"))
-			         return;
-			      RemoveNode(selectedIndex);
-			      RefreshControls();
 
-			   //adding node
-			      JTextField replaceTxt = new JTextField("");
-			      JLabel label = new JLabel("Hashed value: 0");
-			      JPanel panel = new JPanel(new GridLayout(0, 2));
-			      panel.add(new JLabel("Add Node: "));
-			      panel.add(replaceTxt);
-			      replaceTxt.addKeyListener(new KeyAdapter() {
-			         @Override
-			         public void keyPressed(KeyEvent e) {
-			            label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
-			         }
-			      });
-			      panel.add(label);
-			      int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
-			      if (result == JOptionPane.OK_OPTION) {
-			         AddNode(replaceTxt.getText());
-			      }
-			      RefreshControls();
-			   }
-			});	
-		
+		btnNewModifyNode.addActionListener(new ActionListener() {
+			// removing the node
+			public void actionPerformed(ActionEvent arg0) {
+				if (nodeList.getSelectedIndex() < 0)
+					return;
+				String selectedIndex = nodesList.elementAt(nodeList.getSelectedIndex());
+				selectedIndex = selectedIndex.split("\\(")[0].trim();
+				if (selectedIndex.equalsIgnoreCase("All"))
+					return;
+				RemoveNode(selectedIndex);
+				RefreshControls();
+
+				// adding node
+				JTextField replaceTxt = new JTextField("");
+				JLabel label = new JLabel("Hashed value: 0");
+				JPanel panel = new JPanel(new GridLayout(0, 2));
+				panel.add(new JLabel("Add Node: "));
+				panel.add(replaceTxt);
+				replaceTxt.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						label.setText("Hashed value: " + Integer.toString(
+								ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+					}
+				});
+				panel.add(label);
+				int result = JOptionPane.showConfirmDialog(null, panel, "Add New Node", JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.PLAIN_MESSAGE);
+				if (result == JOptionPane.OK_OPTION) {
+					AddNode(replaceTxt.getText());
+				}
+				RefreshControls();
+			}
+		});
+
 		/*
-		 * Modify entry button
+		 * Update entry button
 		 */
-		JButton btnNewModifyEntry = new JButton("Change Entry");
-		panel.add(btnNewModifyEntry);
+		JButton btnUpdateEntry = new JButton("Update Entry");
+		panel.add(btnUpdateEntry);
+
+		btnUpdateEntry.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (keyList.getSelectedIndex() < 0)
+					return;
+
+				String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
+				selectedIndex = selectedIndex.split("\\(")[0].trim();
+				if (selectedIndex.equalsIgnoreCase("All"))
+					return;
+
+				JTextField replaceTxt = new JTextField("");
+				JLabel label = new JLabel("Hashed value: 0");
+				JPanel panel = new JPanel(new GridLayout(0, 2));
+				panel.add(new JLabel("Add Entry: "));
+				panel.add(replaceTxt);
+				replaceTxt.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						label.setText("Hashed value: " + Integer.toString(
+								ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
+					}
+				});
+
+				panel.add(label);
+				int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry", JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.PLAIN_MESSAGE);
+				if (result == JOptionPane.OK_OPTION) {
+					dhService.UpdateEntry(ChecksumDemoHashingFunction.hashValue(selectedIndex), replaceTxt.getText());
+				}
+
+				RefreshControls();
+			}
+		});
+
+		/*
+		 * Remove Entry button
+		 */
+		JButton btnRemoveEntry = new JButton("Remove Entry");
+		panel.add(btnRemoveEntry);
 		
-		
-		btnNewModifyEntry.addActionListener(new ActionListener() {
-			   //removing the node
-			   public void actionPerformed(ActionEvent arg0) {
-			      if (keyList.getSelectedIndex() < 0)
-			         return;
-			      String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
-			      selectedIndex = selectedIndex.split("\\(")[0].trim();
-			      if (selectedIndex.equalsIgnoreCase("All"))
-			         return;
-			      dhService.RemoveEntry(selectedIndex);
-			      RefreshControls();
-			
-			
-			   //adding new entry
-			      JTextField replaceTxt = new JTextField("");
-			      JLabel label = new JLabel("Hashed value: 0");
-			      JPanel panel = new JPanel(new GridLayout(0, 2));
-			      panel.add(new JLabel("Add Entry: "));
-			      panel.add(replaceTxt);
-			      replaceTxt.addKeyListener(new KeyAdapter() {
-			         @Override
-			         public void keyPressed(KeyEvent e) {
-			              label.setText("Hashed value: " + Integer.toString(ChecksumDemoHashingFunction.hashValue(replaceTxt.getText() + e.getKeyChar())));
-			           }
-			      });
-			      panel.add(label);
-			      int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE);
-			      if (result == JOptionPane.OK_OPTION) {
-			    	  dhService.AddEntry(replaceTxt.getText());
-			          }
-			      RefreshControls();
-			      
-			   }
-			});
+		btnRemoveEntry.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (keyList.getSelectedIndex() < 0)
+					return;
+
+				String selectedIndex = keysList.elementAt(keyList.getSelectedIndex());
+				selectedIndex = selectedIndex.split("\\(")[0].trim();
+				if (selectedIndex.equalsIgnoreCase("All"))
+					return;
+
+				JPanel panel = new JPanel(new GridLayout(0, 2));
+				panel.add(new JLabel("Remove Entry: " + selectedIndex));
+
+				int result = JOptionPane.showConfirmDialog(null, panel, "Remove Entry", JOptionPane.OK_CANCEL_OPTION,
+						JOptionPane.PLAIN_MESSAGE);
+				if (result == JOptionPane.OK_OPTION) {
+					dhService.RemoveEntry(ChecksumDemoHashingFunction.hashValue(selectedIndex));
+				}
+
+				RefreshControls();
+			}
+		});
 		
 		/*
-		 * Save button
+		 * Refresh button
 		 */
 		JButton btnRefresh = new JButton("Refresh");
 		btnRefresh.addActionListener(new ActionListener() {
@@ -291,12 +319,6 @@ public class MainWindow extends JFrame {
 			}
 		});
 		panel.add(btnRefresh);
-
-		/*
-		 * Delete button
-		 */
-		JButton btnDelete = new JButton("Delete");
-		panel.add(btnDelete);
 
 		/*
 		 * Main view panel
@@ -341,11 +363,10 @@ public class MainWindow extends JFrame {
 				PopulateKeys();
 			}
 		});
-		
 		JScrollPane scrollPane = new JScrollPane(keyList);
 		keyListPanel.add(scrollPane, BorderLayout.CENTER);
 		keyListPanel.add(keyList);
-		
+
 		keyList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
 				PopulateText();
@@ -436,11 +457,11 @@ public class MainWindow extends JFrame {
 		textField = new JTextField();
 		pnlConnectionSettings.add(textField);
 		textField.setColumns(10);
-		
+
 		textField_1 = new JTextField();
 		pnlConnectionSettings.add(textField_1);
 		textField_1.setColumns(10);
-		
+
 		JPanel tabConnectionPanel = new JPanel();
 		navConnection.add(tabConnectionPanel, BorderLayout.NORTH);
 		tabConnectionPanel.setLayout(new BorderLayout(0, 0));
@@ -487,22 +508,19 @@ public class MainWindow extends JFrame {
 		});
 
 		boolean inMemoryService = false;
-		
-		if (inMemoryService)
-		{
+
+		if (inMemoryService) {
 			createDHService();
-		}
-		else
-		{
+		} else {
 			dhService = new DHService(true);
 			dhService.getAllNodes();
-			
+
 			populateNodes();
 		}
 	}
 
 	/*
-	 * Create the Distributed Hashtable service 
+	 * Create the Distributed Hashtable service
 	 */
 	public void createDHService() throws Exception {
 		dhService = DHService.createFiveNodeCluster(true);
@@ -526,9 +544,9 @@ public class MainWindow extends JFrame {
 			int count = node.getAllEntries().size();
 
 			DhtLogger.log.info("Added node: {} keys count: {} ", node.nodeID, count);
-			
-			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID() + ", angle: "
-					+ node.getAngle() + ", Size=" + count + ")");
+
+			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID()
+					+ ", angle: " + node.getAngle() + ", Size=" + count + ")");
 		}
 	}
 
@@ -536,6 +554,9 @@ public class MainWindow extends JFrame {
 	 * Populate the keys
 	 */
 	public void PopulateKeys() {
+		keysList.clear();
+		keyList.clearSelection();
+		
 		if (nodeList.getSelectedIndex() < 0)
 			return;
 
@@ -543,9 +564,7 @@ public class MainWindow extends JFrame {
 		selectedIndex = selectedIndex.split("\\(")[0].trim();
 		System.out.println(nodeList.getSelectedIndex());
 		if (selectedIndex.equalsIgnoreCase("All"))
-			return;
-
-		keysList.clear();
+			return;		
 
 		DNode node = dhService.findNodeByName(selectedIndex);
 
@@ -559,7 +578,7 @@ public class MainWindow extends JFrame {
 
 		DhtLogger.log.info("Retrieve keys count {}", keysList.getSize());
 
-		keyList.repaint();
+		keyList.repaint();		
 	}
 
 	public void PopulateText() {
@@ -580,9 +599,9 @@ public class MainWindow extends JFrame {
 	}
 
 	public void RefreshControls() {
-		this.PopulateKeys();
-		this.PopulateText();
 		this.populateNodes();
+		this.PopulateKeys();
+		this.PopulateText();		
 	}
 
 	public void AddNode(String text) {
@@ -591,11 +610,9 @@ public class MainWindow extends JFrame {
 		RefreshControls();
 	}
 
-
 	public void RemoveNode(String name) {
 		dhService.removeNode(name);
 
 		RefreshControls();
 	}
-	
 }

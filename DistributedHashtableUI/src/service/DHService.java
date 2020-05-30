@@ -129,10 +129,6 @@ public class DHService {
 		log.debug("findNodeByName(String) {}", name);
 		return dhtNodes.findNodeByName(name);
 	}
-	
-	/*
-	 * 
-	 */
 
 	/*
 	 * Find the node by a hash code
@@ -177,17 +173,16 @@ public class DHService {
 			insertValue(text);
 		}
 		
-		// removing entry
-		public void RemoveEntry(String text)
+		// updating an entry
+		public void UpdateEntry(int id, String text)
 		{
-			//dhService.removeEntry(name);
-			
-			//DNode node = findNodeByName(text);
-			//node.getTable().removeKeys(ChecksumDemoHashingFunction.hashValue(text));
-			
-			//AssignKeys(DHashEntry.getHashEntry(text));
-			dhtNodes.RemoveEntry(text);
-			//RefreshControls();
+			dhtEntries.update(id, text);
+		}		
+		
+		// removing entry
+		public void RemoveEntry(int entryId)
+		{
+			dhtEntries.remove(entryId);
 		}
 
 	public static DHService createFiveNodeCluster(Boolean web)
