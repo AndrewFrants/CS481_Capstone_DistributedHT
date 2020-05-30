@@ -41,6 +41,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	@JsonIgnore
 	public RoutingTable router;
 	public Range keyRange; 
+
 	public int size; // size of networks
 	
 	/*
@@ -49,7 +50,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public DNode() {
 		table = new DHashtable();
 		//router = new RoutingTable(this);
-				
+
 		DhtLogger.log.info("Initialized node (By Serializer)");
 	}
 	
@@ -68,7 +69,30 @@ public class DNode implements Comparable<DNode>, Serializable {
 		keyRange = new Range();
 		keyRange.setLowID(this.nodeID);
 		keyRange.setHighID(this.nodeID - 1);
+		
 		DhtLogger.log.info("Initialized name: {} nodeId: {} angleVal: {}", nodeName, nodeID, this.angleVal);
+	}
+
+	public DNode Clone(boolean cloneHashtable)
+	{
+		DNode clone = new DNode(this.name);
+		
+		if (this.successor != null)
+		{
+			clone.successor = this.successor.Clone(cloneHashtable);
+		}
+
+		if (this.predecessor != null)
+		{
+			clone.predecessor = this.predecessor.Clone(cloneHashtable);
+		}
+
+		if (cloneHashtable)
+		{
+			this.table.copyValuesTo(clone.table);
+		}
+
+		return clone;
 	}
 
 	@JsonIgnore
@@ -261,8 +285,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 
 		else {
 			// final DNode connecting = receivingNode.findIfRequestingNodeIsInRange(this);
-			DNode connecting = receivingNode.findIfIAmSuccessor(this);
-		
+			DNode connecting = receivingNode.findIfIAmSuccessor(this);		
 			// if the connecting node exists, the requesting node has found it's range placement
 			// initialize it's successor/predecessor, keylist
 			// change receiving and connecting node's id
@@ -288,14 +311,14 @@ public class DNode implements Comparable<DNode>, Serializable {
 	public boolean receiveJoinRequest(final DNode incomingNode) {
 		
 		if (incomingNode.size == this.size && incomingNode.nodeID != this.nodeID) {
-			// DNodeJoin.updateNodes(this, incomingNode);
+			 //DNodeJoin.updateNodes(this, incomingNode);
 			return true;
 		}
 		return false;
 
 	}
 	
-public DNode findIfIAmSuccessor(DNode reqNode) {
+	public DNode findIfIAmSuccessor(DNode reqNode) {
 		
 		int reqID = reqNode.nodeID;
 		
@@ -312,7 +335,6 @@ public DNode findIfIAmSuccessor(DNode reqNode) {
 		}	
 		
 	}
-	
 	// This node find's if a requesting node is within this node(receivers)
 	// range.  Meaning it is in the span between either this node
 	// and its successor or predecessor.
@@ -427,9 +449,9 @@ public DNode findIfIAmSuccessor(DNode reqNode) {
 	public boolean checkIfNodeIsInRange(final DNode loRange, final DNode hiRange) {
 
 		boolean isInRange = false;
-		boolean isNodeIdReversed = loRange.nodeID < hiRange.nodeID; // this can happen if the range spans 0
+		boolean isNodeRangeOrdered = loRange.nodeID < hiRange.nodeID; // this can happen if the range spans 0
 		
-		if (isNodeIdReversed) // there is no flip over 0
+		if (isNodeRangeOrdered) // there is no flip over 0
 		{
 			if (this.nodeID > loRange.nodeID && this.nodeID < hiRange.nodeID)
 			{
@@ -450,18 +472,26 @@ public DNode findIfIAmSuccessor(DNode reqNode) {
 
 		if (isInRange)
 		{
-			loRange.successor = this;
-			this.predecessor = loRange;
-			hiRange.predecessor = this;
-			this.successor = hiRange;
+			loRange.successor = this.Clone(false);
+			this.predecessor = loRange.Clone(false);
+			hiRange.predecessor = this.Clone(false);
+			this.successor = hiRange.Clone(false);
+
+			DhtLogger.log.info("loRange.successor={} loRange.predecessor={} this.successor={} this.predecessor={} hiRange.successor={} hiRange.predecessor={}", 
+					loRange.successor.nodeID,
+					loRange.predecessor.nodeID,
+					this.successor.nodeID,
+					this.predecessor.nodeID,
+					hiRange.successor.nodeID,
+					hiRange.predecessor.nodeID);
 		}
 		
-		DhtLogger.log.info("Checked if node is in range. IsInRange={} loRange.nodeID={} this.nodeID={} hiRange.nodeID={} isNodeIdReversed={}", 
+		DhtLogger.log.info("Checked if node is in range. IsInRange={} loRange.nodeID={} this.nodeID={} hiRange.nodeID={} isNodeRangeOrdered={}", 
 								isInRange,
 								loRange.nodeID,
 								this.nodeID,
 								hiRange.nodeID,
-								isNodeIdReversed);
+								isNodeRangeOrdered);
 
 		return isInRange;
 	}
@@ -645,7 +675,5 @@ public DNode findIfIAmSuccessor(DNode reqNode) {
 		
 		return false;
 	}
-	
-	
 	
 }

@@ -37,7 +37,7 @@ public class NodesController {
 
 	IDhtEntries dhtEntries;
 
-	public DHServerInstance getWS() {
+	public static DHServerInstance getWS() {
 		MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
 		return DhtWebService.dhtServiceInstance;
 	}
@@ -148,7 +148,7 @@ public class NodesController {
 		return internalGetNode(getWS(), id, usingStringSearch, traceError);
 	}
 
-	public DNode internalGetNode(DNode node, final Boolean traceError) {
+	public static DNode internalGetNode(DNode node, final Boolean traceError) {
 
 		AssertUtilities.ThrowIfNull(node, "node was null");
 
@@ -159,7 +159,8 @@ public class NodesController {
 			return dhInstance.currentNode;
 		}
 
-		return dhInstance.getNode(node);
+		IDhtNodes nodeProxy = dhInstance.dhtNodes.createProxyFor(node);
+		return nodeProxy.getNode();
 	}
 
 	public static DNode internalGetNode(DHServerInstance dhInstance, final Integer id, final Boolean usingStringSearch, final Boolean traceError) {
@@ -172,7 +173,7 @@ public class NodesController {
 		}
 
 		final DNode foundNode = dhInstance.getNode(id);
-			
+		
 		if (foundNode == null && traceError)
 		{
 			DhtLogger.log.info("node requested id: {} not found on the network. Using string search = {} (hashed string id). Responding with 404", id, usingStringSearch);
@@ -187,6 +188,8 @@ public class NodesController {
 		Integer idAsInt = FormatUtilities.SafeConvertStrToInt(id);
 		Boolean usingStringSearch = false;
 
+		DhtLogger.log.info("Searching for node for node={} asInt=[{}].", id, idAsInt);
+
 		if (idAsInt == null) {
 			idAsInt = ChecksumDemoHashingFunction.hashValue(id);
 			usingStringSearch = true;
@@ -194,6 +197,7 @@ public class NodesController {
 
 		if (getWS().currentNode.nodeID.equals(idAsInt))
 		{
+			DhtLogger.log.info("Returning self.");
 			return getWS().currentNode;
 		}
 
@@ -239,9 +243,9 @@ public class NodesController {
 
 		DNode networkNode = getWS().currentNode;
 		
-		if (!patchNode.nodeID.equals(getWS().currentNode.nodeID))
+		if (!patchNode.nodeID.equals(networkNode.nodeID))
 		{
-			networkNode = internalGetNode(patchNode.nodeID, true);
+			networkNode = internalGetNode(patchNode, true);
 		}
 		
 		if (networkNode == null)
@@ -257,7 +261,7 @@ public class NodesController {
 		}
 		*/
 		
-		DhtLogger.log.info("Patching node: {} successor: {} predecessor: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor);
+		DhtLogger.log.info("Patching node: {} successor: {} predecessor: {} patchedNodeStr: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor, patchNodeStr);
 
 		if (!patchNode.nodeID.equals(getWS().currentNode.nodeID)) // no network call if itself!
 		{
@@ -298,7 +302,7 @@ public class NodesController {
 			return ControllerHelpers.HttpResponse(HttpStatus.BAD_REQUEST);
 		}
 
-		final DNode networkNode = internalGetNode(patchNode.nodeID, true);
+		final DNode networkNode = internalGetNode(patchNode, true);
 
 		/*
 		if (networkNode.version > patchNode.version)

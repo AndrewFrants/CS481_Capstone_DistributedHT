@@ -114,7 +114,7 @@ public class EntryServiceController {
 				return currNode;
 			}
 
-			if (currNode.successor == head || currNode.successor == null)
+			if (currNode.successor.equals(head) || currNode.successor == null)
 			{
 				DhtLogger.log.info("Reached end of ring at: {} successor: {}", currNode.nodeID, successorId);
 				return head;

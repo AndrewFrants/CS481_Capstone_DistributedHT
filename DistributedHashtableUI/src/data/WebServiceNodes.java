@@ -88,7 +88,7 @@ public class WebServiceNodes implements IDhtNodes {
 		if (n.isUrlPointingAt(targetHostNodesController)) {
 			return findNodeByName(n.nodeID);
 		} else {
-			return this.createProxyFor(n).findNodeByName(n.nodeID);
+			return this.createProxyFor(n).getNode();
 		}
 	}
 
@@ -182,8 +182,7 @@ public class WebServiceNodes implements IDhtNodes {
 
 			try
 			{
-				DhtLogger.log.info("Patching node at url {}", url);
-				
+	
 				RestTemplate restTemplate = getProxyRestTemplate();
 				ObjectMapper mapper = new ObjectMapper();
 
@@ -193,6 +192,8 @@ public class WebServiceNodes implements IDhtNodes {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+
+				DhtLogger.log.info("Patching node at url {} n.S={} n.P={} updatedNode={}", url, n.successor.nodeID, n.predecessor.nodeID, updatedNode);
 
 				restTemplate.put(url, updatedNode, String.class);
 			}

@@ -186,9 +186,9 @@ public class DHServerInstance {
 		
 		if (reqNode.isNodeInRange(this.currentNode))
 		{
-			dhtNodes.updateNode(currentNode.predecessor);
+			dhtNodes.updateNode(reqNode.predecessor);
 			
-			dhtNodes.updateNode(currentNode.successor);
+			dhtNodes.updateNode(reqNode.successor);
 			
 			dhtNodes.updateNode(reqNode);
 		}
@@ -197,9 +197,7 @@ public class DHServerInstance {
 
 			IDhtNodes successorProxy = dhtNodes.createProxyFor(this.currentNode.successor);
 			successorProxy.addNode(reqNode);
-		}
-		
-		
+		}	
 	}
 	
 	// Retrieve a node by id from the network
@@ -231,7 +229,8 @@ public class DHServerInstance {
 				successorNodeId = this.currentNode.successor.nodeID;
 				
 				DhtLogger.log.info("Forwarding getNode {} to successor {} ({}})", nodeId, successorName, successorNodeId);
-				return dhtNodes.findNodeByName(this.currentNode.successor);
+				IDhtNodes successorProxy = this.dhtNodes.createProxyFor(this.currentNode.successor);
+				return successorProxy.findNodeByName(nodeId);
 			}
 			else
 			{

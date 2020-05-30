@@ -132,7 +132,7 @@ public class MainWindow extends JFrame {
 		keysList = new DefaultListModel<String>();
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 700, 450);
+		setBounds(100, 100, 823, 450);
 
 		/*
 		 * Creating the UI framework
@@ -164,6 +164,13 @@ public class MainWindow extends JFrame {
 		/*
 		 * Adding node implementation
 		 */
+		JButton btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				RefreshControls();
+			}
+		});
+		panel.add(btnRefresh);
 		JButton btnNew = new JButton("New Node");
 		btnNew.setEnabled(false);
 		panel.add(btnNew);
@@ -312,13 +319,6 @@ public class MainWindow extends JFrame {
 		/*
 		 * Refresh button
 		 */
-		JButton btnRefresh = new JButton("Refresh");
-		btnRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				RefreshControls();
-			}
-		});
-		panel.add(btnRefresh);
 
 		/*
 		 * Main view panel
@@ -365,7 +365,6 @@ public class MainWindow extends JFrame {
 		});
 		JScrollPane scrollPane = new JScrollPane(keyList);
 		keyListPanel.add(scrollPane, BorderLayout.CENTER);
-		keyListPanel.add(keyList);
 
 		keyList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent arg0) {
@@ -546,7 +545,7 @@ public class MainWindow extends JFrame {
 			DhtLogger.log.info("Added node: {} keys count: {} ", node.nodeID, count);
 
 			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID()
-					+ ", angle: " + node.getAngle() + ", Size=" + count + ")");
+					+ ", S:" + node.successor.nodeID + " P:" + node.predecessor.nodeID + ", Size:" + count + ")");
 		}
 	}
 
