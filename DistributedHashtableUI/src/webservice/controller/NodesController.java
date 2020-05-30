@@ -261,7 +261,7 @@ public class NodesController {
 		}
 		*/
 		
-		DhtLogger.log.info("Patching node: {} successor: {} predecessor: {} patchedNodeStr: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor, patchNodeStr);
+		DhtLogger.log.debug("Patching node: {} successor: {} predecessor: {} patchedNodeStr: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor, patchNodeStr);
 
 		if (!patchNode.nodeID.equals(getWS().currentNode.nodeID)) // no network call if itself!
 		{
