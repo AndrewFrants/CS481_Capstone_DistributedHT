@@ -176,6 +176,7 @@ public class WebServiceNodes implements IDhtNodes {
 	 */
 
 	public void updateNode(DNode n) {
+
 		if (n.isUrlPointingAt(targetHostNodesController)) {
 			String url = targetHostNodesController + n.nodeID;
 			String updatedNode = null;

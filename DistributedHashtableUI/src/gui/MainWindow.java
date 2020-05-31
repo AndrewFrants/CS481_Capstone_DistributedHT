@@ -544,8 +544,21 @@ public class MainWindow extends JFrame {
 
 			DhtLogger.log.info("Added node: {} keys count: {} ", node.nodeID, count);
 
+			String succID = "NULL";
+			String precID = "NULL";
+			
+			if (node.successor != null)
+			{
+				succID = node.successor.nodeID.toString();
+			}
+			
+			if (node.predecessor != null)
+			{
+				precID = node.predecessor.nodeID.toString();
+			}
+			
 			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID()
-					+ ", S:" + node.successor.nodeID + " P:" + node.predecessor.nodeID + ", Size:" + count + ")");
+					+ ", S:" + succID + " P:" + precID + ", Size:" + count + ")");
 		}
 	}
 

@@ -33,7 +33,10 @@ See file "Kubernetes Instructions.docx"
     mvnw spring-boot:run
 
 3a Run with a specific port:
-    mvnw spring-boot:run -Drun.arguments="--server.port=9000"
+    mvnw spring-boot:run 
+    
+    Parameters are NOW not needed!
+    -Drun.arguments="--server.port=9000"
 
 3b Run with specifying a specific port and custom command line arguments
 
@@ -42,17 +45,10 @@ See file "Kubernetes Instructions.docx"
 4. When you see "Started DhtWebService in 3.6 seconds" that means it started!
     set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_211
     pushd C:\Users\andreyf\OneDrive\BC\Fall 19\Capstone\DistributedHashtable\DistributedHashtableUI
-    mvnw spring-boot:run -Drun.arguments="--server.port=8080"
+    mvnw spring-boot:run
 
+    For second, third, so on server, just use the SAME command.
 
-    set JAVA_HOME=C:\Program Files\Java\jdk1.8.0_211
-    pushd C:\Users\andreyf\OneDrive\BC\Fall 19\Capstone\DistributedHashtable\DistributedHashtableUI
-    mvnw spring-boot:run -Drun.arguments="--server.port=8081,--join=true"
+    If you want to run from a DIFFERENT MACHINE, then you must specify the following commmand
 
-5. How to run. Start the first webservice on port 8080 always!
-
-mvnw spring-boot:run -Drun.arguments="--server.port=8080,--join"
-
-Subsequent instances, run on other ports such as 8081, 8082, etc
-
-mvnw spring-boot:run -Drun.arguments="--server.port=8081,--join"
+    mvnw spring-boot:run -Drun.arguments="--first.server=<IPADDRESS>:<PORT>"

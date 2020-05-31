@@ -5,7 +5,7 @@ metadata:
   labels:
     app: dht-v1-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: dht-v1-app
@@ -20,6 +20,15 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 6379
+      - name: dht-1
+        image: dht
+        imagePullPolicy: IfNotPresent
+      - name: dht-2
+        image: dht
+        imagePullPolicy: IfNotPresent
+      - name: dht-3
+        image: dht
+        imagePullPolicy: IfNotPresent
 ---
 apiVersion: v1
 kind: Service
@@ -32,6 +41,6 @@ spec:
     app: dht-v1-app
   type: LoadBalancer
   ports:
-    - port: 8888
+    - port: 8079
       protocol: TCP
       targetPort: 8080

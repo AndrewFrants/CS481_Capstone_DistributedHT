@@ -1,13 +1,16 @@
 package webservice;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 import service.DHServerInstance;
 import service.DHService;
@@ -25,6 +28,7 @@ mvnw spring-boot:run -Drun.arguments="--server.port=8081,--first=false"
 
 */
 @SpringBootApplication
+@ComponentScan
 public class DhtWebService {
 
 	//
@@ -40,87 +44,122 @@ public class DhtWebService {
 		// initialize mock service
 		DhtWebService.InMemoryWebService = new DHService(false); // DHService.createFiveNodeCluster(false);
 	}
-	   
+	
+	public static boolean isPortBeingUsed(String host, int port)
+	{
+		Socket sock = null;
+		try
+		{
+			sock = new Socket(host, port);
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+		finally
+		{
+			if(sock != null)
+				try {sock.close();}
+				catch(Exception e){}
+		}
+	}
+	
 	public static void main(String[] args) {
 		
-		Boolean joinNetwork = true;
-		String firstInstanceAddress = null;
-		
-		InetAddress currentAddress = null;
-		try {
-			currentAddress = InetAddress.getLocalHost();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		String ipAddress = currentAddress.getHostAddress();
-		
-		String currentInstanceUrl = ipAddress + ":8080";
-		firstInstanceAddress = currentInstanceUrl;
-		
-		// Read parameters
-		for(String arg:args) {
-			
-			String[] params = arg.split("=",2);
-			System.out.println("Argument: " + arg + " " + params[0]);
-			
-			if (params[0].equalsIgnoreCase("--server.port"))
-			{
-				currentInstanceUrl = String.format(ipAddress + ":%s", params[1]);
+		Integer foundPort = 8080;
 
-				if (currentInstanceUrl.contains("8080"))
-				{
-					System.out.println("Setting joinNetwork=false first instance");
-					joinNetwork = false;
+		do
+		{
+			try
+			{
+				InetAddress currentAddress = null;
+				try {
+					currentAddress = InetAddress.getLocalHost();
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			}
-			else if (params[0].equalsIgnoreCase("--first.server"))
-			{
-				DhtLogger.log.info("Setting first server as: {}", params[1]);
+				
+				String ipAddress = currentAddress.getHostAddress();
+				
+				String currentInstanceUrl = ipAddress + ":8080";
+				firstInstanceAddress = currentInstanceUrl;
 
-				firstInstanceAddress = params[1];
 
-			}
-			else if (params[0].equalsIgnoreCase("--join"))
-			{
-				joinNetwork = true;
-			}
-			else
-			{
-				System.out.println("Ignored command line: " + arg);
-			}
-        }
+				for (int i = 0; i < 100 && isPortBeingUsed(ipAddress, foundPort); i++)
+				{
+					DhtLogger.log.info("Testing ip: {} port: {}", ipAddress, foundPort);
+					foundPort += 1;
+				}
 
-		DhtLogger.log.info("--- ENTRY POINT ---: Instance URL: {} firstInstanceSetting={} firstInstanceAddress={}", currentInstanceUrl, joinNetwork, firstInstanceAddress);
+				currentInstanceUrl = ipAddress + ":" + foundPort;
 
-		DhtWebService.serverUrl = currentInstanceUrl;
-		DhtWebService.joinNetwork = joinNetwork;
-		DhtWebService.firstInstanceAddress = firstInstanceAddress;
-		
-		if (DhtWebService.joinNetwork)
-		{
-			new java.util.Timer().schedule( 
-				new java.util.TimerTask() {
-					@Override
-					public void run() {
-						DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true, DhtWebService.firstInstanceAddress);
-						MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
-						DhtWebService.dhtServiceInstance.joinNetwork();
+				if (foundPort == 8080)
+				{
+					joinNetwork = false;
+					firstInstanceAddress = null;
+				}
+				else
+				{
+					joinNetwork = true;
+					firstInstanceAddress = ipAddress + ":" + 8080;
+				}
 
+				// Read parameters
+				for(String arg:args) {
+			
+					String[] params = arg.split("=",2);
+					DhtLogger.log.info("Argument: {} {}", arg, params[0]);
+
+					if (params[0].equalsIgnoreCase("--first.server")) // allows us to run instances from other machines
+					{
+						DhtLogger.log.info("OVERRIDE DETECTED. Setting first server as: {}", params[1]);
+						firstInstanceAddress = params[1];
+						joinNetwork = true;
 					}
-				}, 
-				1000 
-			);
+					else
+					{
+						System.out.println("Ignored command line: " + arg);
+					}
+				}
+
+				DhtLogger.log.info("--- ENTRY POINT ---: Instance URL: {} firstInstanceSetting={} firstInstanceAddress={}", currentInstanceUrl, joinNetwork, firstInstanceAddress);
+
+				DhtWebService.serverUrl = currentInstanceUrl;
+				DhtWebService.joinNetwork = joinNetwork;
+				DhtWebService.firstInstanceAddress = firstInstanceAddress;
+				
+				if (DhtWebService.joinNetwork)
+				{
+					new java.util.Timer().schedule( 
+						new java.util.TimerTask() {
+							@Override
+							public void run() {
+								DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true, DhtWebService.firstInstanceAddress);
+								MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
+								DhtWebService.dhtServiceInstance.joinNetwork();
+
+							}
+						}, 
+						3000 
+					);
+					}
+				else
+				{
+					DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true, null);
+					MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
+					DhtWebService.dhtServiceInstance.joinNetwork();
+				}
+				
+				SpringApplication.run(DhtWebService.class, "--server.port=" + foundPort.toString());
+				break;
 			}
-		else
-		{
-			DhtWebService.dhtServiceInstance = new DHServerInstance(DhtWebService.serverUrl, DhtWebService.joinNetwork, true, null);
-			MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
-			DhtWebService.dhtServiceInstance.joinNetwork();
-		}
-		
-		SpringApplication.run(DhtWebService.class, args);
+			catch (Exception ex)
+			{
+				foundPort++;
+			}
+		} while (foundPort < 10000);
 
 	}
 }

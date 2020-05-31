@@ -17,5 +17,6 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 # Parameter can be used to change default Sprint Boot port from 8080
-EXPOSE 8080
+# Alternative add --expose=8080 docker argument
+EXPOSE 8080 
 ENTRYPOINT ["java","-cp","app:app/lib/*","webservice.DhtWebService"]

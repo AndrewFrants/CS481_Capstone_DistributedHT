@@ -87,17 +87,7 @@ public class DHServerInstance {
 		this.web = web;
 		this.firstInstanceAddress = firstInstanceAddress;
 		this.currentNode = new DNode(address);
-		
-		if (!joinNetwork)
-		{
-			// this is the first instance or dont join network
-			this.addNode(this.currentNode);
-		}
-		else
-		{
-			dhtNodes = new InMemoryNodes(this);
-		}
-		
+
 		DhtLogger.log.info("initialize address={} joinNetwork={} web={} firstInstanceAddress={}", address, joinNetwork, web, firstInstanceAddress);
 	}
 	
@@ -131,8 +121,8 @@ public class DHServerInstance {
 					{
 						try
 						{
-							DhtLogger.log.info("Waiting 15 seconds to rejoin network, address={} nodeId={}, ex={}", currentNode.getNodeAddress(), currentNode.nodeID, ex);
-							Thread.sleep(15000);
+							DhtLogger.log.info("Waiting 3 seconds to rejoin network, address={} nodeId={}, firstS={} ex={}", currentNode.getNodeAddress(), currentNode.nodeID, firstInstanceAddress, ex);
+							Thread.sleep(3000);
 						} catch (Exception e) {}
 					}
 				} while (!success);
@@ -157,7 +147,7 @@ public class DHServerInstance {
 		// nodeIDs should be unique
 		if(currentNode.nodeID.equals(reqNode.nodeID)) {
 			DhtLogger.log.error("Case 1. CurrNodeID {} ReqNodeId: {} wasnt unique/overlapping", currentNode.name, reqNode.nodeID);
-			//dhtNodes.addNode(reqNode);
+			currentNode = reqNode.Clone(true);
 			return;
 		}
 		// Case 2: currentNode has no successor
