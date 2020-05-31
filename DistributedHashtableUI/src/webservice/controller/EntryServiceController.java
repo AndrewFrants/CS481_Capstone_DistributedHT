@@ -53,7 +53,7 @@ public class EntryServiceController {
 
 			DhtLogger.log.info("Added entries, count: {} from node: {}", entriesOfThisNode.size(), currNode.nodeID);
 
-			if (currNode.successor.equals(head) || currNode.successor == null) {
+			if (currNode.successor == null || currNode.successor.equals(head)) {
 				if (currNode.successor != null) {
 					DhtLogger.log.info("Get all entries, reached end of ring at: {} successor: {}", currNode.nodeID,
 							currNode.successor.nodeID);
