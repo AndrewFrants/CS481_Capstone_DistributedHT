@@ -266,7 +266,7 @@ public class MainWindow extends JFrame {
 				JTextField replaceTxt = new JTextField("");
 				JLabel label = new JLabel("Hashed value: 0");
 				JPanel panel = new JPanel(new GridLayout(0, 2));
-				panel.add(new JLabel("Add Entry: "));
+				panel.add(new JLabel("Update Entry: "));
 				panel.add(replaceTxt);
 				replaceTxt.addKeyListener(new KeyAdapter() {
 					@Override
@@ -277,13 +277,15 @@ public class MainWindow extends JFrame {
 				});
 
 				panel.add(label);
-				int result = JOptionPane.showConfirmDialog(null, panel, "Add New Entry", JOptionPane.OK_CANCEL_OPTION,
+				int result = JOptionPane.showConfirmDialog(null, panel, "Update Entry", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.PLAIN_MESSAGE);
 				if (result == JOptionPane.OK_OPTION) {
-					dhService.UpdateEntry(ChecksumDemoHashingFunction.hashValue(selectedIndex), replaceTxt.getText());
-				}
-
-				RefreshControls();
+					String updateEntry = replaceTxt.getText();
+					if (updateEntry != null && !updateEntry.isEmpty()) {
+						dhService.UpdateEntry(ChecksumDemoHashingFunction.hashValue(selectedIndex), updateEntry);
+						RefreshControls();
+					}
+				}				
 			}
 		});
 
@@ -304,15 +306,14 @@ public class MainWindow extends JFrame {
 					return;
 
 				JPanel panel = new JPanel(new GridLayout(0, 2));
-				panel.add(new JLabel("Remove Entry: " + selectedIndex));
+				panel.add(new JLabel("Remove Entry: " + selectedIndex + "?"));
 
 				int result = JOptionPane.showConfirmDialog(null, panel, "Remove Entry", JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.PLAIN_MESSAGE);
 				if (result == JOptionPane.OK_OPTION) {
 					dhService.RemoveEntry(ChecksumDemoHashingFunction.hashValue(selectedIndex));
-				}
-
-				RefreshControls();
+					RefreshControls();
+				}				
 			}
 		});
 		
@@ -396,11 +397,13 @@ public class MainWindow extends JFrame {
 						JOptionPane.PLAIN_MESSAGE);
 
 				if (result == JOptionPane.OK_OPTION) {
-					DhtLogger.log.info("Adding entry {}", replaceTxt.getText());
-					dhService.AddEntry(replaceTxt.getText());
-				}
-
-				RefreshControls();
+					String entry = replaceTxt.getText();
+					if (entry != null && !entry.isEmpty()) {
+						DhtLogger.log.info("Adding entry {}", replaceTxt.getText());
+						dhService.AddEntry(replaceTxt.getText());
+						RefreshControls();
+					}
+				}				
 			}
 		});
 

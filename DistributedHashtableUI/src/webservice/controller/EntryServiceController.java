@@ -268,7 +268,9 @@ public class EntryServiceController {
 				return ControllerHelpers.HttpResponse("Couldn't find owner node.", HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
-			ownerNode.UpdateEntries(updatedEntry);
+			ownerNode.UpdateEntries(updatedEntry);			
+			WebServiceNodes connection = WebServiceNodes.getProxyFor(ownerNode);
+			connection.updateNode(ownerNode);
 		   
 		   return new ResponseEntity<>("Entry is updated successfully", HttpStatus.OK);
 	   }

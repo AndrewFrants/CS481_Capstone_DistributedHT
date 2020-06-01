@@ -194,7 +194,9 @@ public class WebServiceNodes implements IDhtNodes {
 					e.printStackTrace();
 				}
 
-				DhtLogger.log.debug("Patching node at url {} n.S={} n.P={} updatedNode={}", url, n.successor.nodeID, n.predecessor.nodeID, updatedNode);
+				String successorId = n.successor == null ? "NULL" : n.successor.nodeID.toString();
+				String predecessorId = n.predecessor == null ? "NULL" : n.predecessor.nodeID.toString();
+				DhtLogger.log.debug("Patching node at url {} n.S={} n.P={} updatedNode={}", url, successorId, predecessorId, updatedNode);
 
 				restTemplate.put(url, updatedNode, String.class);
 			}

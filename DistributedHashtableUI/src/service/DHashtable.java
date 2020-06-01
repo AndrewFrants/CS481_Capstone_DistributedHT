@@ -102,7 +102,7 @@ public class DHashtable implements Serializable {
 	public void copyValuesTo(DHashtable table)
 	{
 		Set<Integer> set = table.getLocalHT().keySet();
-		
+		localHT.clear();
 		for (Integer key : set)
 		{
 			if (!localHT.containsKey(key)) {
