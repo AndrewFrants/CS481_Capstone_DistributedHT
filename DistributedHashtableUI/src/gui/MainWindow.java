@@ -525,7 +525,7 @@ public class MainWindow extends JFrame {
 	 * Create the Distributed Hashtable service
 	 */
 	public void createDHService() throws Exception {
-		dhService = DHService.createFiveNodeCluster(true);
+		dhService = DHService.createCluster(true);
 
 		populateNodes();
 	}
@@ -547,18 +547,19 @@ public class MainWindow extends JFrame {
 
 			DhtLogger.log.info("Added node: {} keys count: {} ", node.nodeID, count);
 
-			String succID = "NULL";
-			String precID = "NULL";
+			String succID;
+			String precID;
 			
 			if (node.successor != null)
 			{
 				succID = node.successor.nodeID.toString();
-			}
-			
-			if (node.predecessor != null)
-			{
 				precID = node.predecessor.nodeID.toString();
-			}
+			}		
+			else 
+			{
+				succID = "NULL";
+				precID = "NULL";
+			}	
 			
 			nodesList.add(nodesList.getSize(), node.getName() + " (" + index++ + "=" + "nodeID: " + node.getNodeID()
 					+ ", S:" + succID + " P:" + precID + ", Size:" + count + ")");

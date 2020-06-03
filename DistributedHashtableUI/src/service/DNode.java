@@ -319,7 +319,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 	}
 	
 	public DNode findIfIAmSuccessor(DNode reqNode) {
-		
 		int reqID = reqNode.nodeID;
 		
 		if(this.successor == null || this.predecessor == null) {
@@ -354,40 +353,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 
 		return null;
 
-		/*
-		
-		final int sucID = this.successor.nodeID;
-		final int predID = this.predecessor.nodeID;
-		
-		if(predID == sucID) {
-			return this.successor;
-		}
-		else if(predID < sucID && reqID < nodeID && reqID > predID) {
-			return this.predecessor;
-		}	
-		else if(predID < sucID && reqID > nodeID && reqID < sucID) {
-			return this.successor;
-		}		
-		else if( predID > sucID && nodeID > predID && reqID > predID && reqID < nodeID) {
-			return this.predecessor;
-		}
-		else if( predID > sucID && nodeID < predID && (reqID > predID || reqID < nodeID)) {
-			return this.predecessor;
-		}
-		else if( predID > sucID && nodeID > predID && reqID > predID && (reqID > nodeID || reqID < sucID)) {
-			return this.successor;
-		}
-		else if( predID > sucID && nodeID > predID && (reqID < sucID || reqID > nodeID)) {
-			return this.successor;
-		}
-		else if(predID > sucID && nodeID < predID && reqID > nodeID && reqID < sucID)
-		{
-			return this.successor;
-		}
-		else {
-			return null;
-		}
-		*/
+
 	}
 	
 	// This is called by the node requesting to join,
@@ -504,16 +470,16 @@ public class DNode implements Comparable<DNode>, Serializable {
 		AssertUtilities.ThrowIfNull(currNode, "preNode");
 		AssertUtilities.ThrowIfNull(currNode.predecessor, "preNode.predecessor");
 		AssertUtilities.ThrowIfNull(currNode.successor, "preNode.predecessor");
-
-		if (checkIfNodeIsInRange(currNode.predecessor, currNode))
+		
+		if(currNode.successor == null) {
+			return true;
+		}
+		else if (currNode.keyRange.contains(this.nodeID))
 		{
 			return true;
 		}
-		else if (checkIfNodeIsInRange(currNode, currNode.successor))
-		{
-			return true;
-		}
-
+		
+		
 		return false;
 	}
 	

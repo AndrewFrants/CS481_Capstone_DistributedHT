@@ -29,9 +29,6 @@ public abstract class DNodeJoin {
 	}
 	
 
-
-
-
 	public static void updateKeyList(DNode thisNode, DNode otherNode) {
 		// handles base case of when the first two nodes on a network join together..
 	/*
@@ -141,4 +138,24 @@ public abstract class DNodeJoin {
 		}
 	}
 
+	
+	public static void updateAdjacentNodes(DNode currNode, DNode reqNode) {
+		if(currNode == null || !currNode.keyRange.contains(reqNode.nodeID)) {
+			return;
+		}
+		else if(currNode.successor == null) {
+			reqNode.successor = currNode;
+			reqNode.predecessor = currNode;
+			currNode.successor = reqNode;
+			currNode.predecessor = reqNode;
+			return;
+		}
+		else {
+		reqNode.successor = currNode;
+		reqNode.predecessor = currNode.predecessor;
+		currNode.predecessor.successor = reqNode;
+		currNode.predecessor = reqNode;
+		}
+	}
 }
+

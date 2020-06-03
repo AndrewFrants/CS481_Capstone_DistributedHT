@@ -5,6 +5,7 @@ import data.IDhtNodes;
 import data.InMemoryNodes;
 import data.WebServiceEntries;
 import data.WebServiceNodes;
+import dht_api.AddNode;
 import webservice.DhtWebService;
 
 public class DHServerInstance {
@@ -139,8 +140,8 @@ public class DHServerInstance {
 		}
 	}
 
-	public void addNode(DNode reqNode)
-	{
+	public void addNode(DNode reqNode) {
+	
 		DhtLogger.log.info("Node name={}({}) nodeID={}({}) joining the network", currentNode.name, currentNode.nodeID, reqNode.name, reqNode.nodeID);
 
 		// Case 1: NodeID matches, this is an edge case
@@ -148,21 +149,20 @@ public class DHServerInstance {
 		if(currentNode.nodeID.equals(reqNode.nodeID)) {
 			DhtLogger.log.error("Case 1. CurrNodeID {} ReqNodeId: {} wasnt unique/overlapping", currentNode.name, reqNode.nodeID);
 			currentNode = reqNode.Clone(true);
-			return;
+			return;			
 		}
+		
 		// Case 2: currentNode has no successor
 		// This means this there is only one node in the network
 		// initialize the "loop"
-		else if(currentNode.successor == null || currentNode.predecessor == null) {
-		
+		else if(currentNode.successor == null) {
+			
 			// update curr and req nodes
 			// to create a ring
-			reqNode.successor = currentNode;
-			reqNode.predecessor = currentNode;
+			DNodeJoin.updateAdjacentNodes(currentNode, reqNode);
 			dhtNodes.updateNode(reqNode);
-			currentNode.successor = reqNode;
-			currentNode.predecessor = reqNode;
-
+			
+			
 			DhtLogger.log.info("Case 2. Adding the node {} to currentNode={} currentNode.P.Name = {} currentNode.S.Name = {} as successor", 
 								reqNode.name,
 								currentNode.name,
@@ -170,16 +170,16 @@ public class DHServerInstance {
 								currentNode.successor.nodeID);
 			return;
 		}
-		
+	
 		currentNode.predecessor = this.getNode(currentNode.predecessor);
 		currentNode.successor = this.getNode(currentNode.successor);
 		
 		if (reqNode.isNodeInRange(this.currentNode))
 		{
+			DNodeJoin.updateAdjacentNodes(currentNode, reqNode);
+			
 			dhtNodes.updateNode(reqNode.predecessor);
-			
-			dhtNodes.updateNode(reqNode.successor);
-			
+			dhtNodes.updateNode(reqNode.successor);		
 			dhtNodes.updateNode(reqNode);
 		}
 		// send request to successor
@@ -188,8 +188,8 @@ public class DHServerInstance {
 			IDhtNodes successorProxy = dhtNodes.createProxyFor(this.currentNode.successor);
 			successorProxy.addNode(reqNode);
 		}	
-	}
 	
+	}
 	// Retrieve a node by id from the network
 	public DNode getNode(DNode node)
 	{

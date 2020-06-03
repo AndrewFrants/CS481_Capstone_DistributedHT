@@ -8,7 +8,6 @@ import java.util.Collections;
 public class RoutingTable implements Serializable {
 	public int nodeID; // ID of the node that owns the routing table
 	public int size; // size of the routing table, which is the size of the network size or log(n) of
-
 	public int[] n; // holds value of nodes incremented by 2^i
 	public ArrayList<ArrayList<Integer>> searchValues; // list of search values for node n
 	public DNode[] forwardToNode; // array of nodes to send request to
@@ -31,6 +30,7 @@ public class RoutingTable implements Serializable {
 		initialize(node);
 	}
 
+	// initializes the routing table
 	private void initialize(DNode node) {
 		int x = 0;
 		for (int i = 0; i < size; i++) {
