@@ -2,8 +2,6 @@ package service;
 
 // This class handles changes in the key responsibility range for node's and updating their routing tables upon join requests
 public abstract class DNodeJoin {
-
-	
 	
 	//updates the range of keys for the node
 	public static void updateKeyRange(DNode thisNode) {
@@ -16,7 +14,7 @@ public abstract class DNodeJoin {
 		thisNode.keyRange.setHighID(thisNode.successor.nodeID - 1);
 		}
 		
-		// if the suc node's id is 0, set the range of this node to highest node value (size - 1)
+		// if the successor node's id is 0, set the range of this node to highest node value (size - 1)
 		else {
 			System.out.println(thisNode.size);
 			thisNode.keyRange.setHighID((int)(Math.pow(2, thisNode.size) - 1));
@@ -29,6 +27,7 @@ public abstract class DNodeJoin {
 	}
 	
 
+	//updates key list of node
 	public static void updateKeyList(DNode thisNode, DNode otherNode) {
 		// handles base case of when the first two nodes on a network join together..
 	/*
@@ -51,7 +50,7 @@ public abstract class DNodeJoin {
 		*/
 	}
 
-	
+	//updates the routing table of a node
 	public static void updateRoutingTable(DNode thisNode) {
 
 		if (thisNode.successor == null) {
@@ -114,6 +113,7 @@ public abstract class DNodeJoin {
 
 	}
 
+	//updates predecessor node
 	public static void updatePredecessor(DNode thisNode, DNode otherNode) {
 		if (thisNode.predecessor == null) {
 			thisNode.predecessor = otherNode;
@@ -132,13 +132,14 @@ public abstract class DNodeJoin {
 
 	}
 
+	//updates successor node
 	public static void updateSuccessor(DNode thisNode, DNode otherNode) {
 		if (thisNode.successor == null) {
 			thisNode.successor = otherNode;
 		}
 	}
 
-	
+	//updates adjacent nodes
 	public static void updateAdjacentNodes(DNode currNode, DNode reqNode) {
 		if(currNode == null || !currNode.keyRange.contains(reqNode.nodeID)) {
 			return;

@@ -3,8 +3,6 @@ package data;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Proxy.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,44 +19,55 @@ import service.DHashEntry;
 import service.DNode;
 import service.DhtLogger;
 
+// Entries methods for the Web Service (implementation of the interface in IDhtEntries.java)
 public class WebServiceEntries implements IDhtEntries {
 
+	//url format
     final String uriFmt = "http://%s/entries/";
-    
     String targetHostEntriesController;
     
+    //host and port information
     String host = "localhost";
     String port = "8080";
     
+    //constructor
     public WebServiceEntries()
     {
+    	//formatting the controller
     	String fqdn = String.format("%s:%s", host, port);
     	targetHostEntriesController = String.format(uriFmt, fqdn);
     }
     
+    //constructor with host and port
     public WebServiceEntries(String host, String port)
     {
+    	//formatting the controller
     	String fqdn = String.format("%s:%s", host, port);
     	targetHostEntriesController = String.format(uriFmt, fqdn);
     }
     
+    //constructor with string input
     public WebServiceEntries(String fqdn)
     {
+    	//formatting the controller
     	targetHostEntriesController = String.format(uriFmt, fqdn);
     }
     
+    //get Proxy given node input
     public WebServiceEntries getProxyFor(DNode node)
     {
+    	//returns entries
     	return new WebServiceEntries(node.getName());
     }
     
+    //get Proxy given host and port information
     public WebServiceEntries getProxyFor(String host, String port)
     {
     	return new WebServiceEntries(host, port);
     }
     
     /*
-	 * Insert
+	 * Insert an entry
 	 */
     @Override
 	public void insert(String name) {
@@ -73,7 +82,6 @@ public class WebServiceEntries implements IDhtEntries {
 	    try {
 	    	serializedEntry = mapper.writeValueAsString(DHashEntry.getHashEntry(name));
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -83,7 +91,8 @@ public class WebServiceEntries implements IDhtEntries {
 	    RestTemplate restTemplate = getProxyRestTemplate();
 	    restTemplate.postForEntity(targetHostEntriesController, entity, String.class);
 	}
-	    
+	
+    //removes entry
     @Override
 	public void remove(int entryId) {
 	    DhtLogger.log.info("DELETE entry {} url: {}", entryId, targetHostEntriesController + entryId);
@@ -110,7 +119,6 @@ public class WebServiceEntries implements IDhtEntries {
 		    try {
 		    	serializedEntry = mapper.writeValueAsString(DHashEntry.getHashEntry(name));
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -125,6 +133,7 @@ public class WebServiceEntries implements IDhtEntries {
 		}
 	}
     
+    //updates an entry given entry ID and value
     @Override
     public void update(int entryId, String entryValue) {
     	HttpHeaders headers = new HttpHeaders();
@@ -148,6 +157,7 @@ public class WebServiceEntries implements IDhtEntries {
 	    restTemplate.put(targetHostEntriesController + entryId, entity, String.class);
     }
 	
+    //gets entry based on key
 	public DHashEntry get(Integer key)
     {
     	HttpHeaders headers = new HttpHeaders();
@@ -173,10 +183,10 @@ public class WebServiceEntries implements IDhtEntries {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
         return entry;
 	}
 
+	//gets entry given name
     public DHashEntry get(String name)
     {
     	HttpHeaders headers = new HttpHeaders();
@@ -203,6 +213,7 @@ public class WebServiceEntries implements IDhtEntries {
         return entry;
     }
     
+    //gets entry given node and name
     //@Override
 	public DHashEntry get(DNode node, String name) {
 		
@@ -215,6 +226,7 @@ public class WebServiceEntries implements IDhtEntries {
 		}
 	}
 
+	//getProxyRestTemplate method
 	public RestTemplate getProxyRestTemplate() {
 		if (WebServiceNodes.isProxyEnabled) {
 		    SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
@@ -228,9 +240,4 @@ public class WebServiceEntries implements IDhtEntries {
 		return new RestTemplate();
 	}
 	
-	private String getUri(String uri) {
-		
-	    RestTemplate restTemplate = getProxyRestTemplate();
-	    return restTemplate.getForObject(uri, String.class);
-	}	
 }

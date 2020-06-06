@@ -1,29 +1,27 @@
 package data;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
+//import java.io.BufferedReader;
+//import java.io.FileReader;
 import java.io.IOException;
-
-//import net.minidev.json.JSONArray;
-//import net.minidev.json.JSONObject;
  
+// converts from CSV to JSON
 public class CSVToJSON {
 
 	public static void main(String[] args) throws IOException {
-		String filePath = "movie_metadata.csv";
 		
-		BufferedReader reader = null;
+		// data set
+		//String filePath = "movie_metadata.csv";
 		
-		String line = "";
-		reader = new BufferedReader(new FileReader(filePath));
+		//BufferedReader reader = null;
 		
-		reader.readLine();
-		int index = 0;
-		while((line = reader.readLine()) != null) {
+		//String line = "";
+		//reader = new BufferedReader(new FileReader(filePath));
+		
+		//reader.readLine();
+		//while((line = reader.readLine()) != null) {
 			
 			
-			String[] attributes = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+			//String[] attributes = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 			
 			/* Andrew: Commented out JSONObject was not found...
 			JSONObject movie = new JSONObject();
@@ -64,10 +62,10 @@ public class CSVToJSON {
 			try (FileWriter file = new FileWriter("JSON\\" + attributes[0] + ".json")) {
 				file.write(movie.toJSONString());
 			 
+			}
+			 */		
 		}
-		*/
 		
-	}
-
-}
+		//reader.close();
+	//}
 }

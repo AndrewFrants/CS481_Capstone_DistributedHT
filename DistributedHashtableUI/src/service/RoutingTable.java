@@ -2,10 +2,12 @@ package service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
+//the routing table structure of all the nodes
 public class RoutingTable implements Serializable {
+	
+	//fields initialization
+	static final long serialVersionUID = 0;
 	public int nodeID; // ID of the node that owns the routing table
 	public int size; // size of the routing table, which is the size of the network size or log(n) of
 	public int[] n; // holds value of nodes incremented by 2^i
@@ -19,6 +21,7 @@ public class RoutingTable implements Serializable {
 	public RoutingTable() {
 	}
 	
+	//constructor with given node
 	public RoutingTable(DNode node) {
 
 		this.nodeID = node.getNodeID();
@@ -57,10 +60,12 @@ public class RoutingTable implements Serializable {
 
 	}
 	
+	//gets forwarding node list
 	public DNode [] getForwardNodeList() {
 		return forwardToNode;
 	}
 
+	//prints the routing table
 	public void printRoutingTable() {
 		for (int i = 0; i < size; i++) {
 		

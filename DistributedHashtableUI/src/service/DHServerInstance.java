@@ -5,10 +5,11 @@ import data.IDhtNodes;
 import data.InMemoryNodes;
 import data.WebServiceEntries;
 import data.WebServiceNodes;
-import dht_api.AddNode;
-import webservice.DhtWebService;
 
+// the server instance class
 public class DHServerInstance {
+	
+	//fields initialization
 	Integer networkBitSize;
 	public DNode currentNode;
 	public IDhtNodes dhtNodes;
@@ -18,6 +19,7 @@ public class DHServerInstance {
 	Boolean joinNetwork;
 	String firstInstanceAddress;
 	
+	//constructor
 	public DHServerInstance(DNode node, Boolean web, Boolean joinNetwork)
 	{
 		// when you change this to webservice
@@ -37,6 +39,7 @@ public class DHServerInstance {
 		DhtLogger.log.info("initialize address={} nodeID={} joinNetwork={}", currentNode.getNodeAddress(), currentNode.nodeID, joinNetwork);
 	}
 	
+	//constructor
 	public DHServerInstance(String address, Boolean joinNetwork)
 	{
 		// when you change this to webservice
@@ -56,6 +59,7 @@ public class DHServerInstance {
 		}
 	}
 	
+	//constructor
 	public DHServerInstance(String address, Boolean joinNetwork, Boolean web) 
 	{
 		this.address = address;
@@ -75,7 +79,7 @@ public class DHServerInstance {
 		DhtLogger.log.info("initialize address={} joinNetwork={} web={} firstInstanceAddress={}", address, joinNetwork, web, firstInstanceAddress);
 	}
 	
-	
+	//constructor
 	public DHServerInstance(String address, Boolean joinNetwork, Boolean web, String firstInstanceAddress)
 	{
 		if (firstInstanceAddress == null)
@@ -92,6 +96,7 @@ public class DHServerInstance {
 		DhtLogger.log.info("initialize address={} joinNetwork={} web={} firstInstanceAddress={}", address, joinNetwork, web, firstInstanceAddress);
 	}
 	
+	//joining the network
 	public void joinNetwork()
 	{
 		if (web)
@@ -102,7 +107,7 @@ public class DHServerInstance {
 			
 			if (!joinNetwork)
 			{
-				// this is the first instance or dont join network
+				// this is the first instance or don't join network
 				DhtLogger.log.info("Current Instance and Node initialized at address={} nodeId={}", currentNode.getNodeAddress(), currentNode.nodeID);
 			}
 			else
@@ -140,6 +145,7 @@ public class DHServerInstance {
 		}
 	}
 
+	// adding a node
 	public void addNode(DNode reqNode) {
 	
 		DhtLogger.log.info("Node name={}({}) nodeID={}({}) joining the network", currentNode.name, currentNode.nodeID, reqNode.name, reqNode.nodeID);
@@ -258,6 +264,7 @@ public class DHServerInstance {
 		
 	}
 	
+	// add entry into the network
 	public void addEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
@@ -285,7 +292,7 @@ public class DHServerInstance {
 		}
 	}
 	
-	
+	//gets entry from the network
 	public DHashEntry getEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
@@ -305,6 +312,7 @@ public class DHServerInstance {
 		}
 	}
 	
+	//removes entry from the network
 	public void removeEntry(String entry)
 	{
 		int fileID = ChecksumDemoHashingFunction.hashValue(entry);
@@ -326,7 +334,6 @@ public class DHServerInstance {
 			}
 
 			DhtLogger.log.info("Forwarding {} to successor {} ({})", entry, successorName, this.currentNode.nodeID);
-			// dhtEntries.remove(this.currentNode.successor, entry);
 		}
 	}	
 }

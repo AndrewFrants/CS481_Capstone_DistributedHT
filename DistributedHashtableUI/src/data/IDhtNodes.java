@@ -7,7 +7,9 @@ import service.DNode;
 
 /*
  * The nodes methods
+ * Refer to WebServiceNodes.java for implementation
  */
+
 public interface IDhtNodes {
 
 	/*
@@ -19,13 +21,14 @@ public interface IDhtNodes {
 	 * Find node by hash id
 	 */
 	DNode findNodeByName(Integer hash);
+	
+	// find node
 	DNode findNodeByName(DNode node);
 	
 	/*
 	 * Add a node
 	 */
 	void addNode(String name);
-	
 	void addNode(DNode node);
 	
 	
@@ -57,10 +60,11 @@ public interface IDhtNodes {
 	
 	//adds entry
 	void AddEntry(String text);
-	
 	void AddEntry(DNode node);
+	
 	//removing entry
 	void RemoveEntry(String text);
 
+	//createProxyFor method for a node
 	IDhtNodes createProxyFor(DNode node);
 }

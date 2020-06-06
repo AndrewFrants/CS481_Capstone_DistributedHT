@@ -2,46 +2,26 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
 import javax.swing.JButton;
-import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.AbstractListModel;
-import java.awt.Color;
-import javax.swing.BoxLayout;
-import java.awt.Font;
-import javax.swing.UIManager;
 import javax.swing.JTextArea;
-import javax.swing.border.LineBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JLayeredPane;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import javax.swing.event.ListSelectionListener;
 
@@ -57,16 +37,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
-import javax.swing.border.BevelBorder;
-import javax.swing.JCheckBox;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.Component;
 import javax.swing.JSplitPane;
-import java.awt.event.InputMethodListener;
-import java.awt.event.InputMethodEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollPane;
 
@@ -85,11 +57,6 @@ public class MainWindow extends JFrame {
 
 	// This is the main window content pane
 	private JPanel contentPane;
-
-	/*
-	 * Connection settings
-	 */
-	private JTextField serviceUrl;
 
 	/*
 	 * Hashtable viewer
@@ -127,7 +94,8 @@ public class MainWindow extends JFrame {
 	 * @throws Exception
 	 */
 	public MainWindow() throws Exception {
-
+		
+		//created nodes list and keys list
 		nodesList = new DefaultListModel<String>();
 		keysList = new DefaultListModel<String>();
 
@@ -147,8 +115,6 @@ public class MainWindow extends JFrame {
 		tabbedPane.setBounds(0, 0, 654, 61);
 
 		contentPane.add(tabbedPane);
-
-		BorderLayout bl_pnlMainBody = new BorderLayout();
 
 		/*
 		 * Tabbed control
@@ -317,9 +283,6 @@ public class MainWindow extends JFrame {
 			}
 		});
 		
-		/*
-		 * Refresh button
-		 */
 
 		/*
 		 * Main view panel
@@ -373,6 +336,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 
+		// adding entry implementation
 		btnNewEntry.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JTextField replaceTxt = new JTextField("");
@@ -491,7 +455,6 @@ public class MainWindow extends JFrame {
 		btnMakeDefault.setVerticalAlignment(SwingConstants.TOP);
 		btnMakeDefault.setHorizontalAlignment(SwingConstants.LEFT);
 
-		//
 		// This the the top menu tab selection logic
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -597,6 +560,7 @@ public class MainWindow extends JFrame {
 		keyList.repaint();		
 	}
 
+	//populating the text
 	public void PopulateText() {
 		if (keyList.getSelectedIndex() < 0)
 			return;
@@ -622,13 +586,11 @@ public class MainWindow extends JFrame {
 
 	public void AddNode(String text) {
 		dhService.addNode(text);
-
 		RefreshControls();
 	}
 
 	public void RemoveNode(String name) {
 		dhService.removeNode(name);
-
 		RefreshControls();
 	}
 }

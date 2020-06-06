@@ -1,15 +1,11 @@
 package service;
 
-import java.util.Random;
-
+// Hashing function 
 public class ChecksumDemoHashingFunction {
 
 	/*
 	 * Returns a hash of a string into 360 Degrees
-	 * 
-	 * This is a stupid/experimental checksum based hash
-	 * this probably should never be used for anything
-	 * Implemented for demo purposes only.
+	 * This is an experimental checksum based hash
 	 */
 	public static int hashValueByDegree(String value)
 	{
@@ -25,8 +21,6 @@ public class ChecksumDemoHashingFunction {
 
 		rem = Math.round(rem * 10) / 100.0;
 		
-		// TODO: here we want to make the hash generic
-		// so that we can use different hash types.
 		return (int)((hash % 360) + rem);
 	}
 	
@@ -57,9 +51,7 @@ public class ChecksumDemoHashingFunction {
 		return intHash;
 	}
 	
-	// Andrew
-	// changed the hash function a bit because the
-	// nodes were two clustered together
+	// revised hash function
 	public static int originalHashFunction(String value)
 	{
 		DhtLogger.log.info("Hashing value: {}", value);

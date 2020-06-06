@@ -1,18 +1,20 @@
-/**
- * 
- */
+
 package service;
 
 import java.io.Serializable;
 
 /**
- * @author andreyf Option 1. Caller sends key Option 2. Caller passes file and
- *         we hash the file, e.g. SHA-1
+ * @author andreyf Option 1. Caller sends key 
+ * 				   Option 2. Caller passes file and we hash the file, e.g. SHA-1
  */
+
+// defines the structure of an entry
 public class DHashEntry implements Comparable<DHashEntry>, Serializable {
 
+	static final long serialVersionUID = 0;
+	
+	//each entry has a key and a value
 	public Integer key;
-
 	public String value;
 	
 	/*

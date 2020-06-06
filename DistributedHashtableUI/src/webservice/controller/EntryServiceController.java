@@ -7,23 +7,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-//import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import data.IDhtNodes;
 import data.WebServiceNodes;
 import service.ChecksumDemoHashingFunction;
 import service.DHServerInstance;
 import service.DHashEntry;
-//import service.DHashtable;
 import service.DNode;
 import service.DhtLogger;
 import service.FormatUtilities;
 import webservice.DhtWebService;
 
+/* The controller for entries in the web service
+ * Maps to "/entries" for URL
+ */
 @RestController
 @RequestMapping("/entries")
 public class EntryServiceController {
@@ -31,6 +33,7 @@ public class EntryServiceController {
 	// Nodes interface
 	IDhtNodes dhtNodes;
 
+	//gets the web service instance
 	public DHServerInstance getWS() {
 		return DhtWebService.dhtServiceInstance;
 	}
@@ -39,8 +42,6 @@ public class EntryServiceController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<Object> getallentries() {
 		
-		//Create a new ObjectMapper object
-
 		final List<DHashEntry> entries = new LinkedList<DHashEntry>();
 
 		final DNode head = getWS().currentNode;
@@ -75,6 +76,7 @@ public class EntryServiceController {
 		return ControllerHelpers.HttpResponseObjectOrError(ControllerHelpers.SerializeToString("DhEntries", entries));
 	}
 
+	//finds the node in the range
 	private DNode findNodeInRangeOf(final Integer entryHash, final Boolean refreshNode) {
 		final DNode head = getWS().currentNode;
 		DNode currNode = getWS().currentNode;
@@ -129,7 +131,7 @@ public class EntryServiceController {
 		} while (true);
 	}
 
-	// gets all entries
+	// gets all node entries [uses GET request]
 	@RequestMapping(value = "{id}/all", method = RequestMethod.GET)
 	public ResponseEntity<Object> getAllNodeEntries(@PathVariable("id") final String id) {
 
@@ -157,7 +159,7 @@ public class EntryServiceController {
 		return ControllerHelpers.HttpResponse("Provided id " + id + " couldnt be found.", HttpStatus.NOT_FOUND);
 	}
 	
-	// gets entry
+	// gets entry based on {id} given [uses GET request]
 	@RequestMapping(value = "{id}", method = RequestMethod.GET)
 	public ResponseEntity<Object> get(@PathVariable("id") final String id) {
 
@@ -184,7 +186,7 @@ public class EntryServiceController {
 		return ControllerHelpers.HttpResponse("Provided id " + id + " couldnt be found.", HttpStatus.NOT_FOUND);
 	}
 
-	// creates an entry
+	// creates an entry [uses POST request]
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Object> createEntry(@RequestBody final DHashEntry newEntry) {
 
@@ -210,14 +212,14 @@ public class EntryServiceController {
 		return new ResponseEntity<>("Entry is created successfully", HttpStatus.CREATED);
 	}
 
-	// removes an entry
+	// removes an entry [uses DELETE request]
 	@RequestMapping(method = RequestMethod.DELETE)
 	public ResponseEntity<Object> deleteByEntry(@RequestBody final DHashEntry updatedEntry) {
 
 		return deleteById(updatedEntry.key.toString());
 	}
 
-	// deletes entries
+	// deletes entries [uses DELETE request]
 	@RequestMapping(value = "{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Object> deleteById(@PathVariable("id") final String id) {
 
@@ -250,7 +252,7 @@ public class EntryServiceController {
 		return new ResponseEntity<>("Entry was not found to be deleted.", HttpStatus.NOT_FOUND);
 	}
 
-	// updates an entry
+	// updates an entry [uses PUT request]
 	@RequestMapping(value = "{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Object> updateEntry(@PathVariable("id") final Integer hash,
 			@RequestBody final DHashEntry updatedEntry) {

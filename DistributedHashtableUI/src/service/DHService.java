@@ -1,17 +1,10 @@
 /**
- * This is the DH Service
+ * This is the DH Service class
  */
+
 package service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +16,13 @@ import data.WebServiceEntries;
 import data.WebServiceNodes;
 
 
-
 /**
  * This is the entry point into the service
- * it provides service level functionality
+ * It provides service level functionality
  */
 public class DHService {
 	
-//	public DNode node;
-	//HashMap<Integer, DNode> nodes;
+	//fields initialization
 	Integer networkBitSize;
 	IDhtNodes dhtNodes;	
 	IDhtEntries dhtEntries;
@@ -48,6 +39,7 @@ public class DHService {
 		dhtNodes = new InMemoryNodes(null);
 	}
 	
+	//constructor
 	public DHService(Boolean web)
 	{
 		log.info("initialize web={}", web);
@@ -65,12 +57,14 @@ public class DHService {
 		}
 	}
 	
+	//adding a node given name
 	public void addNode(String name)
 	{
 		log.debug("addNode(String) {}", name);
 		dhtNodes.addNode(name);
 	}
 	
+	//adding a node
 	public void addNode(DNode node)
 	{
 		log.debug("addNode(DNode)", node.name);
@@ -84,9 +78,6 @@ public class DHService {
 	{
 		DhtLogger.log.info("insertValue(DNode) {}", value);
 		
-		/*
-		 * TODO. This part can be/should be optimized to a BST
-		 */
 		if (this.dhtEntries == null)
 		{
 			Integer key = ChecksumDemoHashingFunction.hashValue(value);
@@ -114,13 +105,14 @@ public class DHService {
 		}
 	}
 	
+	//gets entry based on key
 	public DHashEntry getEntry(Integer key)
 	{
 		return this.dhtEntries.get(key);
 	}
 	
 	/*
-	 * Find a node by it's name (this is useful for UI).
+	 * Find a node by its name (this is useful for UI).
 	 */
 	public DNode findNodeByName(String name)
 	{
@@ -154,19 +146,13 @@ public class DHService {
 	 * This is a 4 node sample cluster for testing/demo'ing
 	 */
 	
-	//adding entry
+		//adding entry
 		public void AddEntry(String text) {
 			
 			// If current node owns this entry
 			//    currentNode.getTable.Insert()
 			// If current node does not own entry
 			// 	  WebServicesNodes.insert(text); //forward to successor
-			//
-			
-			//DNode node = findNodeByName(text);
-			//node.AssignKeys(DHashEntry.getHashEntry(text));
-			//dhtNodes.AddEntry(text);
-			//RefreshControls();
 			
 			insertValue(text);
 		}
@@ -183,6 +169,7 @@ public class DHService {
 			dhtEntries.remove(entryId);
 		}
 
+	//creating a cluster; returns DHService	
 	public static DHService createCluster(Boolean web)
 	{
 		DHService dhService = new DHService(web);
@@ -199,6 +186,5 @@ public class DHService {
 		return dhtNodes.getAllNodes();
 		
 	}
-
 
 }

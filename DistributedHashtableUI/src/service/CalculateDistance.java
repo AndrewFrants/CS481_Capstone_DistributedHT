@@ -1,5 +1,6 @@
 package service;
 
+//calculates the clock wise distance between 2 nodes given node1, node2, and bit size as inputs
 public class CalculateDistance {
 	
 	public static int calculateClockWiseDistance(int node_1, int node_2, int bitSize) {

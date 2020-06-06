@@ -8,11 +8,12 @@ import org.springframework.http.ResponseEntity;
 
 import service.DhtLogger;
 
-
+//the helpers for the entry service controller and node controller
 public class ControllerHelpers {
 	
 	final static ObjectMapper mapper = new ObjectMapper();
 
+	//http response
 	public static ResponseEntity<Object> HttpResponse(final String text, final HttpStatus status) {
 		return new ResponseEntity<>(text, status);
 	}
@@ -22,6 +23,7 @@ public class ControllerHelpers {
 			return new ResponseEntity<>(obj, HttpStatus.OK);
 	}
 
+	//serialize to string
 	public static String SerializeToString(String serializingName, Object obj)
 	{
 		String res = null;
@@ -34,6 +36,7 @@ public class ControllerHelpers {
 		return res;
 	}
 
+	//http response with returns error message or OK message
 	public static ResponseEntity<Object> HttpResponseObjectOrError(String res)
 	{
 		if (res == null)

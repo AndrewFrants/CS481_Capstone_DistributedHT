@@ -1,15 +1,16 @@
 package service;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Set;
 
 /*
- * Distributed hashtable, there is an instance of 
- * this on every node
+ * Distributed hashtable structure
+ * There is an instance of this on every node
  */
 public class DHashtable implements Serializable {
+	
+	static final long serialVersionUID = 0;
 
 	private HashMap<Integer, DHashEntry> localHT;
 	
@@ -20,6 +21,7 @@ public class DHashtable implements Serializable {
 		return localHT;
 	}
 
+	//sets localHT
 	public void setLocalHT(HashMap<Integer, DHashEntry> ht) {
 		localHT = ht;
 	}
@@ -69,6 +71,7 @@ public class DHashtable implements Serializable {
 		}
 	}
 
+	//update entries for the distributed hashtable
 	public void updateEntries(DHashEntry... hashEntries)
 	{
 		for (DHashEntry e : hashEntries)

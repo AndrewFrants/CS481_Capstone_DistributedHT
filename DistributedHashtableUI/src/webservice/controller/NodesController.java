@@ -28,6 +28,9 @@ import service.DhtLogger;
 import service.FormatUtilities;
 import webservice.DhtWebService;
 
+/* The controller for nodes in the web service
+ * Maps to "/nodes" for URL
+ */
 @RestController
 @RequestMapping("/nodes")
 public class NodesController {
@@ -35,13 +38,16 @@ public class NodesController {
 	// Nodes interface
 	IDhtNodes dhtNodes;
 
+	//entries interface
 	IDhtEntries dhtEntries;
 
+	//gets the web service instance
 	public static DHServerInstance getWS() {
 		MDC.put("prefix", DhtWebService.dhtServiceInstance.currentNode.nodeID.toString());
 		return DhtWebService.dhtServiceInstance;
 	}
    
+	//prints all the nodes
 	@RequestMapping()
 	public ResponseEntity<Object> getAllNodes() {
 		//Create a new ObjectMapper object
@@ -122,6 +128,7 @@ public class NodesController {
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+	// gets node entries using {id} [uses GET request]
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<DNode> get(@PathVariable("id") final String id) {
 
@@ -133,21 +140,20 @@ public class NodesController {
 		return new ResponseEntity<DNode>(foundNode, HttpStatus.OK);
 	}
 
+	// gets node entries for current node [uses GET request]
 	@RequestMapping(value = "/self", method = RequestMethod.GET)
 	public ResponseEntity<DNode> getSelf() {
 		return new ResponseEntity<DNode>(getWS().currentNode, HttpStatus.OK);
 	}
-
-	private DNode internalGetNode(final Integer id, final Boolean traceError) {
-		return internalGetNode(id, false, traceError);
-	}
-
+	
+	// returns internal node
 	private DNode internalGetNode(final Integer id, final Boolean usingStringSearch, final Boolean traceError) {
 		AssertUtilities.ThrowIfNull(id, "id was null");
 
 		return internalGetNode(getWS(), id, usingStringSearch, traceError);
 	}
 
+	// returns internal node
 	public static DNode internalGetNode(DNode node, final Boolean traceError) {
 
 		AssertUtilities.ThrowIfNull(node, "node was null");
@@ -163,6 +169,7 @@ public class NodesController {
 		return nodeProxy.getNode();
 	}
 
+	//returns internal node
 	public static DNode internalGetNode(DHServerInstance dhInstance, final Integer id, final Boolean usingStringSearch, final Boolean traceError) {
 		AssertUtilities.ThrowIfNull(id, "id was null");
 		AssertUtilities.ThrowIfNull(dhInstance, "dhInstance was null");
@@ -182,6 +189,7 @@ public class NodesController {
 		return foundNode;
 	}
 
+	//returns internal node
 	private DNode internalGetNode(final String id, final Boolean traceError) {
 		AssertUtilities.ThrowIfNull(id, "id was null");
 
@@ -206,6 +214,7 @@ public class NodesController {
 		return foundNode;
 	}
 
+	// gets entries using {id} [uses GET request]
 	@RequestMapping(value = "/{id}/entries", method = RequestMethod.GET)
 	public ResponseEntity<List<DHashEntry>> getEntries(@PathVariable("id") final String id) {
 
@@ -220,6 +229,7 @@ public class NodesController {
 		return new ResponseEntity<List<DHashEntry>>(specificEntries, HttpStatus.OK);
 	}
 
+	// updates node using {id} [uses PUT request]
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Object> put(@PathVariable("id") final String id, @RequestBody final String patchNodeStr) {
 		
@@ -253,13 +263,6 @@ public class NodesController {
 			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());
 			return ControllerHelpers.HttpResponse(HttpStatus.NOT_FOUND);
 		}
-		/*
-		if (networkNode.version > patchNode.version)
-		{
-			DhtLogger.log.error("Patch node couldnt be completed because the patch node version {} was below expected {}, returning 417.", patchNode.version, networkNode.version);
-			return ControllerHelpers.HttpResponse(HttpStatus.EXPECTATION_FAILED);
-		}
-		*/
 		
 		DhtLogger.log.debug("Patching node: {} successor: {} predecessor: {} patchedNodeStr: {}", patchNode.nodeID, patchNode.successor, patchNode.predecessor, patchNodeStr);
 
@@ -279,6 +282,7 @@ public class NodesController {
 		return ControllerHelpers.HttpResponse(HttpStatus.OK);
 	}
 
+	// patches node using {id} [uses PATCH request]
 	@RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
 	public ResponseEntity<Object> patch(@PathVariable("id") final String id, @RequestBody final String patchNodeStr) {
 		
@@ -304,13 +308,6 @@ public class NodesController {
 
 		final DNode networkNode = internalGetNode(patchNode, true);
 
-		/*
-		if (networkNode.version > patchNode.version)
-		{
-			DhtLogger.log.error("Patch node couldnt be completed because the patch node version {} was below expected {}, returning 417.", patchNode.version, networkNode.version);
-			return ControllerHelpers.HttpResponse(HttpStatus.EXPECTATION_FAILED);
-		}
-		 */
 		if (networkNode == null)
 		{
 			DhtLogger.log.error("Patch node {} couldnt be found on the network from {}, returning 4xx.", patchNode.getName(), getWS().currentNode.getName());
@@ -328,7 +325,8 @@ public class NodesController {
 
 		return ControllerHelpers.HttpResponse(HttpStatus.OK);
 	}
-
+	
+	// gets node by hash value using {id} [uses GET request]
 	@RequestMapping(value = "hash/{id}", method = RequestMethod.GET)
 	public ResponseEntity<Object> getByHash(@PathVariable("id") final String id) {
 		final DNode node = internalGetNode(id, true);
@@ -336,6 +334,7 @@ public class NodesController {
 		return new ResponseEntity<>(node, HttpStatus.OK);
 	}
 
+	// deletes node using {id} [uses DELETE request]
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Object> delete(@PathVariable("id") final String id) {
 
@@ -354,6 +353,7 @@ public class NodesController {
 		return ControllerHelpers.HttpResponse(HttpStatus.OK);
 	}
 
+	// creates a new node [uses POST request]
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Object> createNode(@RequestBody final DNode newNode) {
 		getWS().addNode(newNode);

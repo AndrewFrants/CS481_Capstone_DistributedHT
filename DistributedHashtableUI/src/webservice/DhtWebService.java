@@ -3,10 +3,6 @@ package webservice;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,11 +23,13 @@ pushd C:\Users\andreyf\OneDrive\BC\Fall 19\Capstone\DistributedHashtable\Distrib
 mvnw spring-boot:run -Drun.arguments="--server.port=8081,--first=false"
 
 */
+
+// the web service for distributed hash table
 @SpringBootApplication
 @ComponentScan
 public class DhtWebService {
 
-	//
+	//fields initialization
 	// Use only for testing and when web=false!!!
 	public static DHService InMemoryWebService;
 	public static String serverUrl;
@@ -45,6 +43,7 @@ public class DhtWebService {
 		DhtWebService.InMemoryWebService = new DHService(false); // DHService.createFiveNodeCluster(false);
 	}
 	
+	//determines whether the port is being used
 	public static boolean isPortBeingUsed(String host, int port)
 	{
 		Socket sock = null;
@@ -65,6 +64,7 @@ public class DhtWebService {
 		}
 	}
 	
+	//starting the web service
 	public static void main(String[] args) {
 		
 		Integer foundPort = 8080;

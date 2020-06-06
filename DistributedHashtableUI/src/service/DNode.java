@@ -1,31 +1,20 @@
 package service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
-import webservice.DhtWebService;
 
 /*
  * This class is a node on a network
+ * Also, defines the node structure
  */
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="nodeID", scope = DNode.class)
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="nodeID", scope = DhtWebService.class)
+
 public class DNode implements Comparable<DNode>, Serializable {
 
-	/**
-	 *
-	 */
+	//fields initialization
 	private static final long serialVersionUID = 5418247889354114418L;
 	public DHashtable table;
 	public Integer nodeID;
@@ -73,6 +62,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		DhtLogger.log.info("Initialized name: {} nodeId: {} angleVal: {}", nodeName, nodeID, this.angleVal);
 	}
 
+	//returns copy of node
 	public DNode Clone(boolean cloneHashtable)
 	{
 		DNode clone = new DNode(this.name);
@@ -95,11 +85,13 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return clone;
 	}
 
+	//gets the node address
 	@JsonIgnore
 	public String getNodeAddress() {
 		return "http://" + this.name;
 	}
 	
+	//returns boolean for "url pointing"
 	@JsonIgnore
 	public Boolean isUrlPointingAt(final String url) {
 		DhtLogger.log.info("Comparing {} to url: {}", this.getNodeAddress(), url);
@@ -113,6 +105,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return table;
 	}
 
+	//gets the routing table
 	@JsonIgnore
 	public RoutingTable getRoutingTable() {
 		return router;
@@ -167,7 +160,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	}
 
 	/*
-	 * Set the sucessfor
+	 * Set the successor
 	 */
 	public void setSuccessor(final DNode successor) {
 		this.successor = successor;
@@ -181,7 +174,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	}
 
 	/*
-	 * Set the predecssecor
+	 * Set the predecessor
 	 */
 	public void setPredecessor(final DNode predecessor) {
 		this.predecessor = predecessor;
@@ -247,6 +240,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return 1;
 	}
 
+	//hashCode method
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -255,11 +249,13 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return result;
 	}
 
+	//toString method
 	@Override
 	public String toString() {
 		return this.nodeID.toString();
 	}
 
+	//equals method
 	@Override
 	public boolean equals(final Object obj) {
 		if (this == obj)
@@ -318,6 +314,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 
 	}
 	
+	//finds successor
 	public DNode findIfIAmSuccessor(DNode reqNode) {
 		int reqID = reqNode.nodeID;
 		
@@ -334,13 +331,12 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}	
 		
 	}
+	
 	// This node find's if a requesting node is within this node(receivers)
 	// range.  Meaning it is in the span between either this node
 	// and its successor or predecessor.
 	
-	// this method needs to be cleaned up, expressions can probably be reduced
 	public DNode findIfRequestingNodeIsInRange(final DNode reqNode) {
-		final int reqID = reqNode.nodeID;
 		
 		if(this.successor == null || this.predecessor == null) {
 			return this;
@@ -368,7 +364,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setSuccessor(recNode);
 			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);
-		//	DNodeJoin.updateRoutingTable(this);
 			return;
 		}
 		final int conID = connectingNode.nodeID;
@@ -378,7 +373,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setPredecessor(recNode);
 			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from recNode (successor)
-		//	DNodeJoin.updateRoutingTable(this);
 		}
 		
 	
@@ -386,9 +380,8 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setPredecessor(connectingNode);
 			this.setSuccessor(recNode);
 			DNodeJoin.updateKeyRange(this);
-			DNodeJoin.updateKeyList(this, connectingNode);
-		//	DNodeJoin.updateRoutingTable(this);
-			//take keys from recNode (successor)
+			DNodeJoin.updateKeyList(this, connectingNode); //take keys from recNode (successor)
+			
 		}
 		
 	
@@ -398,7 +391,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setSuccessor(recNode);
 			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, connectingNode);//take keys from recNode (successor)
-		//	DNodeJoin.updateRoutingTable(this);
 			
 		}
 		
@@ -407,11 +399,11 @@ public class DNode implements Comparable<DNode>, Serializable {
 			this.setSuccessor(connectingNode);
 			DNodeJoin.updateKeyRange(this);
 			DNodeJoin.updateKeyList(this, recNode);// take keys from connectingNode (successor)
-		//	DNodeJoin.updateRoutingTable(this);
 			
 		}
 	}
 
+	//checks if the given node is in the range
 	public boolean checkIfNodeIsInRange(final DNode loRange, final DNode hiRange) {
 
 		boolean isInRange = false;
@@ -462,7 +454,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		return isInRange;
 	}
 
-	//
+	
 	// This node is the one being added
 	// currNode is which node this code is executing on
 	public boolean isNodeInRange(final DNode currNode) {
@@ -501,7 +493,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		else {
 			this.setPredecessor(reqNode);	
 			DNodeJoin.updateKeyList(this, reqNode);// give keys to requesting node
-		//	DNodeJoin.updateRoutingTable(this);
 		
 		}
 		DNodeJoin.updateKeyRange(this);	
@@ -540,9 +531,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 	
 	public void leaveNetwork() {					
 	successor.updateSuccessorUponLeave(this.predecessor, this);
-	predecessor.updatePredecessorUponLeave(this.successor, this);		
-	//	this.setPredecessor(null);
-	//	this.setSuccessor(null);				
+	predecessor.updatePredecessorUponLeave(this.successor, this);					
 	}
 	
 	// update this node's successor upon leaving the network
@@ -557,24 +546,7 @@ public class DNode implements Comparable<DNode>, Serializable {
 		DNodeLeave.updateRoutingTable(this.predecessor, leavingNode);
 		this.setSuccessor(sucNode);				
 	}
-	
-	/*
-	// get's the key range of the node that has 2 entries
-	// the first element being the start
-	// the second element being the end
-	@JsonIgnore
-	public int[] getKeyRange() {
 
-		final int[] range = new int[2];
-		
-		range[0] = this.getTable().getLocalHT().keySet().get(0);
-		range[1] = keyList.get(keyList.size() - 1);
-		
-		return range;
-	}
-	*/
-
-	
 	
 	// Traverses the chord network to find the node with the key responsibility and inserts the file into that local node
 	public void insert(final String file) {
@@ -592,7 +564,6 @@ public class DNode implements Comparable<DNode>, Serializable {
 		
 	}
 	
-	
 	// Traverses the chord network to find the node with the key responsibility and 
 	public String get(final String title) {
 		final int fileID = ChecksumDemoHashingFunction.hashValue(title);
@@ -609,17 +580,8 @@ public class DNode implements Comparable<DNode>, Serializable {
 		}
 		
 	}
-	
-	
-	/*
-	 * @Override public int compareTo(Object o) { if (o == null || o instanceof
-	 * DNode || ((DNode)o).getHash() == this.getHash()) return 0;
-	 * 
-	 * if (arg0.getHash() > this.getHash()) return -1;
-	 * 
-	 * return 1; }
-	 */
-	
+
+	//removes keys and returns boolean (True for success, False for failure)
 	public Boolean remove(final Integer hash) {
 	
 		if(this.getTable().getLocalHT().containsKey(hash)) {

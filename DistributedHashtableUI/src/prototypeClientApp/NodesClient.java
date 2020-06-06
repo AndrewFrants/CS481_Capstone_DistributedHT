@@ -1,7 +1,6 @@
 package prototypeClientApp;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import service.DNode;
 
@@ -9,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+//client facing Nodes
 public class NodesClient {
 	
+	//gets node given id
 	public DNode get(String id)
 	{
 	    final String uri = "http://localhost:8080/nodes/{id}";
@@ -24,7 +25,7 @@ public class NodesClient {
 	    return value;
 	}
 
-	
+	//add or update given node's name
 	public Boolean addOrUpdate(String nodeName)
 	{
 	    final String uri = "http://localhost:8080/nodes";
@@ -35,7 +36,7 @@ public class NodesClient {
 	    return result.getStatusCode() == HttpStatus.CREATED ? true: false;
 	}
 
-	
+	//delete node
 	public void delete(String id)
 	{
 	    final String uri = "http://localhost:8080/nodes/{id}";

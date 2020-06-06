@@ -4,19 +4,16 @@ import service.DNode;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+//moving node information to local storage
 public class NodesStorage {
 	private final String NODES_FILENAME = "/nodes.json";
 	
+	//writing to storage
 	public void writeToStorage(List<DNode> nodes) {
 		if (nodes != null) {
 			// Temporary: router is causing circular reference and gson.tojson is throwing stackoverflow error
@@ -43,6 +40,7 @@ public class NodesStorage {
 		}
 	}
 	
+	//retrieving from storage
 	public List<DNode> readFromStorage() {
 		// Get the path for resources folder while the service is running
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -56,17 +54,9 @@ public class NodesStorage {
 		return nodes;
 	}
 	
+	//reading the file as a String
 	public static String readFileAsString(String fileName) {
 	    String text = "";
-	    /*TODO
-	    try {
-	     
-	      text = new String(Files.readString(Paths.get(fileName)));
-	    } catch (IOException e) {
-	      e.printStackTrace();
-	    }
-		*/
-	    
 	    return text;
 	  }
 }

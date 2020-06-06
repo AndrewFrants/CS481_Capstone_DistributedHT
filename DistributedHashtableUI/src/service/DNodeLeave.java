@@ -6,15 +6,18 @@ package service;
  */
 public class DNodeLeave {
 
+	//updates predecessor of given node
 	public static void updatePredecessor(DNode thisNode) {
 		thisNode.successor = null;
 
 	}
-
+	
+	//updates successor of given node
 	public static void updateSuccessor(DNode thisNode) {
 		thisNode.predecessor = null;
 	}
 
+	//updates key list
 	public static void updateKeyList(DNode thisNode, DNode otherNode) {
 		// handles base case of when the first two nodes on a network join together..
 
@@ -27,6 +30,7 @@ public class DNodeLeave {
 		*/
 	}
 
+	//updates routing table
 	public static void updateRoutingTable(DNode thisNode, DNode leavingNode) {
 
 		for (int i = 0; i < thisNode.router.forwardToNode.length; i++) {

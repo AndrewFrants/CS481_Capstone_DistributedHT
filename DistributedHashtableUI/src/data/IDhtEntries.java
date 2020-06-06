@@ -1,24 +1,21 @@
 package data;
 
-import java.util.List;
-
 import service.DHashEntry;
 import service.DNode;
 
-/*
- * The nodes methods
- */
+// interface for Entries methods (refer to WebServiceEntries.java for implementation)
 public interface IDhtEntries {
 
-	/*
-	 * Find the node by name
-	 */
+	// inserts an entry
 	void insert(String name);
 
+	// gets entry based on name
 	public DHashEntry get(String name);
 
+	// gets entry based on key
 	public DHashEntry get(Integer key);
 
+	// get an entry based on node and name
 	public DHashEntry get(DNode node, String name);
 
 	/*

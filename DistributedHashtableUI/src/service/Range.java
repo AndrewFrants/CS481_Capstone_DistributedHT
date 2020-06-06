@@ -6,21 +6,28 @@ import java.io.Serializable;
  * This class represents the range of Keys a node is responsible for on the Hash Ring
  */
 public class Range implements Serializable {
+	
+	//fields initialization
+	static final long serialVersionUID = 0;
 	public int lowID;
 	public int highID;
 	
+	//sets lowID
 	public void setLowID(int low) {
 		this.lowID = low;
 	}
 	
+	//sets highID
 	public void setHighID(int high) {
 		this.highID = high;
 	}
 	
+	//gets highID
 	public int getHighID() {
 		return highID;
 	}
 	
+	//gets lowID
 	public int getLowID() {
 		return lowID;	
 	}
@@ -28,7 +35,7 @@ public class Range implements Serializable {
 	// checks if a Key Value is in range
 	public boolean contains(int val) {
 		
-		// case 1: high is greater than low, and value is inbetween
+		// case 1: high is greater than low, and value is in between
 		if(highID > lowID && val >= lowID && val <=highID) {
 			return true;	
 		}	

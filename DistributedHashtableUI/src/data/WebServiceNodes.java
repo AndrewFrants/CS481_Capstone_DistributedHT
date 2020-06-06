@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package data;
 
 import java.net.InetSocketAddress;
@@ -10,11 +8,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -29,51 +24,65 @@ import service.DNode;
 import service.DhtLogger;
 
 /**
- * @author Andrew This is the webservice version of the Nodes Collection
+ * @author Andrew This is the web service version of the Nodes Collection
+ * Refer to the interface in IDhtNodes.java
  */
 public class WebServiceNodes implements IDhtNodes {
 
+	//url format
 	final String uriFmt = "http://%s/nodes/"; // keep the trailing slash because its coded for this assumption
-
 	String targetHostNodesController;
 
+    //host and port information
 	String host = "localhost";
 	String port = "8080";
 
+	//proxy is not enabled
 	public static boolean isProxyEnabled = false;
 
+	//constructor
 	public WebServiceNodes() {
+    	//formatting the controller
 		String fqdn = String.format("%s:%s", host, port);
 		targetHostNodesController = String.format(uriFmt, fqdn);
 	}
 
+	//constructor with host and port
 	public WebServiceNodes(String host, String port) {
+    	//formatting the controller
 		String fqdn = String.format("%s:%s", host, port);
 		targetHostNodesController = String.format(uriFmt, fqdn);
 	}
 
+    //constructor with string input
 	public WebServiceNodes(String fqdn) {
+    	//formatting the controller
 		targetHostNodesController = String.format(uriFmt, fqdn);
 	}
 
+    //get Proxy given node input
 	public static WebServiceNodes getProxyFor(DNode node) {
 		return new WebServiceNodes(node.getName());
 	}
 
+    //create Proxy given node input
 	public IDhtNodes createProxyFor(DNode node) {
 		return new WebServiceNodes(node.getName());
 	}
 	
+    //get Proxy given host and port information
 	public static WebServiceNodes getProxyFor(String host, String port) {
 		return new WebServiceNodes(host, port);
 	}
 
+	// find node given its name
 	@Override
 	public DNode findNodeByName(String name) {
 		int hash = ChecksumDemoHashingFunction.hashValue(name);
 		return findNodeByName(hash);
 	}
 
+	//find node given hash value
 	@Override
 	public DNode findNodeByName(Integer hash) {
 
@@ -82,6 +91,7 @@ public class WebServiceNodes implements IDhtNodes {
 		return getNodeByPath(targetHostNodesController + hash);
 	}
 
+	//find node 
 	@Override
 	public DNode findNodeByName(DNode n) {
 
@@ -92,6 +102,7 @@ public class WebServiceNodes implements IDhtNodes {
 		}
 	}
 
+	//adding a node given name
 	@Override
 	public void addNode(String name) {
 
@@ -105,6 +116,7 @@ public class WebServiceNodes implements IDhtNodes {
 		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
 
+	//adding a node
 	@Override
 	public void addNode(DNode node) {
 
@@ -116,6 +128,7 @@ public class WebServiceNodes implements IDhtNodes {
 		restTemplate.postForObject(targetHostNodesController, request, String.class);
 	}
 	
+	//removing node
 	@Override
 	public void removeNode(DNode node) {
 		DNode predecessor = findNodeByName(node.predecessor.nodeID);
@@ -124,12 +137,13 @@ public class WebServiceNodes implements IDhtNodes {
 		restTemplate.delete(targetHostNodesController + predecessor.name);
 	}
 
-
+	//gets all the nodes
 	@Override
 	public List<DNode> getAllNodes() {
 		return getNodes(targetHostNodesController);
 	}
 
+	//gets current node
 	@Override
 	public DNode getNode() {
 		RestTemplate restTemplate = getProxyRestTemplate();
@@ -137,7 +151,8 @@ public class WebServiceNodes implements IDhtNodes {
 		DhtLogger.log.info("Getting node {}", url);
 		return restTemplate.getForObject(url, DNode.class);
 	}
-
+	
+	//getProxyRestTemplate method
 	public RestTemplate getProxyRestTemplate() {
 		if (isProxyEnabled) {
 			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
@@ -151,30 +166,20 @@ public class WebServiceNodes implements IDhtNodes {
 		return new RestTemplate();
 	}
 
-	private String getUri(String uri) {
-
-		RestTemplate restTemplate = getProxyRestTemplate();
-		return restTemplate.getForObject(uri, String.class);
-	}
-
+	//gets current node
 	public DNode get() {
 		RestTemplate restTemplate = getProxyRestTemplate();
 	
 		return restTemplate.getForObject(this.targetHostNodesController, DNode.class);
 	}
 	
+	//gets a node given path information
 	private DNode getNodeByPath(String uri) {
-
 		RestTemplate restTemplate = getProxyRestTemplate();
 		return restTemplate.getForObject(uri, DNode.class);
 	}
-
-	/*
-	 * RestTemplate restTemplate = getProxyRestTemplate(); ResponseEntity<List<T>>
-	 * response = restTemplate.exchange( path, method, null, new
-	 * ParameterizedTypeReference<List<T>>(){});
-	 */
-
+	
+	//updates node
 	public void updateNode(DNode n) {
 
 		if (n.isUrlPointingAt(targetHostNodesController)) {
@@ -183,7 +188,6 @@ public class WebServiceNodes implements IDhtNodes {
 
 			try
 			{
-	
 				RestTemplate restTemplate = getProxyRestTemplate();
 				ObjectMapper mapper = new ObjectMapper();
 
@@ -210,7 +214,8 @@ public class WebServiceNodes implements IDhtNodes {
 			wsNodes.updateNode(n);
 		}
 	}
-
+	
+	//gets nodes
 	private List<DNode> getNodes(String uri) {
 
 		DhtLogger.log.info("GET to {}", uri);
@@ -238,13 +243,7 @@ public class WebServiceNodes implements IDhtNodes {
 			list.add(node);
 		}
 		return list;
-		/*
-		 * ResponseEntity<List<T>> response = restTemplate.exchange( uri,
-		 * HttpMethod.GET, null, new ParameterizedTypeReference<List<T>>(){}); List<T>
-		 * list = response.getBody(); return list;
-		 */
 	}
-
 
 	// adding entry
 	public void AddEntry(String text) {
@@ -253,7 +252,8 @@ public class WebServiceNodes implements IDhtNodes {
 		DhtLogger.log.info("Adding key {} to node: {}({})", text, node.name, node.nodeID);
 		this.updateNode(node);
 	}
-
+	
+	//adding entry
 	public void AddEntry(DNode node, String text) {
 		node.AssignKeys(DHashEntry.getHashEntry(text));
 		this.updateNode(node);
@@ -290,15 +290,7 @@ public class WebServiceNodes implements IDhtNodes {
 		return (specificEntries);
 	}
 
-//	@Override
-//	public void removeNode(String name) {
-//		// TODO Auto-generated method stub
-//
-//	}
-
 	@Override
 	public void AddEntry(DNode node) {
-		// TODO Auto-generated method stub
-
 	}
 }
