@@ -14,9 +14,7 @@ public class RoutingEntry {
 		idealForwardID = startingID + 2^index%16;
 		forwardRange = new Range();
 		forwardRange.setLowID(startingID);		
-		forwardRange.setHighID(idealForwardID + 2^(index+1) - 1);
-		
-		
+		forwardRange.setHighID(idealForwardID + 2^(index+1) - 1);		
 	}
 
 	public int getForwardID() {
@@ -27,6 +25,7 @@ public class RoutingEntry {
 		return forwardAddress;
 	}
 
+	// changes the the node/address to forward requests to
 	public void changeForwardNode(int forwardID, String forwardAddress) {
 		this.forwardID = forwardID;
 		this.forwardAddress = forwardAddress;
@@ -36,12 +35,22 @@ public class RoutingEntry {
 		return forwardRange;
 	}
 	
+	public int getIdealForwardID() {
+		return idealForwardID;
+	}
+	
+	// checks if this entry can forward the node
 	public boolean contains(int nodeID) {
 		if (forwardRange.contains(nodeID)) {
 			return true;
 		}
 		
 		return false;
+	}
+	
+	// prints contents of entry
+	public void printRoutingEntry() {
+		System.out.println("Forward ID: " + forwardID + " Forward Address: " + forwardAddress + " Range of Entry: " + forwardRange);
 	}
 
 	

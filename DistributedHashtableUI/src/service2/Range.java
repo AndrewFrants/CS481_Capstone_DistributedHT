@@ -51,6 +51,12 @@ public class Range {
 		return false;
 	}
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "LOW: " + lowID + " HIGH: " + highID;
+	}
+
 	// prints the node range
 	public void printNodeRange() {
 		System.out.println("The Range of the Node is from " + lowID + " to " + highID + " on the circular Hash Ring");
